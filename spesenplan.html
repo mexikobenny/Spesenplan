@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Spesenplan">
+<title>Spesenplan</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<style>
+:root {
+  --bg:#F7F6F3;--surface:#FFFFFF;--border:#E8E6E1;--border2:#D4D1CB;
+  --text:#1A1917;--muted:#6B6860;--hint:#A09E99;
+  --accent:#2D6A4F;--accent-l:#E8F4EE;--accent-t:#1B4332;
+  --red:#C0392B;--red-l:#FDF0EE;
+  --blue:#2D5FA4;--blue-l:#EBF2FA;
+  --orange:#B7621A;--orange-l:#FDF3E3;
+  --radius:12px;--radius-s:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#111110;--surface:#1C1C1A;--border:#2A2A27;--border2:#3A3A36;
+  --text:#F0EEE9;--muted:#8A8880;--hint:#5A5955;
+  --accent:#52B788;--accent-l:#1A3328;--accent-t:#A7F3D0;
+  --red:#E57373;--red-l:#2C1A1A;
+  --blue:#5B9BD5;--blue-l:#1A2535;
+  --orange:#E59B4A;--orange-l:#2C1F0A;
+}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;min-height:100vh;padding-bottom:80px}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px 10px;position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.app-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;flex-shrink:0}
+.project-switcher select{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-s);padding:5px 10px;font-size:12px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer;max-width:160px;-webkit-appearance:none;outline:none}
+.project-switcher select:focus{border-color:var(--accent)}
+
+.top-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:57px;z-index:99}
+.top-nav::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:10px 18px;font-size:14px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;transition:color 0.15s}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+.sync-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--hint);padding:5px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--hint);flex-shrink:0}
+.sync-dot.syncing{background:#B7621A;animation:pulse 1s infinite}
+.sync-dot.synced{background:var(--accent)}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.page{display:none;padding:20px}
+.page.active{display:block}
+
+/* Metrics */
+.metrics-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
+@media(min-width:380px){.metrics-row.five{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
+.metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:0.3px}
+.metric-value{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.metric-value.green{color:var(--accent)}
+.metric-value.red{color:var(--red)}
+.metric-value.orange{color:var(--orange)}
+.metric-value.blue{color:var(--blue)}
+
+.current-project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.cpj-name{font-size:17px;font-weight:700;letter-spacing:-0.3px}
+.cpj-meta{font-size:12px;color:var(--muted);margin-top:2px;margin-bottom:12px}
+
+.section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px}
+
+/* Project tiles */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:10px;margin-bottom:20px}
+.project-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:border-color 0.15s}
+.project-tile.is-active{border-color:var(--accent)}
+.project-tile:active{opacity:0.85}
+.pt-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-meta{font-size:10px;color:var(--hint);margin-top:1px;margin-bottom:8px}
+.pt-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-top:4px}
+.pt-label{color:var(--muted)}
+.pt-val{font-weight:600}
+
+/* Liste */
+.list-toggle{display:flex;background:var(--border);border-radius:var(--radius-s);padding:3px;margin-bottom:16px}
+.list-toggle-btn{flex:1;height:34px;border-radius:6px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit;transition:background 0.15s}
+.list-toggle-btn.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
+.list-item{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--shadow)}
+.list-item:active{border-color:var(--border2)}
+.list-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.li-info{flex:1;min-width:0}
+.li-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-meta{font-size:11px;color:var(--hint);margin-top:2px}
+.li-amount{font-size:15px;font-weight:600;flex-shrink:0}
+
+.day-group{margin-bottom:16px}
+.day-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.day-sum{font-size:11px;color:var(--muted)}
+
+/* Projekte page */
+.project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.pc-name{font-size:16px;font-weight:700}
+.pc-loc{font-size:12px;color:var(--muted);margin-top:2px}
+.pc-dates{font-size:11px;color:var(--hint);text-align:right;flex-shrink:0;margin-left:8px}
+.pc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.pc-metric{background:var(--bg);border-radius:var(--radius-s);padding:8px;text-align:center}
+.pc-metric-lbl{font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:0.3px}
+.pc-metric-val{font-size:13px;font-weight:700;margin-top:2px}
+.pc-actions{display:flex;gap:8px}
+.pc-btn{flex:1;height:34px;border-radius:var(--radius-s);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text)}
+.pc-btn.primary{background:var(--accent-l);color:var(--accent-t);border-color:var(--accent)}
+.pc-btn.danger{background:var(--red-l);color:var(--red);border-color:var(--red)}
+
+/* Form sections (per diem) */
+.form-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px}
+.form-section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px}
+.perdiem-preview{background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--radius-s);padding:12px}
+.pdp-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
+.pdp-row.total{font-weight:700;font-size:14px;border-top:1px solid rgba(45,106,79,0.2);padding-top:8px;margin-top:4px}
+.pdp-label{color:var(--accent-t)}
+.pdp-value{font-weight:600;color:var(--accent-t)}
+.pdp-value.red{color:var(--red)}
+
+.week-input-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:8px}
+.wib-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wib-title{font-size:12px;font-weight:600;color:var(--muted)}
+.wib-remove{font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:28px;background:var(--accent);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(45,106,79,0.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform 0.15s}
+.fab:active{transform:scale(0.94)}
+
+/* Overlay & Sheets */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);z-index:400;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:92vh;overflow-y:auto}
+.sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
+.sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border)}
+.sheet-title{font-size:17px;font-weight:700}
+.sheet-close{width:30px;height:30px;border-radius:50%;background:var(--bg);border:none;color:var(--muted);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.form-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.form-row{display:flex;gap:10px}
+.form-group{display:flex;flex-direction:column;gap:5px;flex:1}
+.form-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
+.form-input{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:16px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;transition:border-color 0.15s}
+.form-input:focus{border-color:var(--accent)}
+.form-select{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:15px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;cursor:pointer}
+.form-select:focus{border-color:var(--accent)}
+.form-input.small{height:40px;font-size:14px}
+.btn-submit{height:52px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-submit:active{opacity:0.85}
+.btn-add-week{height:38px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-s);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;width:100%}
+.btn-delete{width:100%;height:46px;background:var(--red-l);color:var(--red);border:1px solid var(--red);border-radius:var(--radius-s);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* Confirm box */
+.confirm-box{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s}
+.confirm-box.open{opacity:1;pointer-events:all}
+.confirm-card{background:var(--surface);border-radius:var(--radius);padding:24px 20px 20px;width:100%;max-width:320px;text-align:center}
+.confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.confirm-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btn{flex:1;height:46px;border-radius:var(--radius-s);font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.confirm-cancel{background:var(--bg);color:var(--text);border:1px solid var(--border2)}
+.confirm-ok{background:var(--red);color:#fff}
+
+/* Login */
+.login-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;width:100%;max-width:360px;box-shadow:var(--shadow)}
+.login-title{font-size:24px;font-weight:700;margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
+.login-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.login-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
+.login-input{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:16px;padding:0 14px;outline:none;width:100%;font-family:inherit}
+.login-input:focus{border-color:var(--accent)}
+.login-btn{height:52px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:8px}
+.login-error{font-size:13px;color:var(--red);margin-top:8px;text-align:center;min-height:18px}
+.logout-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
+
+/* Toast */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--surface);padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:600;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Empty state */
+.empty-state{text-align:center;padding:48px 20px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
+.empty-sub{font-size:13px;color:var(--hint)}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-top">
+    <span class="app-title">Spesenplan</span>
+    <div class="project-switcher">
+      <select id="projectSelect" onchange="selectProject(this.value)">
+        <option value="">Kein Projekt</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<nav class="top-nav">
+  <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+  <button class="nav-tab" data-page="liste">Liste</button>
+  <button class="nav-tab" data-page="projekte">Projekte</button>
+</nav>
+
+<div class="sync-bar">
+  <div class="sync-dot" id="syncDot"></div>
+  <span id="syncText">Verbinde...</span>
+  <button class="logout-btn" onclick="doLogout()" style="margin-left:auto">Abmelden</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div id="dashCurrentProject"></div>
+  <div class="section-title" id="dashAllTitle" style="display:none">Alle Projekte</div>
+  <div class="projects-grid" id="dashProjectsGrid"></div>
+</div>
+
+<!-- LISTE -->
+<div class="page" id="page-liste">
+  <div class="list-toggle">
+    <button class="list-toggle-btn active" id="toggleIncome" onclick="setListTab('income')">Einnahmen</button>
+    <button class="list-toggle-btn" id="toggleExpense" onclick="setListTab('expense')">Ausgaben</button>
+  </div>
+  <div id="listeContainer"></div>
+</div>
+
+<!-- PROJEKTE -->
+<div class="page" id="page-projekte">
+  <div id="projekteContainer"></div>
+</div>
+
+<!-- SHEET: Projekt -->
+<div class="sheet" id="projectSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="projectSheetTitle">Neues Projekt</span>
+    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
+  </div>
+  <div class="form-body">
+    <input type="hidden" id="fTripId">
+
+    <div class="form-group">
+      <label class="form-label">Projektname</label>
+      <input class="form-input" type="text" id="fTripName" placeholder="z.B. Amsterdam Q1 2026">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Stadt</label>
+        <input class="form-input" type="text" id="fCity" placeholder="Amsterdam">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Land</label>
+        <input class="form-input" type="text" id="fCountry" placeholder="Niederlande">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Startdatum</label>
+        <input class="form-input" type="date" id="fStartDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Enddatum</label>
+        <input class="form-input" type="date" id="fEndDate">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Per Diem Tagess&auml;tze</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Volltagssatz (€)</label>
+          <input class="form-input" type="number" id="fFullDayRate" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Anreisetag (€)</label>
+          <input class="form-input" type="number" id="fTravelDayRate" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Steuer</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Steuerfreie Grenze (€/Tag)</label>
+          <input class="form-input" type="number" id="fFreeLimit" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Einkommensteuer (%)</label>
+          <input class="form-input" type="number" id="fLst" placeholder="—" step="0.5" min="0" max="100" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <div class="form-group" style="flex:0 0 48%">
+          <label class="form-label">Sozialversicherung (%)</label>
+          <input class="form-input" type="number" id="fSv" placeholder="—" step="0.5" min="0" max="100" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Mahlzeitenabz&uuml;ge (€/Tag)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fr&uuml;hst&uuml;ck</label>
+          <input class="form-input" type="number" id="fMealFrueh" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mittagessen</label>
+          <input class="form-input" type="number" id="fMealMittag" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Abendessen</label>
+          <input class="form-input" type="number" id="fMealAbend" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Anreisetage</div>
+      <div class="form-row">
+        <div class="form-group" style="flex:0 0 100px">
+          <label class="form-label">Anzahl</label>
+          <input class="form-input" type="number" id="fTravelDays" value="0" min="0" max="30" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Wochen</div>
+      <div id="formWeeksContainer"></div>
+      <button class="btn-add-week" onclick="addFormWeek()">+ Woche hinzuf&uuml;gen</button>
+    </div>
+
+    <div class="perdiem-preview" id="perdiemPreview" style="display:none">
+      <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="pdpBrutto">—</span></div>
+      <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="pdpSteuern">—</span></div>
+      <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="pdpNetto">—</span></div>
+    </div>
+
+    <button class="btn-submit" onclick="saveTrip()">Projekt speichern</button>
+    <button class="btn-delete" id="tripDeleteBtn" style="display:none" onclick="confirmDelete('trip')">Projekt l&ouml;schen</button>
+  </div>
+</div>
+
+<!-- SHEET: Einnahme -->
+<div class="sheet" id="incomeSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="incomeSheetTitle">Einnahme hinzuf&uuml;gen</span>
+    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
+  </div>
+  <div class="form-body">
+    <input type="hidden" id="fIncomeId">
+    <div class="form-group">
+      <label class="form-label">Betrag (€)</label>
+      <input class="form-input" type="number" id="fIncomeAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" type="date" id="fIncomeDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Projekt</label>
+        <select class="form-select" id="fIncomeTripId"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notiz (optional)</label>
+      <input class="form-input" type="text" id="fIncomeNote" placeholder="z.B. Spesen KW 3" autocomplete="off">
+    </div>
+    <button class="btn-submit" onclick="saveIncome()">Speichern</button>
+    <button class="btn-delete" id="incomeDeleteBtn" style="display:none" onclick="confirmDelete('income')">Einnahme l&ouml;schen</button>
+  </div>
+</div>
+
+<!-- SHEET: Ausgabe -->
+<div class="sheet" id="expenseSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="expenseSheetTitle">Ausgabe hinzuf&uuml;gen</span>
+    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
+  </div>
+  <div class="form-body">
+    <input type="hidden" id="fExpenseId">
+    <div class="form-group">
+      <label class="form-label">Bezeichnung</label>
+      <input class="form-input" type="text" id="fExpenseName" placeholder="z.B. Supermarkt" autocomplete="off">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Betrag (€)</label>
+        <input class="form-input" type="number" id="fExpenseAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" type="date" id="fExpenseDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Projekt</label>
+      <select class="form-select" id="fExpenseTripId"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notiz (optional)</label>
+      <input class="form-input" type="text" id="fExpenseNote" placeholder="optional" autocomplete="off">
+    </div>
+    <button class="btn-submit" onclick="saveExpense()">Speichern</button>
+    <button class="btn-delete" id="expenseDeleteBtn" style="display:none" onclick="confirmDelete('expense')">Ausgabe l&ouml;schen</button>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm-box" id="confirmBox">
+  <div class="confirm-card">
+    <div class="confirm-title">Eintrag l&ouml;schen?</div>
+    <div class="confirm-sub" id="confirmSub">Diese Aktion kann nicht r&uuml;ckg&auml;ngig gemacht werden.</div>
+    <div class="confirm-btns">
+      <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">Abbrechen</button>
+      <button class="confirm-btn confirm-ok" id="confirmOk">L&ouml;schen</button>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fabBtn">+</button>
+<div class="overlay" id="overlay" onclick="closeSheets()"></div>
+<div class="toast" id="toast"></div>
+
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-title">Spesenplan</div>
+    <div class="login-sub">Bitte melde dich an.</div>
+    <div class="login-group">
+      <label class="login-label">E-Mail</label>
+      <input class="login-input" type="email" id="loginEmail" placeholder="deine@email.com" autocomplete="email">
+    </div>
+    <div class="login-group">
+      <label class="login-label">Passwort</label>
+      <input class="login-input" type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" onclick="doLogin()">Anmelden</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️  FIREBASE CONFIG
+// Neues Projekt anlegen unter https://console.firebase.google.com
+// Dann Firestore + Authentication (E-Mail/Passwort) aktivieren
+// und die Werte unten ersetzen.
+// ─────────────────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyAJv4fpNnsmJbgCzkN_8hoMj_fmyI6xc6E",
+  authDomain:        "spesenplan.firebaseapp.com",
+  projectId:         "spesenplan",
+  storageBucket:     "spesenplan.firebasestorage.app",
+  messagingSenderId: "626276550441",
+  appId:             "1:626276550441:web:85d45888710124cc8f1938"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+const tripsCol    = collection(db, "trips");
+const incomesCol  = collection(db, "incomes");
+const expensesCol = collection(db, "expenses");
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let trips = [], incomes = [], expenses = [];
+let selectedTripId  = null;
+let activePage      = "dashboard";
+let activeListTab   = "income";
+let deleteTarget    = null;
+let formWeeks       = [];
+const today         = new Date();
+
+let snapUnsubs = [];
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+window.doLogin = async function() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pw    = document.getElementById("loginPassword").value;
+  const errEl = document.getElementById("loginError");
+  errEl.textContent = "";
+  if (!email || !pw) { errEl.textContent = "E-Mail und Passwort eingeben."; return; }
+  try { await signInWithEmailAndPassword(auth, email, pw); }
+  catch(e) { errEl.textContent = "Anmeldung fehlgeschlagen. Bitte pruefen."; }
+};
+
+window.doLogout = async function() {
+  snapUnsubs.forEach(u => u()); snapUnsubs = [];
+  await signOut(auth);
+  showToast("Abgemeldet");
+};
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById("loginScreen").style.display = "none";
+    startListeners();
+  } else {
+    document.getElementById("loginScreen").style.display = "flex";
+    trips = []; incomes = []; expenses = [];
+    snapUnsubs.forEach(u => u()); snapUnsubs = [];
+  }
+});
+
+function startListeners() {
+  setSyncStatus("syncing", "Verbinde...");
+  snapUnsubs.push(onSnapshot(query(tripsCol, orderBy("startDate","desc")), snap => {
+    trips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    autoSelectTrip();
+    renderAll();
+  }, () => setSyncStatus("error", "Verbindungsfehler")));
+  snapUnsubs.push(onSnapshot(query(incomesCol, orderBy("date","desc")), snap => {
+    incomes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  }, () => {}));
+  snapUnsubs.push(onSnapshot(query(expensesCol, orderBy("date","desc")), snap => {
+    expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  }, () => {}));
+}
+
+function setSyncStatus(s, t) {
+  document.getElementById("syncDot").className = "sync-dot " + s;
+  document.getElementById("syncText").textContent = t;
+}
+
+function autoSelectTrip() {
+  if (!trips.length) { selectedTripId = null; return; }
+  if (selectedTripId && trips.find(t => t.id === selectedTripId)) return;
+  const todayStr = today.toISOString().slice(0,10);
+  const active   = trips.find(t => t.startDate <= todayStr && t.endDate >= todayStr);
+  selectedTripId = active ? active.id : trips[0].id;
+}
+
+// ─── Per Diem Berechnung (identisch zu per_diem_calculator_EN.html) ──────────
+function calcPerDiem(trip) {
+  const arrDays = trip.travelDays || 0;
+  const arrRate = trip.travelDayRate || 0;
+  let totalBrutto   = arrDays * arrRate;
+  let totalFree     = totalBrutto; // Anreisetage immer steuerfrei
+  let totalTaxable  = 0;
+
+  (trip.weeks || []).forEach(week => {
+    const full      = week.fullDays || 0;
+    const mealDed   = (week.frueh  || 0) * (trip.mealFrueh  || 0)
+                    + (week.mittag || 0) * (trip.mealMittag || 0)
+                    + (week.abend  || 0) * (trip.mealAbend  || 0);
+    const mealPerDay = full > 0 ? mealDed / full : 0;
+    const freeLimit  = trip.freeLimit  || 0;
+    const fullRate   = trip.fullDayRate || 0;
+    for (let d = 0; d < full; d++) {
+      const rate    = Math.max(0, fullRate - mealPerDay);
+      totalBrutto  += rate;
+      totalFree    += Math.min(rate, freeLimit);
+      totalTaxable += Math.max(0, rate - freeLimit);
+    }
+  });
+
+  const lst     = trip.lst != null ? totalTaxable * (trip.lst / 100) : 0;
+  const sv      = trip.sv  != null ? (totalTaxable - lst) * (trip.sv / 100) : 0;
+  const steuern = lst + sv;
+  return { brutto: totalBrutto, steuern, net: totalBrutto - steuern };
+}
+
+function tripExpenses(tripId) {
+  return expenses.filter(e => e.tripId === tripId).reduce((s,e) => s + (e.amount||0), 0);
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderAll() {
+  setSyncStatus("synced", "Synchronisiert");
+  updateProjectSelect();
+  if      (activePage === "dashboard") renderDashboard();
+  else if (activePage === "liste")     renderListe();
+  else if (activePage === "projekte")  renderProjekte();
+}
+
+function updateProjectSelect() {
+  const sel = document.getElementById("projectSelect");
+  if (!trips.length) {
+    sel.innerHTML = "<option value=''>Kein Projekt</option>";
+    return;
+  }
+  sel.innerHTML = trips.map(t =>
+    `<option value="${t.id}"${t.id === selectedTripId ? " selected" : ""}>${escHtml(t.name || t.city || "Projekt")}</option>`
+  ).join("");
+}
+
+function renderDashboard() {
+  const trip    = selectedTripId ? trips.find(t => t.id === selectedTripId) : null;
+  const cpEl    = document.getElementById("dashCurrentProject");
+  const allTitle = document.getElementById("dashAllTitle");
+  const gridEl  = document.getElementById("dashProjectsGrid");
+
+  if (!trip) {
+    cpEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
+    allTitle.style.display = "none";
+    gridEl.innerHTML = "";
+    return;
+  }
+
+  const calc   = calcPerDiem(trip);
+  const aus    = tripExpenses(trip.id);
+  const diff   = calc.net - aus;
+
+  cpEl.innerHTML = `
+    <div class="current-project-card">
+      <div class="cpj-name">${escHtml(trip.name || trip.city)}</div>
+      <div class="cpj-meta">${escHtml(trip.city || "")}${trip.country ? ", " + escHtml(trip.country) : ""} &middot; ${fmtDate(trip.startDate)} &ndash; ${fmtDate(trip.endDate)}</div>
+    </div>
+    <div class="metrics-row five">
+      <div class="metric-card"><div class="metric-label">Einnahmen (Brutto)</div><div class="metric-value blue">${fmtEur(calc.brutto)}</div></div>
+      <div class="metric-card"><div class="metric-label">Steuern</div><div class="metric-value orange">${fmtEur(calc.steuern)}</div></div>
+      <div class="metric-card"><div class="metric-label">Netto Spesen</div><div class="metric-value green">${fmtEur(calc.net)}</div></div>
+      <div class="metric-card"><div class="metric-label">Ausgaben</div><div class="metric-value red">${fmtEur(aus)}</div></div>
+      <div class="metric-card"><div class="metric-label">Differenz</div><div class="metric-value ${diff >= 0 ? "green" : "red"}">${fmtEur(diff)}</div></div>
+    </div>`;
+
+  if (trips.length > 1) {
+    allTitle.style.display = "";
+    gridEl.innerHTML = trips.map(t => {
+      const c    = calcPerDiem(t);
+      const a    = tripExpenses(t.id);
+      const df   = c.net - a;
+      return `<div class="project-tile${t.id === selectedTripId ? " is-active" : ""}" onclick="selectProject('${t.id}')">
+        <div class="pt-name">${escHtml(t.name || t.city)}</div>
+        <div class="pt-meta">${escHtml(t.city || "")}${t.country ? ", " + escHtml(t.country) : ""}</div>
+        <div class="pt-row"><span class="pt-label">Netto</span><span class="pt-val" style="color:var(--accent)">${fmtCompact(c.net)}</span></div>
+        <div class="pt-row"><span class="pt-label">Ausgaben</span><span class="pt-val" style="color:var(--red)">${fmtCompact(a)}</span></div>
+        <div class="pt-row"><span class="pt-label">Differenz</span><span class="pt-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</span></div>
+      </div>`;
+    }).join("");
+  } else {
+    allTitle.style.display = "none";
+    gridEl.innerHTML = "";
+  }
+}
+
+function renderListe() {
+  document.getElementById("toggleIncome").classList.toggle("active", activeListTab === "income");
+  document.getElementById("toggleExpense").classList.toggle("active", activeListTab === "expense");
+  const container = document.getElementById("listeContainer");
+
+  if (activeListTab === "income") {
+    if (!incomes.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">💶</div><div class="empty-title">Keine Einnahmen</div><div class="empty-sub">Tippe auf + um eine Einnahme zu erfassen</div></div>`;
+      return;
+    }
+    const groups = groupByDate(incomes);
+    container.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => {
+      const daySum = groups[date].reduce((s,i) => s + (i.amount||0), 0);
+      return `<div class="day-group">
+        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
+        ${groups[date].map(i => {
+          const t = trips.find(tr => tr.id === i.tripId);
+          return `<div class="list-item" onclick="openIncomeEdit('${i.id}')">
+            <div class="list-icon" style="background:var(--accent-l)">💶</div>
+            <div class="li-info">
+              <div class="li-name">${escHtml(i.note || "Spesenzahlung")}</div>
+              <div class="li-meta">${t ? escHtml(t.name || t.city) : "–"}</div>
+            </div>
+            <div class="li-amount" style="color:var(--accent)">${fmtEur(i.amount||0)}</div>
+          </div>`;
+        }).join("")}
+      </div>`;
+    }).join("");
+  } else {
+    if (!expenses.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>`;
+      return;
+    }
+    const groups = groupByDate(expenses);
+    container.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => {
+      const daySum = groups[date].reduce((s,e) => s + (e.amount||0), 0);
+      return `<div class="day-group">
+        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
+        ${groups[date].map(e => {
+          const t = trips.find(tr => tr.id === e.tripId);
+          return `<div class="list-item" onclick="openExpenseEdit('${e.id}')">
+            <div class="list-icon" style="background:var(--red-l)">🧾</div>
+            <div class="li-info">
+              <div class="li-name">${escHtml(e.name || "Ausgabe")}</div>
+              <div class="li-meta">${t ? escHtml(t.name || t.city) : "–"}</div>
+            </div>
+            <div class="li-amount" style="color:var(--red)">${fmtEur(e.amount||0)}</div>
+          </div>`;
+        }).join("")}
+      </div>`;
+    }).join("");
+  }
+}
+
+function renderProjekte() {
+  const container = document.getElementById("projekteContainer");
+  if (!trips.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-title">Noch keine Projekte</div><div class="empty-sub">Tippe auf + um ein Projekt anzulegen</div></div>`;
+    return;
+  }
+  container.innerHTML = trips.map(t => {
+    const calc = calcPerDiem(t);
+    const aus  = tripExpenses(t.id);
+    const diff = calc.net - aus;
+    return `<div class="project-card">
+      <div class="pc-head">
+        <div>
+          <div class="pc-name">${escHtml(t.name || t.city)}</div>
+          <div class="pc-loc">${escHtml(t.city||"")}${t.country ? ", "+escHtml(t.country):""}</div>
+        </div>
+        <div class="pc-dates">${fmtDate(t.startDate)}<br>${fmtDate(t.endDate)}</div>
+      </div>
+      <div class="pc-metrics">
+        <div class="pc-metric"><div class="pc-metric-lbl">Netto</div><div class="pc-metric-val" style="color:var(--accent)">${fmtCompact(calc.net)}</div></div>
+        <div class="pc-metric"><div class="pc-metric-lbl">Ausgaben</div><div class="pc-metric-val" style="color:var(--red)">${fmtCompact(aus)}</div></div>
+        <div class="pc-metric"><div class="pc-metric-lbl">Differenz</div><div class="pc-metric-val" style="color:${diff>=0?"var(--accent)":"var(--red)"}">${fmtCompact(diff)}</div></div>
+      </div>
+      <div class="pc-actions">
+        <button class="pc-btn primary" onclick="openEditTrip('${t.id}')">Bearbeiten</button>
+        <button class="pc-btn danger" onclick="openEditTrip('${t.id}', true)">L&ouml;schen</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ─── Projekt Form ─────────────────────────────────────────────────────────────
+window.addFormWeek = function() {
+  formWeeks.push({ fullDays: 4, frueh: 0, mittag: 0, abend: 0 });
+  renderFormWeeks();
+  updatePreview();
+};
+
+window.removeFormWeek = function(idx) {
+  formWeeks.splice(idx, 1);
+  renderFormWeeks();
+  updatePreview();
+};
+
+function renderFormWeeks() {
+  document.getElementById("formWeeksContainer").innerHTML = formWeeks.map((w, i) => `
+    <div class="week-input-block">
+      <div class="wib-header">
+        <span class="wib-title">Woche ${i+1}</span>
+        <button class="wib-remove" onclick="removeFormWeek(${i})">Entfernen</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Volltage</label>
+          <input class="form-input small" type="number" min="0" max="7" value="${w.fullDays}"
+            oninput="formWeeks[${i}].fullDays=+this.value;updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fr&uuml;hst&uuml;ck</label>
+          <input class="form-input small" type="number" min="0" max="7" value="${w.frueh}"
+            oninput="formWeeks[${i}].frueh=+this.value;updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mittag</label>
+          <input class="form-input small" type="number" min="0" max="7" value="${w.mittag}"
+            oninput="formWeeks[${i}].mittag=+this.value;updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Abend</label>
+          <input class="form-input small" type="number" min="0" max="7" value="${w.abend}"
+            oninput="formWeeks[${i}].abend=+this.value;updatePreview()">
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+window.updatePreview = function() {
+  const gN  = id => parseFloat(document.getElementById(id).value) || 0;
+  const tmp = {
+    travelDays: gN("fTravelDays"), travelDayRate: gN("fTravelDayRate"),
+    fullDayRate: gN("fFullDayRate"), freeLimit: gN("fFreeLimit"),
+    lst: gN("fLst"), sv: gN("fSv"),
+    mealFrueh: gN("fMealFrueh"), mealMittag: gN("fMealMittag"), mealAbend: gN("fMealAbend"),
+    weeks: formWeeks
+  };
+  const c   = calcPerDiem(tmp);
+  const el  = document.getElementById("perdiemPreview");
+  if (c.brutto > 0) {
+    el.style.display = "block";
+    document.getElementById("pdpBrutto").textContent  = fmtEur(c.brutto);
+    document.getElementById("pdpSteuern").textContent = fmtEur(c.steuern);
+    document.getElementById("pdpNetto").textContent   = fmtEur(c.net);
+  } else {
+    el.style.display = "none";
+  }
+};
+
+window.openAddTrip = function() {
+  formWeeks = [];
+  document.getElementById("fTripId").value     = "";
+  document.getElementById("projectSheetTitle").textContent = "Neues Projekt";
+  ["fTripName","fCity","fCountry","fStartDate","fEndDate",
+   "fFullDayRate","fTravelDayRate","fFreeLimit","fLst","fSv",
+   "fMealFrueh","fMealMittag","fMealAbend"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("fTravelDays").value = "0";
+  document.getElementById("tripDeleteBtn").style.display = "none";
+  renderFormWeeks();
+  document.getElementById("perdiemPreview").style.display = "none";
+  openSheet("projectSheet");
+};
+
+window.openEditTrip = function(id, showDelete) {
+  const t = trips.find(tr => tr.id === id);
+  if (!t) return;
+  if (showDelete) {
+    // Quick delete via projekte page button
+    deleteTarget = { type: "trip", id };
+    document.getElementById("confirmSub").textContent = `"${t.name || t.city}" und alle zugehoerigen Daten werden geloescht.`;
+    document.getElementById("confirmBox").classList.add("open");
+    return;
+  }
+  formWeeks = (t.weeks || []).map(w => ({ ...w }));
+  document.getElementById("fTripId").value        = id;
+  document.getElementById("projectSheetTitle").textContent = "Projekt bearbeiten";
+  document.getElementById("fTripName").value      = t.name || "";
+  document.getElementById("fCity").value          = t.city || "";
+  document.getElementById("fCountry").value       = t.country || "";
+  document.getElementById("fStartDate").value     = t.startDate || "";
+  document.getElementById("fEndDate").value       = t.endDate || "";
+  document.getElementById("fFullDayRate").value   = t.fullDayRate || "";
+  document.getElementById("fTravelDayRate").value = t.travelDayRate || "";
+  document.getElementById("fFreeLimit").value     = t.freeLimit || "";
+  document.getElementById("fLst").value           = t.lst || "";
+  document.getElementById("fSv").value            = t.sv || "";
+  document.getElementById("fMealFrueh").value     = t.mealFrueh || "";
+  document.getElementById("fMealMittag").value    = t.mealMittag || "";
+  document.getElementById("fMealAbend").value     = t.mealAbend || "";
+  document.getElementById("fTravelDays").value    = t.travelDays || 0;
+  document.getElementById("tripDeleteBtn").style.display = "block";
+  renderFormWeeks();
+  updatePreview();
+  openSheet("projectSheet");
+};
+
+window.saveTrip = async function() {
+  const id        = document.getElementById("fTripId").value;
+  const city      = document.getElementById("fCity").value.trim();
+  const startDate = document.getElementById("fStartDate").value;
+  const endDate   = document.getElementById("fEndDate").value;
+  if (!city || !startDate || !endDate) { showToast("Stadt, Start- und Enddatum benoetigt"); return; }
+  const gN  = eid => { const v = parseFloat(document.getElementById(eid).value); return isNaN(v) ? null : v; };
+  const data = {
+    name: document.getElementById("fTripName").value.trim() || city,
+    city, country: document.getElementById("fCountry").value.trim(),
+    startDate, endDate,
+    fullDayRate: gN("fFullDayRate"), travelDayRate: gN("fTravelDayRate"),
+    freeLimit: gN("fFreeLimit"), lst: gN("fLst"), sv: gN("fSv"),
+    mealFrueh: gN("fMealFrueh"), mealMittag: gN("fMealMittag"), mealAbend: gN("fMealAbend"),
+    travelDays: parseFloat(document.getElementById("fTravelDays").value) || 0,
+    weeks: formWeeks.map(w => ({ ...w })),
+    updated_at: new Date().toISOString()
+  };
+  setSyncStatus("syncing", "Speichert...");
+  try {
+    if (id) { await updateDoc(doc(db,"trips",id), data); }
+    else    { data.created_at = new Date().toISOString(); await addDoc(tripsCol, data); }
+    closeSheets(); showToast(id ? "Projekt aktualisiert" : "Projekt angelegt");
+  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+};
+
+// ─── Einnahmen ────────────────────────────────────────────────────────────────
+function populateTripSelect(selectId, preselect) {
+  const sel = document.getElementById(selectId);
+  const pre = preselect || selectedTripId;
+  sel.innerHTML = trips.length
+    ? trips.map(t => `<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)}</option>`).join("")
+    : "<option value=''>Kein Projekt</option>";
+}
+
+window.openAddIncome = function() {
+  document.getElementById("fIncomeId").value    = "";
+  document.getElementById("fIncomeAmount").value = "";
+  document.getElementById("fIncomeDate").value  = today.toISOString().slice(0,10);
+  document.getElementById("fIncomeNote").value  = "";
+  document.getElementById("incomeSheetTitle").textContent = "Einnahme hinzufuegen";
+  document.getElementById("incomeDeleteBtn").style.display = "none";
+  populateTripSelect("fIncomeTripId");
+  openSheet("incomeSheet");
+  setTimeout(() => document.getElementById("fIncomeAmount").focus(), 350);
+};
+
+window.openIncomeEdit = function(id) {
+  const i = incomes.find(x => x.id === id);
+  if (!i) return;
+  document.getElementById("fIncomeId").value    = id;
+  document.getElementById("fIncomeAmount").value = i.amount;
+  document.getElementById("fIncomeDate").value  = i.date;
+  document.getElementById("fIncomeNote").value  = i.note || "";
+  document.getElementById("incomeSheetTitle").textContent = "Einnahme bearbeiten";
+  document.getElementById("incomeDeleteBtn").style.display = "block";
+  populateTripSelect("fIncomeTripId", i.tripId);
+  openSheet("incomeSheet");
+};
+
+window.saveIncome = async function() {
+  const id     = document.getElementById("fIncomeId").value;
+  const amount = parseFloat(document.getElementById("fIncomeAmount").value);
+  const date   = document.getElementById("fIncomeDate").value;
+  const note   = document.getElementById("fIncomeNote").value.trim();
+  const tripId = document.getElementById("fIncomeTripId").value;
+  if (isNaN(amount) || amount <= 0 || !date) { showToast("Betrag und Datum eingeben"); return; }
+  const data = { amount, date, note, tripId, updated_at: new Date().toISOString() };
+  setSyncStatus("syncing","Speichert...");
+  try {
+    if (id) { await updateDoc(doc(db,"incomes",id), data); }
+    else    { data.created_at = new Date().toISOString(); await addDoc(incomesCol, data); }
+    closeSheets(); showToast("Einnahme gespeichert");
+  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+};
+
+// ─── Ausgaben ─────────────────────────────────────────────────────────────────
+window.openAddExpense = function() {
+  document.getElementById("fExpenseId").value     = "";
+  document.getElementById("fExpenseName").value   = "";
+  document.getElementById("fExpenseAmount").value = "";
+  document.getElementById("fExpenseDate").value   = today.toISOString().slice(0,10);
+  document.getElementById("fExpenseNote").value   = "";
+  document.getElementById("expenseSheetTitle").textContent = "Ausgabe hinzufuegen";
+  document.getElementById("expenseDeleteBtn").style.display = "none";
+  populateTripSelect("fExpenseTripId");
+  openSheet("expenseSheet");
+  setTimeout(() => document.getElementById("fExpenseName").focus(), 350);
+};
+
+window.openExpenseEdit = function(id) {
+  const e = expenses.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById("fExpenseId").value     = id;
+  document.getElementById("fExpenseName").value   = e.name || "";
+  document.getElementById("fExpenseAmount").value = e.amount;
+  document.getElementById("fExpenseDate").value   = e.date;
+  document.getElementById("fExpenseNote").value   = e.note || "";
+  document.getElementById("expenseSheetTitle").textContent = "Ausgabe bearbeiten";
+  document.getElementById("expenseDeleteBtn").style.display = "block";
+  populateTripSelect("fExpenseTripId", e.tripId);
+  openSheet("expenseSheet");
+};
+
+window.saveExpense = async function() {
+  const id     = document.getElementById("fExpenseId").value;
+  const name   = document.getElementById("fExpenseName").value.trim();
+  const amount = parseFloat(document.getElementById("fExpenseAmount").value);
+  const date   = document.getElementById("fExpenseDate").value;
+  const note   = document.getElementById("fExpenseNote").value.trim();
+  const tripId = document.getElementById("fExpenseTripId").value;
+  if (!name || isNaN(amount) || amount <= 0 || !date) { showToast("Name, Betrag und Datum eingeben"); return; }
+  const data = { name, amount, date, note, tripId, updated_at: new Date().toISOString() };
+  setSyncStatus("syncing","Speichert...");
+  try {
+    if (id) { await updateDoc(doc(db,"expenses",id), data); }
+    else    { data.created_at = new Date().toISOString(); await addDoc(expensesCol, data); }
+    closeSheets(); showToast("Ausgabe gespeichert");
+  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+};
+
+// ─── Delete ───────────────────────────────────────────────────────────────────
+window.confirmDelete = function(type) {
+  const idField = type === "income" ? "fIncomeId" : type === "expense" ? "fExpenseId" : "fTripId";
+  const id      = document.getElementById(idField).value;
+  if (!id) return;
+  deleteTarget  = { type, id };
+  const msg = type === "trip" ? "Das Projekt wird geloescht. Einnahmen und Ausgaben bleiben erhalten."
+            : "Dieser Eintrag wird unwiderruflich geloescht.";
+  document.getElementById("confirmSub").textContent = msg;
+  document.getElementById("confirmBox").classList.add("open");
+};
+
+window.closeConfirm = function() {
+  deleteTarget = null;
+  document.getElementById("confirmBox").classList.remove("open");
+};
+
+document.getElementById("confirmOk").addEventListener("click", async function() {
+  if (!deleteTarget) return;
+  const { type, id } = deleteTarget;
+  const colRef = type === "trip" ? "trips" : type === "income" ? "incomes" : "expenses";
+  try {
+    await deleteDoc(doc(db, colRef, id));
+    closeConfirm(); closeSheets(); showToast("Geloescht");
+  } catch(e) { showToast("Fehler beim Loeschen"); }
+});
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+document.querySelectorAll(".nav-tab").forEach(tab => {
+  tab.addEventListener("click", function() {
+    activePage = this.dataset.page;
+    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    this.classList.add("active");
+    document.getElementById("page-" + activePage).classList.add("active");
+    renderAll();
+  });
+});
+
+window.selectProject = function(id) {
+  selectedTripId = id;
+  document.getElementById("projectSelect").value = id;
+  if (activePage !== "dashboard") {
+    activePage = "dashboard";
+    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelector("[data-page='dashboard']").classList.add("active");
+    document.getElementById("page-dashboard").classList.add("active");
+  }
+  renderDashboard();
+};
+
+window.setListTab = function(tab) {
+  activeListTab = tab;
+  renderListe();
+};
+
+// ─── FAB ──────────────────────────────────────────────────────────────────────
+document.getElementById("fabBtn").addEventListener("click", function() {
+  if (activePage === "projekte")                          window.openAddTrip();
+  else if (activePage === "liste" && activeListTab === "income") window.openAddIncome();
+  else                                                    window.openAddExpense();
+});
+
+// ─── Sheets ───────────────────────────────────────────────────────────────────
+function openSheet(id) {
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById(id).classList.add("open");
+}
+window.closeSheets = function() {
+  document.getElementById("overlay").classList.remove("open");
+  document.querySelectorAll(".sheet").forEach(s => s.classList.remove("open"));
+};
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function fmtEur(n) {
+  return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
+}
+function fmtCompact(n) {
+  const abs  = Math.abs(n||0);
+  const sign = (n||0) < 0 ? "−" : "";
+  if (abs >= 1000) return sign + (Math.round(abs/100)/10).toFixed(1).replace(".",",") + "k €";
+  return sign + Math.round(abs) + " €";
+}
+function fmtDate(s) {
+  if (!s) return "–";
+  return new Date(s+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"});
+}
+function fmtDayLabel(s) {
+  const d    = new Date(s+"T12:00:00");
+  const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const day  = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = (base - day) / 86400000;
+  if (diff === 0) return "Heute";
+  if (diff === 1) return "Gestern";
+  return d.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"short"});
+}
+function groupByDate(items) {
+  const g = {};
+  items.forEach(i => { if (!g[i.date]) g[i.date] = []; g[i.date].push(i); });
+  return g;
+}
+function escHtml(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeSheets();
+  if (e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") window.doLogin();
+});
+</script>
+</body>
+</html>
