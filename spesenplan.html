@@ -261,7 +261,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   </div>
 </div>
 
-<!-- SHEET: Einnahme (mit Per Diem Rechner) -->
+<!-- SHEET: Einnahme (Einfach oder Per Diem) -->
 <div class="sheet" id="incomeSheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -270,6 +270,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   </div>
   <div class="form-body">
     <input type="hidden" id="fIncomeId">
+    <input type="hidden" id="fIncomeMode" value="simple">
+
+    <!-- Mode toggle -->
+    <div class="list-toggle">
+      <button class="list-toggle-btn active" id="incModeSimpleBtn" onclick="setIncomeMode('simple')">Einfach</button>
+      <button class="list-toggle-btn" id="incModePerdiemBtn" onclick="setIncomeMode('perdiem')">Per Diem Rechner</button>
+    </div>
 
     <div class="form-row">
       <div class="form-group">
@@ -286,6 +293,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
       <input class="form-input" type="text" id="fIncomeNote" placeholder="z.B. Spesen KW 3" autocomplete="off">
     </div>
 
+    <!-- EINFACH: direkte Betrags-Eingabe -->
+    <div id="incomeSimpleSection">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Einnahme / Brutto (&#8364;)</label>
+          <input class="form-input" type="number" id="iSimpleAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="updateSimplePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Steuern (&#8364;, optional)</label>
+          <input class="form-input" type="number" id="iSimpleTax" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="updateSimplePreview()">
+        </div>
+      </div>
+      <div class="perdiem-preview" id="simplePreview" style="display:none">
+        <div class="pdp-row"><span class="pdp-label">Brutto</span><span class="pdp-value" id="sPdpBrutto">&#8212;</span></div>
+        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="sPdpSteuern">&#8212;</span></div>
+        <div class="pdp-row total"><span class="pdp-label">Netto</span><span class="pdp-value" id="sPdpNetto">&#8212;</span></div>
+      </div>
+    </div>
+
+    <!-- PER DIEM: calculator sections -->
+    <div id="incomePerdiemSection" style="display:none;flex-direction:column;gap:14px">
     <div class="form-section">
       <div class="form-section-title">Tagess&auml;tze</div>
       <div class="form-row">
@@ -359,6 +387,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
       <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="iPdpSteuern">&#8212;</span></div>
       <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="iPdpNetto">&#8212;</span></div>
     </div>
+
+    </div><!-- /incomePerdiemSection -->
 
     <button class="btn-submit" onclick="saveIncome()">Speichern</button>
     <button class="btn-delete" id="incomeDeleteBtn" style="display:none" onclick="confirmDelete('income')">Einnahme l&ouml;schen</button>
@@ -616,7 +646,7 @@ function renderDashboard() {
       const df = c.net - a;
       return `<div class="project-tile${t.id===selectedTripId?" is-active":""}" onclick="selectProject('${t.id}')">
         <div class="pt-name">${escHtml(t.name||t.city)}</div>
-        <div class="pt-meta">${escHtml(t.city||"")}${t.country?", "+escHtml(t.country):""}</div>
+        <div class="pt-meta">${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</div>
         <div class="pt-row"><span class="pt-label">Netto</span><span class="pt-val" style="color:var(--accent)">${fmtCompact(c.net)}</span></div>
         <div class="pt-row"><span class="pt-label">Ausgaben</span><span class="pt-val" style="color:var(--red)">${fmtCompact(a)}</span></div>
         <div class="pt-row"><span class="pt-label">Differenz</span><span class="pt-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</span></div>
@@ -822,32 +852,61 @@ function populateTripSelect(selectId, preselect) {
   const sel = document.getElementById(selectId);
   const pre = preselect || selectedTripId;
   sel.innerHTML = trips.length
-    ? trips.map(t=>`<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)}</option>`).join("")
+    ? trips.map(t=>`<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)} (${fmtDate(t.startDate)}–${fmtDate(t.endDate)})</option>`).join("")
     : "<option value=''>Kein Projekt</option>";
 }
 
+window.setIncomeMode = function(mode) {
+  document.getElementById("fIncomeMode").value = mode;
+  document.getElementById("incModeSimpleBtn").classList.toggle("active", mode==="simple");
+  document.getElementById("incModePerdiemBtn").classList.toggle("active", mode==="perdiem");
+  document.getElementById("incomeSimpleSection").style.display  = mode==="simple"  ? "block" : "none";
+  document.getElementById("incomePerdiemSection").style.display = mode==="perdiem" ? "flex"  : "none";
+};
+
+window.updateSimplePreview = function() {
+  const brutto = parseFloat(document.getElementById("iSimpleAmount").value) || 0;
+  const steuern = parseFloat(document.getElementById("iSimpleTax").value) || 0;
+  const el = document.getElementById("simplePreview");
+  if (brutto > 0) {
+    el.style.display = "block";
+    document.getElementById("sPdpBrutto").textContent  = fmtEur(brutto);
+    document.getElementById("sPdpSteuern").textContent = fmtEur(steuern);
+    document.getElementById("sPdpNetto").textContent   = fmtEur(brutto - steuern);
+  } else { el.style.display = "none"; }
+};
+
 window.openAddIncome = function() {
   incomeWeeks = [];
-  document.getElementById("fIncomeId").value   = "";
-  document.getElementById("fIncomeDate").value = today.toISOString().slice(0,10);
-  document.getElementById("fIncomeNote").value = "";
+  document.getElementById("fIncomeId").value      = "";
+  document.getElementById("fIncomeDate").value    = today.toISOString().slice(0,10);
+  document.getElementById("fIncomeNote").value    = "";
+  document.getElementById("iSimpleAmount").value  = "";
+  document.getElementById("iSimpleTax").value     = "";
   document.getElementById("incomeSheetTitle").textContent = "Spesen erfassen";
   document.getElementById("incomeDeleteBtn").style.display = "none";
-  document.getElementById("incomePreview").style.display = "none";
+  document.getElementById("incomePreview").style.display  = "none";
+  document.getElementById("simplePreview").style.display  = "none";
   ["iFullDayRate","iTravelDayRate","iFreeLimit","iLst","iSv","iMealFrueh","iMealMittag","iMealAbend"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("iTravelDays").value = "0";
   populateTripSelect("fIncomeTripId");
   renderIncomeWeeks();
+  window.setIncomeMode("simple");
   openSheet("incomeSheet");
 };
 
 window.openIncomeEdit = function(id) {
   const i = incomes.find(x=>x.id===id);
   if (!i) return;
+  const mode = i.type === "perdiem" ? "perdiem" : "simple";
   incomeWeeks = (i.weeks||[]).map(w=>({...w}));
   document.getElementById("fIncomeId").value          = id;
   document.getElementById("fIncomeDate").value        = i.date;
   document.getElementById("fIncomeNote").value        = i.note||"";
+  // Simple fields
+  document.getElementById("iSimpleAmount").value      = mode==="simple" ? (i.brutto||"") : "";
+  document.getElementById("iSimpleTax").value         = mode==="simple" ? (i.steuern||"") : "";
+  // Per diem fields
   document.getElementById("iFullDayRate").value       = i.fullDayRate||"";
   document.getElementById("iTravelDayRate").value     = i.travelDayRate||"";
   document.getElementById("iFreeLimit").value         = i.freeLimit||"";
@@ -861,7 +920,9 @@ window.openIncomeEdit = function(id) {
   document.getElementById("incomeDeleteBtn").style.display = "block";
   populateTripSelect("fIncomeTripId", i.tripId);
   renderIncomeWeeks();
-  updateIncomePreview();
+  window.setIncomeMode(mode);
+  if (mode==="simple") { window.updateSimplePreview(); }
+  else                 { updateIncomePreview(); }
   openSheet("incomeSheet");
 };
 
@@ -870,18 +931,29 @@ window.saveIncome = async function() {
   const date   = document.getElementById("fIncomeDate").value;
   const note   = document.getElementById("fIncomeNote").value.trim();
   const tripId = document.getElementById("fIncomeTripId").value;
+  const mode   = document.getElementById("fIncomeMode").value;
   if (!date) { showToast("Datum eingeben"); return; }
-  const gN = eid => { const v=parseFloat(document.getElementById(eid).value); return isNaN(v)?null:v; };
-  const params = {
-    travelDays: parseFloat(document.getElementById("iTravelDays").value)||0,
-    travelDayRate: gN("iTravelDayRate"), fullDayRate: gN("iFullDayRate"),
-    freeLimit: gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
-    mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
-    weeks: incomeWeeks.map(w=>({...w}))
-  };
-  const calc = calcPerDiem(params);
-  if (calc.brutto === 0) { showToast("Bitte mindestens einen Tagessatz und Tage eingeben"); return; }
-  const data = { date, note, tripId, ...params, brutto: calc.brutto, steuern: calc.steuern, net: calc.net, updated_at: new Date().toISOString() };
+
+  let data;
+  if (mode === "simple") {
+    const brutto  = parseFloat(document.getElementById("iSimpleAmount").value);
+    if (isNaN(brutto) || brutto <= 0) { showToast("Betrag eingeben"); return; }
+    const steuern = parseFloat(document.getElementById("iSimpleTax").value) || 0;
+    data = { date, note, tripId, type: "simple", brutto, steuern, net: brutto - steuern, updated_at: new Date().toISOString() };
+  } else {
+    const gN = eid => { const v=parseFloat(document.getElementById(eid).value); return isNaN(v)?null:v; };
+    const params = {
+      travelDays: parseFloat(document.getElementById("iTravelDays").value)||0,
+      travelDayRate: gN("iTravelDayRate"), fullDayRate: gN("iFullDayRate"),
+      freeLimit: gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
+      mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
+      weeks: incomeWeeks.map(w=>({...w}))
+    };
+    const calc = calcPerDiem(params);
+    if (calc.brutto === 0) { showToast("Tagessatz und Tage eingeben"); return; }
+    data = { date, note, tripId, type: "perdiem", ...params, brutto: calc.brutto, steuern: calc.steuern, net: calc.net, updated_at: new Date().toISOString() };
+  }
+
   setSyncStatus("syncing","Speichert...");
   try {
     if (id) { await updateDoc(doc(db,"incomes",id), data); }
