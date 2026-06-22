@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spesenplan Import</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#F7F6F3;color:#1A1917;padding:24px;max-width:600px;margin:0 auto}
+  h1{font-size:22px;font-weight:700;margin-bottom:4px}
+  p{color:#6B6860;font-size:14px;margin-bottom:24px}
+  .card{background:#fff;border:1px solid #E8E6E1;border-radius:12px;padding:20px;margin-bottom:16px}
+  .stat{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid #f0ede8}
+  .stat:last-child{border-bottom:none;font-weight:700}
+  .stat-label{color:#6B6860}
+  button{width:100%;height:52px;background:#2D6A4F;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px}
+  button:disabled{background:#A0968C;cursor:not-allowed}
+  .log{background:#111;color:#A7F3D0;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;height:240px;overflow-y:auto;white-space:pre-wrap;margin-top:16px}
+  .progress{height:8px;background:#E8E6E1;border-radius:4px;margin-top:12px;overflow:hidden}
+  .progress-bar{height:100%;background:#2D6A4F;border-radius:4px;transition:width 0.3s;width:0%}
+  .done{background:#E8F4EE;border:1px solid #2D6A4F;color:#1B4332;padding:14px;border-radius:8px;font-weight:600;text-align:center;margin-top:12px;display:none}
+  .login-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .login-label{font-size:11px;font-weight:600;color:#6B6860;text-transform:uppercase;letter-spacing:0.4px}
+  .login-input{height:46px;border:1px solid #D4D1CB;border-radius:8px;background:#F7F6F3;color:#1A1917;font-size:16px;padding:0 14px;outline:none;width:100%;font-family:inherit}
+  .login-input:focus{border-color:#2D6A4F}
+  .error{color:#C0392B;font-size:13px;margin-top:4px;min-height:18px}
+</style>
+</head>
+<body>
+<h1>&#128230; Spesenplan Import</h1>
+<p>Importiert 9 Projekte und 143 Ausgaben aus dem Notion-Export.</p>
+
+<div class="card">
+  <div class="stat"><span class="stat-label">Projekte</span><span>9</span></div>
+  <div class="stat"><span class="stat-label">Ausgaben</span><span>143</span></div>
+  <div class="stat"><span class="stat-label">Gesamtbetrag</span><span>3.552,70 &#8364;</span></div>
+  <div class="stat"><span class="stat-label">Zeitraum</span><span>Aug 2024 &ndash; Jun 2026</span></div>
+</div>
+
+<div class="card">
+  <div style="font-size:14px;font-weight:600;margin-bottom:12px">Anmeldung</div>
+  <div class="login-group">
+    <label class="login-label">E-Mail</label>
+    <input class="login-input" type="email" id="email" placeholder="deine@email.com" autocomplete="email">
+  </div>
+  <div class="login-group">
+    <label class="login-label">Passwort</label>
+    <input class="login-input" type="password" id="password" placeholder="Passwort" autocomplete="current-password">
+  </div>
+  <div class="error" id="loginError"></div>
+  <button id="startBtn" onclick="startImport()">Import starten</button>
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="done" id="doneMsg">&#10003; Import abgeschlossen! Du kannst dieses Tab jetzt schliessen.</div>
+  <div class="log" id="log" style="display:none"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where }
+  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyAJv4fpNnsmJbgCzkN_8hoMj_fmyI6xc6E",
+  authDomain:        "spesenplan.firebaseapp.com",
+  projectId:         "spesenplan",
+  storageBucket:     "spesenplan.firebasestorage.app",
+  messagingSenderId: "626276550441",
+  appId:             "1:626276550441:web:85d45888710124cc8f1938"
+};
+
+const TRIPS    = [{"name": "Zürich 26/08-29/08", "city": "Zürich", "country": "", "startDate": "2024-08-26", "endDate": "2024-08-29"}, {"name": "Paris 16/09-19/09", "city": "Paris", "country": "", "startDate": "2024-09-16", "endDate": "2024-09-19"}, {"name": "Munich 25/09-27/09", "city": "Munich", "country": "", "startDate": "2024-09-27", "endDate": "2024-09-27"}, {"name": "Graz 16/12-17/12", "city": "Graz", "country": "", "startDate": "2024-12-17", "endDate": "2024-12-17"}, {"name": "London 12/05-15/05", "city": "London", "country": "", "startDate": "2025-05-12", "endDate": "2025-05-14"}, {"name": "Munich 26/08/25-28/08/25", "city": "Munich", "country": "", "startDate": "2025-08-26", "endDate": "2025-08-28"}, {"name": "Amsterdam 17/11-20/12", "city": "Amsterdam", "country": "", "startDate": "2025-11-19", "endDate": "2025-12-18"}, {"name": "Amsterdam 05/01-27/03", "city": "Amsterdam", "country": "", "startDate": "2026-01-05", "endDate": "2026-03-28"}, {"name": "Amsterdam 13/04-27/06", "city": "Amsterdam", "country": "", "startDate": "2026-04-14", "endDate": "2026-06-12"}];
+const EXPENSES = [{"name": "Rewe Flughafen Köln", "amount": 5.35, "date": "2024-08-26", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Thai Lunch", "amount": 19.69, "date": "2024-08-27", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Schweizer Dinner", "amount": 35.79, "date": "2024-08-27", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Sushi Dinner", "amount": 40.49, "date": "2024-08-28", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Lidl", "amount": 6.84, "date": "2024-08-29", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Bier", "amount": 4.0, "date": "2024-08-29", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Handyrechnung", "amount": 59.5, "date": "2024-08-28", "tripName": "Zürich 26/08-29/08", "note": ""}, {"name": "Bowl", "amount": 9.9, "date": "2024-09-16", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Salat Bowl", "amount": 7.01, "date": "2024-09-17", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Chicken César Salad", "amount": 18.0, "date": "2024-09-17", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Pizza", "amount": 5.71, "date": "2024-09-18", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Bowl", "amount": 11.9, "date": "2024-09-19", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Mittag in La Maison", "amount": 9.21, "date": "2024-09-19", "tripName": "Paris 16/09-19/09", "note": ""}, {"name": "Food Freitagabend", "amount": 24.0, "date": "2024-09-27", "tripName": "Munich 25/09-27/09", "note": ""}, {"name": "Kaffee", "amount": 3.5, "date": "2024-12-17", "tripName": "Graz 16/12-17/12", "note": ""}, {"name": "Mittag - 12/05", "amount": 15.31, "date": "2025-05-12", "tripName": "London 12/05-15/05", "note": ""}, {"name": "Mittag - 13/05", "amount": 13.68, "date": "2025-05-13", "tripName": "London 12/05-15/05", "note": ""}, {"name": "Mittag 14/05", "amount": 17.42, "date": "2025-05-14", "tripName": "London 12/05-15/05", "note": ""}, {"name": "Dean & David Salat", "amount": 11.45, "date": "2025-08-26", "tripName": "Munich 26/08/25-28/08/25", "note": ""}, {"name": "Mittagessen", "amount": 13.0, "date": "2025-08-28", "tripName": "Munich 26/08/25-28/08/25", "note": ""}, {"name": "18/11 Mittag", "amount": 7.12, "date": "2025-11-19", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mittag", "amount": 7.85, "date": "2025-11-19", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mittag", "amount": 7.75, "date": "2025-11-20", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Snacks", "amount": 3.0, "date": "2025-11-20", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Bowl", "amount": 12.9, "date": "2025-11-20", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Julia und Suzi", "amount": 114.8, "date": "2025-11-23", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mo Catine", "amount": 13.5, "date": "2025-11-24", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "TSN Mensa Di & Mi", "amount": 15.94, "date": "2025-11-26", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Hotel Mi Abends", "amount": 15.1, "date": "2025-11-26", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Flughafen Mittag", "amount": 19.0, "date": "2025-11-28", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "TSN Mensa Do", "amount": 6.1, "date": "2025-11-27", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Ausgaben Menko WE", "amount": 187.0, "date": "2025-11-30", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 7.85, "date": "2025-12-01", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Di, TSN Mensa", "amount": 9.0, "date": "2025-12-02", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Do, TSN Mensa", "amount": 6.1, "date": "2025-12-04", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Wochenende Tilko", "amount": 259.34, "date": "2025-12-06", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Brötchen am Shiphol", "amount": 3.5, "date": "2025-12-09", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Di, TSN Mensa", "amount": 6.1, "date": "2025-12-09", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mi, TSN Mensa", "amount": 7.85, "date": "2025-12-10", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Bowl Wien", "amount": 13.9, "date": "2025-12-04", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 10.85, "date": "2025-12-16", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Ausgaben Erfurt", "amount": 72.76, "date": "2025-12-14", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Di, TSN Mensa", "amount": 8.35, "date": "2025-12-16", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Do, TSN Mensa", "amount": 9.1, "date": "2025-12-18", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Do, ICE", "amount": 4.5, "date": "2025-12-18", "tripName": "Amsterdam 17/11-20/12", "note": ""}, {"name": "Brezel", "amount": 2.8, "date": "2026-01-05", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Cafee und bowl", "amount": 16.05, "date": "2026-01-06", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Nudelsuppe", "amount": 23.0, "date": "2026-01-07", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Thai Basilikum", "amount": 11.5, "date": "2026-01-08", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mo", "amount": 10.4, "date": "2026-01-12", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Ausgaben WE 09.01", "amount": 130.0, "date": "2026-01-10", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa Do", "amount": 1.45, "date": "2026-01-15", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "WE 18/01", "amount": 84.0, "date": "2026-01-19", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa Do", "amount": 7.95, "date": "2026-01-22", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Accenture Office Mensa", "amount": 5.5, "date": "2026-01-23", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa Mo, DI & Mi + Lidl", "amount": 28.88, "date": "2026-01-21", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mi, Uber eats", "amount": 19.78, "date": "2026-01-21", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa Mo + Uber eats", "amount": 8.44, "date": "2026-01-26", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Amsterdam WE", "amount": 243.95, "date": "2026-01-25", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mi", "amount": 9.85, "date": "2026-01-28", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Döner, Mi", "amount": 6.3, "date": "2026-01-28", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mo", "amount": 4.95, "date": "2026-01-26", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Dinner Mo", "amount": 15.36, "date": "2026-02-02", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 7.95, "date": "2026-02-02", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Uber eats Sonntag", "amount": 29.26, "date": "2026-02-08", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mo", "amount": 7.2, "date": "2026-02-09", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Uber Eats, Mo", "amount": 14.71, "date": "2026-02-02", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Bäcker MUC", "amount": 6.1, "date": "2026-02-06", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, DO", "amount": 14.2, "date": "2026-02-05", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mi", "amount": 9.8, "date": "2026-02-04", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Di", "amount": 7.95, "date": "2026-02-03", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Daria’s 30ter", "amount": 203.0, "date": "2026-02-07", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Wochenende 02/02", "amount": 115.15, "date": "2026-01-30", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mi, Caesar Salad", "amount": 15.0, "date": "2026-02-11", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, DO", "amount": 9.7, "date": "2026-02-12", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Wochenende 14/02", "amount": 150.05, "date": "2026-02-14", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 14.5, "date": "2026-02-16", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Di, TSN Mensa", "amount": 7.4, "date": "2026-02-17", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mi, TSN Mensa", "amount": 14.5, "date": "2026-02-18", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Do, TSN Mensa", "amount": 18.8, "date": "2026-02-19", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Fr, Shiphol Baguette", "amount": 19.0, "date": "2026-02-20", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Uber eats, Di", "amount": 14.94, "date": "2026-02-24", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Uber eats, Mo", "amount": 14.86, "date": "2026-02-23", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 7.95, "date": "2026-02-23", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Di, TSN Mensa", "amount": 1.45, "date": "2026-02-24", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Wochenende 20./21.02", "amount": 165.0, "date": "2026-02-21", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mo, Apapika", "amount": 12.8, "date": "2026-03-02", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Do", "amount": 7.95, "date": "2026-03-12", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Do, DB Bordbistro", "amount": 13.0, "date": "2026-03-12", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mi, TSN Mensa", "amount": 11.3, "date": "2026-03-11", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Di, TSN Mensa", "amount": 11.45, "date": "2026-03-10", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 7.95, "date": "2026-03-09", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Kafe", "amount": 3.96, "date": "2026-03-18", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Kaffee DB", "amount": 5.0, "date": "2026-03-16", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Albert Heijn", "amount": 3.9, "date": "2026-03-16", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Bowl", "amount": 13.8, "date": "2026-03-21", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Di", "amount": 6.4, "date": "2026-03-17", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Burger", "amount": 21.0, "date": "2026-03-26", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Café", "amount": 6.95, "date": "2026-03-27", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Dean & David", "amount": 12.9, "date": "2026-03-27", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "ACN Cantine", "amount": 8.9, "date": "2026-03-26", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Mi", "amount": 7.76, "date": "2026-03-25", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN Mensa, Di", "amount": 8.0, "date": "2026-03-24", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Asiate Wien HBF", "amount": 11.5, "date": "2026-03-23", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "Tom Birthday Weekend", "amount": 293.05, "date": "2026-03-28", "tripName": "Amsterdam 05/01-27/03", "note": ""}, {"name": "TSN, Mi", "amount": 6.1, "date": "2026-04-15", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Uber Eats, Mi", "amount": 19.68, "date": "2026-04-15", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, DI", "amount": 13.7, "date": "2026-04-14", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, Do", "amount": 11.3, "date": "2026-04-16", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "AMS Office, FR", "amount": 6.5, "date": "2026-04-17", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa Mo", "amount": 13.7, "date": "2026-04-20", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Hotel So", "amount": 11.75, "date": "2026-04-19", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, Di", "amount": 7.4, "date": "2026-04-21", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, Mi", "amount": 7.4, "date": "2026-04-22", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Billa, VEI", "amount": 6.13, "date": "2026-04-22", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, Di", "amount": 14.5, "date": "2026-04-28", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN Mensa, Mi", "amount": 12.56, "date": "2026-04-29", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "ACN, Mensa", "amount": 5.5, "date": "2026-04-30", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Fr, DB Cantine", "amount": 12.0, "date": "2026-05-10", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Do, TSN Mensa", "amount": 13.7, "date": "2026-05-07", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mi, Bowl", "amount": 20.18, "date": "2026-05-06", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mi, TSN Mensa", "amount": 12.95, "date": "2026-05-06", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, TSN Mensa", "amount": 7.4, "date": "2026-05-05", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, TSN Mensa", "amount": 6.4, "date": "2026-05-05", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, Bowl", "amount": 17.5, "date": "2026-05-05", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 14.5, "date": "2026-05-04", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "So, Bowl", "amount": 22.25, "date": "2026-05-03", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Kaffe", "amount": 3.2, "date": "2026-05-13", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mo, TSN Kantine", "amount": 7.95, "date": "2026-05-11", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, TSN Kantine", "amount": 17.97, "date": "2026-05-12", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mo, TSN Mensa", "amount": 3.05, "date": "2026-05-18", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "So, Schiphol Albert Heijn", "amount": 11.45, "date": "2026-05-17", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mi, Uber eats", "amount": 20.63, "date": "2026-05-21", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Do, TSN Mensa", "amount": 8.0, "date": "2026-05-21", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Do, Döner + pommes", "amount": 10.5, "date": "2026-05-28", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "TSN, Do", "amount": 12.3, "date": "2026-05-28", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mi,Uber Eats", "amount": 1.49, "date": "2026-05-27", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di TSN Mensa,", "amount": 6.5, "date": "2026-05-26", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Mi, TSN Mensa", "amount": 7.4, "date": "2026-06-10", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, TSN Mens", "amount": 12.45, "date": "2026-06-09", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "So, Albeit Heijn", "amount": 7.5, "date": "2026-06-08", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Di, Uber eats", "amount": 19.25, "date": "2026-06-09", "tripName": "Amsterdam 13/04-27/06", "note": ""}, {"name": "Do, TSN Mensa", "amount": 12.75, "date": "2026-06-12", "tripName": "Amsterdam 13/04-27/06", "note": ""}];
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+const logEl  = document.getElementById("log");
+const barEl  = document.getElementById("progressBar");
+const doneEl = document.getElementById("doneMsg");
+
+function log(msg) {
+  logEl.style.display = "block";
+  logEl.textContent += msg + "\n";
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function setProgress(pct) {
+  barEl.style.width = pct + "%";
+}
+
+window.startImport = async function() {
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const errEl    = document.getElementById("loginError");
+  const btn      = document.getElementById("startBtn");
+  errEl.textContent = "";
+  if (!email || !password) { errEl.textContent = "E-Mail und Passwort eingeben."; return; }
+
+  btn.disabled = true;
+  btn.textContent = "Anmelden...";
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    errEl.textContent = "Anmeldung fehlgeschlagen: " + e.message;
+    btn.disabled = false; btn.textContent = "Import starten"; return;
+  }
+
+  btn.textContent = "Importiere...";
+  log("Angemeldet. Starte Import...");
+
+  // 1. Check for duplicate trips
+  const existingTrips = {};
+  const tripsSnap = await getDocs(collection(db, "trips"));
+  tripsSnap.forEach(d => { existingTrips[d.data().name] = d.id; });
+  log(`Bestehende Projekte in DB: ${Object.keys(existingTrips).length}`);
+
+  // 2. Create trips
+  const tripIdMap = {...existingTrips};
+  const tripsCol  = collection(db, "trips");
+  let tripsCreated = 0;
+  for (const t of TRIPS) {
+    if (tripIdMap[t.name]) {
+      log(`  SKIP (existiert): ${t.name}`);
+    } else {
+      const ref = await addDoc(tripsCol, { ...t, created_at: new Date().toISOString() });
+      tripIdMap[t.name] = ref.id;
+      log(`  + Projekt: ${t.name}`);
+      tripsCreated++;
+    }
+  }
+  log(`\nProjekte: ${tripsCreated} neu, ${TRIPS.length - tripsCreated} uebersprungen.`);
+  setProgress(10);
+
+  // 3. Check existing expenses (by name+date to avoid duplicates)
+  const existingExpSnap = await getDocs(collection(db, "expenses"));
+  const existingKeys = new Set();
+  existingExpSnap.forEach(d => {
+    const e = d.data();
+    existingKeys.add(e.name + "|" + e.date);
+  });
+  log(`Bestehende Ausgaben in DB: ${existingKeys.size}`);
+
+  // 4. Import expenses
+  const expCol = collection(db, "expenses");
+  let imported = 0, skipped = 0;
+  const total = EXPENSES.length;
+
+  for (let i = 0; i < total; i++) {
+    const e = EXPENSES[i];
+    const tripId = tripIdMap[e.tripName] || "";
+    const key    = e.name + "|" + e.date;
+    if (existingKeys.has(key)) {
+      skipped++; 
+    } else {
+      await addDoc(expCol, {
+        name:       e.name,
+        amount:     e.amount,
+        date:       e.date,
+        note:       e.note || "",
+        tripId:     tripId,
+        created_at: new Date().toISOString()
+      });
+      imported++;
+      if (imported % 10 === 0) log(`  Importiert: ${imported}/${total - skipped}`);
+    }
+    setProgress(10 + Math.round((i+1)/total*90));
+  }
+
+  log(`\nAusgaben: ${imported} importiert, ${skipped} uebersprungen (Duplikate).`);
+  log("\n=== IMPORT ABGESCHLOSSEN ===");
+  setProgress(100);
+  doneEl.style.display = "block";
+  btn.textContent = "Fertig!";
+};
+</script>
+</body>
+</html>
