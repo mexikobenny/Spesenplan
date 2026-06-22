@@ -51,7 +51,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .page{display:none;padding:20px}
 .page.active{display:block}
 
-/* Metrics */
 .metrics-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
 @media(min-width:380px){.metrics-row.five{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
@@ -68,7 +67,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 
 .section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px}
 
-/* Project tiles */
 .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:10px;margin-bottom:20px}
 .project-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:border-color 0.15s}
 .project-tile.is-active{border-color:var(--accent)}
@@ -79,7 +77,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .pt-label{color:var(--muted)}
 .pt-val{font-weight:600}
 
-/* Liste */
 .list-toggle{display:flex;background:var(--border);border-radius:var(--radius-s);padding:3px;margin-bottom:16px}
 .list-toggle-btn{flex:1;height:34px;border-radius:6px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit;transition:background 0.15s}
 .list-toggle-btn.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
@@ -90,13 +87,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .li-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-meta{font-size:11px;color:var(--hint);margin-top:2px}
 .li-amount{font-size:15px;font-weight:600;flex-shrink:0}
+.li-sub{font-size:11px;color:var(--muted);text-align:right;margin-top:1px}
 
 .day-group{margin-bottom:16px}
 .day-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
 .day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
 .day-sum{font-size:11px;color:var(--muted)}
 
-/* Projekte page */
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
 .pc-name{font-size:16px;font-weight:700}
@@ -111,7 +108,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .pc-btn.primary{background:var(--accent-l);color:var(--accent-t);border-color:var(--accent)}
 .pc-btn.danger{background:var(--red-l);color:var(--red);border-color:var(--red)}
 
-/* Form sections (per diem) */
 .form-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px}
 .form-section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px}
 .perdiem-preview{background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--radius-s);padding:12px}
@@ -126,11 +122,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .wib-title{font-size:12px;font-weight:600;color:var(--muted)}
 .wib-remove{font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
 
-/* FAB */
 .fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:28px;background:var(--accent);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(45,106,79,0.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform 0.15s}
 .fab:active{transform:scale(0.94)}
-
-/* Overlay & Sheets */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .overlay.open{opacity:1;pointer-events:all}
 .sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);z-index:400;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:92vh;overflow-y:auto}
@@ -153,7 +146,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .btn-add-week{height:38px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-s);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;width:100%}
 .btn-delete{width:100%;height:46px;background:var(--red-l);color:var(--red);border:1px solid var(--red);border-radius:var(--radius-s);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 
-/* Confirm box */
 .confirm-box{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s}
 .confirm-box.open{opacity:1;pointer-events:all}
 .confirm-card{background:var(--surface);border-radius:var(--radius);padding:24px 20px 20px;width:100%;max-width:320px;text-align:center}
@@ -164,7 +156,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .confirm-cancel{background:var(--bg);color:var(--text);border:1px solid var(--border2)}
 .confirm-ok{background:var(--red);color:#fff}
 
-/* Login */
 .login-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;width:100%;max-width:360px;box-shadow:var(--shadow)}
 .login-title{font-size:24px;font-weight:700;margin-bottom:6px}
@@ -177,11 +168,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .login-error{font-size:13px;color:var(--red);margin-top:8px;text-align:center;min-height:18px}
 .logout-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
 
-/* Toast */
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--surface);padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:600;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Empty state */
 .empty-state{text-align:center;padding:48px 20px}
 .empty-icon{font-size:36px;margin-bottom:10px}
 .empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
@@ -234,7 +223,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   <div id="projekteContainer"></div>
 </div>
 
-<!-- SHEET: Projekt -->
+<!-- SHEET: Projekt (simpel) -->
 <div class="sheet" id="projectSheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -243,7 +232,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   </div>
   <div class="form-body">
     <input type="hidden" id="fTripId">
-
     <div class="form-group">
       <label class="form-label">Projektname</label>
       <input class="form-input" type="text" id="fTripName" placeholder="z.B. Amsterdam Q1 2026">
@@ -268,17 +256,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
         <input class="form-input" type="date" id="fEndDate">
       </div>
     </div>
+    <button class="btn-submit" onclick="saveTrip()">Projekt speichern</button>
+    <button class="btn-delete" id="tripDeleteBtn" style="display:none" onclick="confirmDelete('trip')">Projekt l&ouml;schen</button>
+  </div>
+</div>
+
+<!-- SHEET: Einnahme (mit Per Diem Rechner) -->
+<div class="sheet" id="incomeSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="incomeSheetTitle">Spesen erfassen</span>
+    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
+  </div>
+  <div class="form-body">
+    <input type="hidden" id="fIncomeId">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Projekt</label>
+        <select class="form-select" id="fIncomeTripId"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" type="date" id="fIncomeDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notiz (optional)</label>
+      <input class="form-input" type="text" id="fIncomeNote" placeholder="z.B. Spesen KW 3" autocomplete="off">
+    </div>
 
     <div class="form-section">
-      <div class="form-section-title">Per Diem Tagess&auml;tze</div>
+      <div class="form-section-title">Tagess&auml;tze</div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Volltagssatz (€)</label>
-          <input class="form-input" type="number" id="fFullDayRate" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+          <label class="form-label">Volltagssatz (&#8364;)</label>
+          <input class="form-input" type="number" id="iFullDayRate" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
         </div>
         <div class="form-group">
-          <label class="form-label">Anreisetag (€)</label>
-          <input class="form-input" type="number" id="fTravelDayRate" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+          <label class="form-label">Anreisetag (&#8364;)</label>
+          <input class="form-input" type="number" id="iTravelDayRate" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
         </div>
       </div>
     </div>
@@ -287,36 +304,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
       <div class="form-section-title">Steuer</div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Steuerfreie Grenze (€/Tag)</label>
-          <input class="form-input" type="number" id="fFreeLimit" placeholder="—" step="0.5" min="0" oninput="updatePreview()">
+          <label class="form-label">Steuerfreie Grenze (&#8364;/Tag)</label>
+          <input class="form-input" type="number" id="iFreeLimit" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Einkommensteuer (%)</label>
-          <input class="form-input" type="number" id="fLst" placeholder="—" step="0.5" min="0" max="100" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iLst" placeholder="&#8212;" step="0.5" min="0" max="100" oninput="updateIncomePreview()">
         </div>
       </div>
       <div class="form-row" style="margin-top:8px">
         <div class="form-group" style="flex:0 0 48%">
           <label class="form-label">Sozialversicherung (%)</label>
-          <input class="form-input" type="number" id="fSv" placeholder="—" step="0.5" min="0" max="100" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iSv" placeholder="&#8212;" step="0.5" min="0" max="100" oninput="updateIncomePreview()">
         </div>
       </div>
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">Mahlzeitenabz&uuml;ge (€/Tag)</div>
+      <div class="form-section-title">Mahlzeitenabz&uuml;ge (&#8364;/Tag)</div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Fr&uuml;hst&uuml;ck</label>
-          <input class="form-input" type="number" id="fMealFrueh" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iMealFrueh" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Mittagessen</label>
-          <input class="form-input" type="number" id="fMealMittag" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iMealMittag" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Abendessen</label>
-          <input class="form-input" type="number" id="fMealAbend" placeholder="—" step="0.1" min="0" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iMealAbend" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
         </div>
       </div>
     </div>
@@ -326,55 +343,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
       <div class="form-row">
         <div class="form-group" style="flex:0 0 100px">
           <label class="form-label">Anzahl</label>
-          <input class="form-input" type="number" id="fTravelDays" value="0" min="0" max="30" oninput="updatePreview()">
+          <input class="form-input" type="number" id="iTravelDays" value="0" min="0" max="30" oninput="updateIncomePreview()">
         </div>
       </div>
     </div>
 
     <div class="form-section">
       <div class="form-section-title">Wochen</div>
-      <div id="formWeeksContainer"></div>
-      <button class="btn-add-week" onclick="addFormWeek()">+ Woche hinzuf&uuml;gen</button>
+      <div id="incomeWeeksContainer"></div>
+      <button class="btn-add-week" onclick="addIncomeWeek()">+ Woche hinzuf&uuml;gen</button>
     </div>
 
-    <div class="perdiem-preview" id="perdiemPreview" style="display:none">
-      <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="pdpBrutto">—</span></div>
-      <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="pdpSteuern">—</span></div>
-      <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="pdpNetto">—</span></div>
+    <div class="perdiem-preview" id="incomePreview" style="display:none">
+      <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="iPdpBrutto">&#8212;</span></div>
+      <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="iPdpSteuern">&#8212;</span></div>
+      <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="iPdpNetto">&#8212;</span></div>
     </div>
 
-    <button class="btn-submit" onclick="saveTrip()">Projekt speichern</button>
-    <button class="btn-delete" id="tripDeleteBtn" style="display:none" onclick="confirmDelete('trip')">Projekt l&ouml;schen</button>
-  </div>
-</div>
-
-<!-- SHEET: Einnahme -->
-<div class="sheet" id="incomeSheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title" id="incomeSheetTitle">Einnahme hinzuf&uuml;gen</span>
-    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
-  </div>
-  <div class="form-body">
-    <input type="hidden" id="fIncomeId">
-    <div class="form-group">
-      <label class="form-label">Betrag (€)</label>
-      <input class="form-input" type="number" id="fIncomeAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Datum</label>
-        <input class="form-input" type="date" id="fIncomeDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Projekt</label>
-        <select class="form-select" id="fIncomeTripId"></select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notiz (optional)</label>
-      <input class="form-input" type="text" id="fIncomeNote" placeholder="z.B. Spesen KW 3" autocomplete="off">
-    </div>
     <button class="btn-submit" onclick="saveIncome()">Speichern</button>
     <button class="btn-delete" id="incomeDeleteBtn" style="display:none" onclick="confirmDelete('income')">Einnahme l&ouml;schen</button>
   </div>
@@ -395,7 +380,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Betrag (€)</label>
+        <label class="form-label">Betrag (&#8364;)</label>
         <input class="form-input" type="number" id="fExpenseAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
       </div>
       <div class="form-group">
@@ -457,12 +442,6 @@ import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚠️  FIREBASE CONFIG
-// Neues Projekt anlegen unter https://console.firebase.google.com
-// Dann Firestore + Authentication (E-Mail/Passwort) aktivieren
-// und die Werte unten ersetzen.
-// ─────────────────────────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyAJv4fpNnsmJbgCzkN_8hoMj_fmyI6xc6E",
   authDomain:        "spesenplan.firebaseapp.com",
@@ -482,14 +461,13 @@ const expensesCol = collection(db, "expenses");
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let trips = [], incomes = [], expenses = [];
-let selectedTripId  = null;
-let activePage      = "dashboard";
-let activeListTab   = "income";
-let deleteTarget    = null;
-let formWeeks       = [];
-const today         = new Date();
-
-let snapUnsubs = [];
+let selectedTripId = null;
+let activePage     = "dashboard";
+let activeListTab  = "income";
+let deleteTarget   = null;
+let incomeWeeks    = [];   // per diem weeks while income form is open
+const today        = new Date();
+let snapUnsubs     = [];
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 window.doLogin = async function() {
@@ -499,15 +477,12 @@ window.doLogin = async function() {
   errEl.textContent = "";
   if (!email || !pw) { errEl.textContent = "E-Mail und Passwort eingeben."; return; }
   try { await signInWithEmailAndPassword(auth, email, pw); }
-  catch(e) { errEl.textContent = "Anmeldung fehlgeschlagen. Bitte pruefen."; }
+  catch(e) { errEl.textContent = "Anmeldung fehlgeschlagen."; }
 };
-
 window.doLogout = async function() {
   snapUnsubs.forEach(u => u()); snapUnsubs = [];
-  await signOut(auth);
-  showToast("Abgemeldet");
+  await signOut(auth); showToast("Abgemeldet");
 };
-
 onAuthStateChanged(auth, user => {
   if (user) {
     document.getElementById("loginScreen").style.display = "none";
@@ -523,9 +498,8 @@ function startListeners() {
   setSyncStatus("syncing", "Verbinde...");
   snapUnsubs.push(onSnapshot(query(tripsCol, orderBy("startDate","desc")), snap => {
     trips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    autoSelectTrip();
-    renderAll();
-  }, () => setSyncStatus("error", "Verbindungsfehler")));
+    autoSelectTrip(); renderAll();
+  }, () => setSyncStatus("error","Verbindungsfehler")));
   snapUnsubs.push(onSnapshot(query(incomesCol, orderBy("date","desc")), snap => {
     incomes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAll();
@@ -540,7 +514,6 @@ function setSyncStatus(s, t) {
   document.getElementById("syncDot").className = "sync-dot " + s;
   document.getElementById("syncText").textContent = t;
 }
-
 function autoSelectTrip() {
   if (!trips.length) { selectedTripId = null; return; }
   if (selectedTripId && trips.find(t => t.id === selectedTripId)) return;
@@ -549,22 +522,22 @@ function autoSelectTrip() {
   selectedTripId = active ? active.id : trips[0].id;
 }
 
-// ─── Per Diem Berechnung (identisch zu per_diem_calculator_EN.html) ──────────
-function calcPerDiem(trip) {
-  const arrDays = trip.travelDays || 0;
-  const arrRate = trip.travelDayRate || 0;
+// ─── Per Diem Berechnung ─────────────────────────────────────────────────────
+// Identische Logik wie per_diem_calculator_EN.html
+function calcPerDiem(params) {
+  const arrDays  = params.travelDays || 0;
+  const arrRate  = params.travelDayRate || 0;
   let totalBrutto   = arrDays * arrRate;
-  let totalFree     = totalBrutto; // Anreisetage immer steuerfrei
+  let totalFree     = totalBrutto;
   let totalTaxable  = 0;
-
-  (trip.weeks || []).forEach(week => {
+  (params.weeks || []).forEach(week => {
     const full      = week.fullDays || 0;
-    const mealDed   = (week.frueh  || 0) * (trip.mealFrueh  || 0)
-                    + (week.mittag || 0) * (trip.mealMittag || 0)
-                    + (week.abend  || 0) * (trip.mealAbend  || 0);
+    const mealDed   = (week.frueh  || 0) * (params.mealFrueh  || 0)
+                    + (week.mittag || 0) * (params.mealMittag || 0)
+                    + (week.abend  || 0) * (params.mealAbend  || 0);
     const mealPerDay = full > 0 ? mealDed / full : 0;
-    const freeLimit  = trip.freeLimit  || 0;
-    const fullRate   = trip.fullDayRate || 0;
+    const freeLimit  = params.freeLimit  || 0;
+    const fullRate   = params.fullDayRate || 0;
     for (let d = 0; d < full; d++) {
       const rate    = Math.max(0, fullRate - mealPerDay);
       totalBrutto  += rate;
@@ -572,20 +545,28 @@ function calcPerDiem(trip) {
       totalTaxable += Math.max(0, rate - freeLimit);
     }
   });
-
-  const lst     = trip.lst != null ? totalTaxable * (trip.lst / 100) : 0;
-  const sv      = trip.sv  != null ? (totalTaxable - lst) * (trip.sv / 100) : 0;
+  const lst     = params.lst != null ? totalTaxable * (params.lst / 100) : 0;
+  const sv      = params.sv  != null ? (totalTaxable - lst) * (params.sv / 100) : 0;
   const steuern = lst + sv;
   return { brutto: totalBrutto, steuern, net: totalBrutto - steuern };
 }
 
+// Summiert gespeicherte berechnete Werte aus Einnahmen-Eintraegen
+function getIncomeCalc(tripId) {
+  const its = tripId ? incomes.filter(i => i.tripId === tripId) : incomes;
+  return {
+    brutto:  its.reduce((s,i) => s + (i.brutto  || 0), 0),
+    steuern: its.reduce((s,i) => s + (i.steuern || 0), 0),
+    net:     its.reduce((s,i) => s + (i.net     || 0), 0)
+  };
+}
 function tripExpenses(tripId) {
   return expenses.filter(e => e.tripId === tripId).reduce((s,e) => s + (e.amount||0), 0);
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
 function renderAll() {
-  setSyncStatus("synced", "Synchronisiert");
+  setSyncStatus("synced","Synchronisiert");
   updateProjectSelect();
   if      (activePage === "dashboard") renderDashboard();
   else if (activePage === "liste")     renderListe();
@@ -594,13 +575,9 @@ function renderAll() {
 
 function updateProjectSelect() {
   const sel = document.getElementById("projectSelect");
-  if (!trips.length) {
-    sel.innerHTML = "<option value=''>Kein Projekt</option>";
-    return;
-  }
-  sel.innerHTML = trips.map(t =>
-    `<option value="${t.id}"${t.id === selectedTripId ? " selected" : ""}>${escHtml(t.name || t.city || "Projekt")}</option>`
-  ).join("");
+  sel.innerHTML = trips.length
+    ? trips.map(t => `<option value="${t.id}"${t.id===selectedTripId?" selected":""}>${escHtml(t.name||t.city||"Projekt")}</option>`).join("")
+    : "<option value=''>Kein Projekt</option>";
 }
 
 function renderDashboard() {
@@ -610,94 +587,92 @@ function renderDashboard() {
   const gridEl  = document.getElementById("dashProjectsGrid");
 
   if (!trip) {
-    cpEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
-    allTitle.style.display = "none";
-    gridEl.innerHTML = "";
-    return;
+    cpEl.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128193;</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
+    allTitle.style.display = "none"; gridEl.innerHTML = ""; return;
   }
 
-  const calc   = calcPerDiem(trip);
-  const aus    = tripExpenses(trip.id);
-  const diff   = calc.net - aus;
+  const calc = getIncomeCalc(trip.id);
+  const aus  = tripExpenses(trip.id);
+  const diff = calc.net - aus;
 
   cpEl.innerHTML = `
     <div class="current-project-card">
-      <div class="cpj-name">${escHtml(trip.name || trip.city)}</div>
-      <div class="cpj-meta">${escHtml(trip.city || "")}${trip.country ? ", " + escHtml(trip.country) : ""} &middot; ${fmtDate(trip.startDate)} &ndash; ${fmtDate(trip.endDate)}</div>
+      <div class="cpj-name">${escHtml(trip.name||trip.city)}</div>
+      <div class="cpj-meta">${escHtml(trip.city||"")}${trip.country?", "+escHtml(trip.country):""} &middot; ${fmtDate(trip.startDate)} &ndash; ${fmtDate(trip.endDate)}</div>
     </div>
     <div class="metrics-row five">
       <div class="metric-card"><div class="metric-label">Einnahmen (Brutto)</div><div class="metric-value blue">${fmtEur(calc.brutto)}</div></div>
       <div class="metric-card"><div class="metric-label">Steuern</div><div class="metric-value orange">${fmtEur(calc.steuern)}</div></div>
       <div class="metric-card"><div class="metric-label">Netto Spesen</div><div class="metric-value green">${fmtEur(calc.net)}</div></div>
       <div class="metric-card"><div class="metric-label">Ausgaben</div><div class="metric-value red">${fmtEur(aus)}</div></div>
-      <div class="metric-card"><div class="metric-label">Differenz</div><div class="metric-value ${diff >= 0 ? "green" : "red"}">${fmtEur(diff)}</div></div>
+      <div class="metric-card"><div class="metric-label">Differenz</div><div class="metric-value ${diff>=0?"green":"red"}">${fmtEur(diff)}</div></div>
     </div>`;
 
   if (trips.length > 1) {
     allTitle.style.display = "";
     gridEl.innerHTML = trips.map(t => {
-      const c    = calcPerDiem(t);
-      const a    = tripExpenses(t.id);
-      const df   = c.net - a;
-      return `<div class="project-tile${t.id === selectedTripId ? " is-active" : ""}" onclick="selectProject('${t.id}')">
-        <div class="pt-name">${escHtml(t.name || t.city)}</div>
-        <div class="pt-meta">${escHtml(t.city || "")}${t.country ? ", " + escHtml(t.country) : ""}</div>
+      const c  = getIncomeCalc(t.id);
+      const a  = tripExpenses(t.id);
+      const df = c.net - a;
+      return `<div class="project-tile${t.id===selectedTripId?" is-active":""}" onclick="selectProject('${t.id}')">
+        <div class="pt-name">${escHtml(t.name||t.city)}</div>
+        <div class="pt-meta">${escHtml(t.city||"")}${t.country?", "+escHtml(t.country):""}</div>
         <div class="pt-row"><span class="pt-label">Netto</span><span class="pt-val" style="color:var(--accent)">${fmtCompact(c.net)}</span></div>
         <div class="pt-row"><span class="pt-label">Ausgaben</span><span class="pt-val" style="color:var(--red)">${fmtCompact(a)}</span></div>
         <div class="pt-row"><span class="pt-label">Differenz</span><span class="pt-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</span></div>
       </div>`;
     }).join("");
-  } else {
-    allTitle.style.display = "none";
-    gridEl.innerHTML = "";
-  }
+  } else { allTitle.style.display="none"; gridEl.innerHTML=""; }
 }
 
 function renderListe() {
-  document.getElementById("toggleIncome").classList.toggle("active", activeListTab === "income");
-  document.getElementById("toggleExpense").classList.toggle("active", activeListTab === "expense");
+  document.getElementById("toggleIncome").classList.toggle("active", activeListTab==="income");
+  document.getElementById("toggleExpense").classList.toggle("active", activeListTab==="expense");
   const container = document.getElementById("listeContainer");
 
   if (activeListTab === "income") {
     if (!incomes.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">💶</div><div class="empty-title">Keine Einnahmen</div><div class="empty-sub">Tippe auf + um eine Einnahme zu erfassen</div></div>`;
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128182;</div><div class="empty-title">Keine Spesen erfasst</div><div class="empty-sub">Tippe auf + um Spesen einzutragen</div></div>`;
       return;
     }
     const groups = groupByDate(incomes);
-    container.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => {
-      const daySum = groups[date].reduce((s,i) => s + (i.amount||0), 0);
+    container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
+      const daySum = groups[date].reduce((s,i) => s+(i.brutto||0), 0);
       return `<div class="day-group">
-        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
+        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)} brutto</span></div>
         ${groups[date].map(i => {
-          const t = trips.find(tr => tr.id === i.tripId);
+          const t = trips.find(tr => tr.id===i.tripId);
           return `<div class="list-item" onclick="openIncomeEdit('${i.id}')">
-            <div class="list-icon" style="background:var(--accent-l)">💶</div>
+            <div class="list-icon" style="background:var(--accent-l)">&#128182;</div>
             <div class="li-info">
-              <div class="li-name">${escHtml(i.note || "Spesenzahlung")}</div>
-              <div class="li-meta">${t ? escHtml(t.name || t.city) : "–"}</div>
+              <div class="li-name">${escHtml(i.note||"Spesen")}</div>
+              <div class="li-meta">${t?escHtml(t.name||t.city):"&#8211;"}</div>
             </div>
-            <div class="li-amount" style="color:var(--accent)">${fmtEur(i.amount||0)}</div>
+            <div>
+              <div class="li-amount" style="color:var(--accent)">${fmtEur(i.net||0)} netto</div>
+              <div class="li-sub">${fmtEur(i.brutto||0)} brutto</div>
+            </div>
           </div>`;
         }).join("")}
       </div>`;
     }).join("");
   } else {
     if (!expenses.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>`;
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#129534;</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>`;
       return;
     }
     const groups = groupByDate(expenses);
-    container.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(date => {
-      const daySum = groups[date].reduce((s,e) => s + (e.amount||0), 0);
+    container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
+      const daySum = groups[date].reduce((s,e) => s+(e.amount||0), 0);
       return `<div class="day-group">
         <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
         ${groups[date].map(e => {
-          const t = trips.find(tr => tr.id === e.tripId);
+          const t = trips.find(tr => tr.id===e.tripId);
           return `<div class="list-item" onclick="openExpenseEdit('${e.id}')">
-            <div class="list-icon" style="background:var(--red-l)">🧾</div>
+            <div class="list-icon" style="background:var(--red-l)">&#129534;</div>
             <div class="li-info">
-              <div class="li-name">${escHtml(e.name || "Ausgabe")}</div>
-              <div class="li-meta">${t ? escHtml(t.name || t.city) : "–"}</div>
+              <div class="li-name">${escHtml(e.name||"Ausgabe")}</div>
+              <div class="li-meta">${t?escHtml(t.name||t.city):"&#8211;"}</div>
             </div>
             <div class="li-amount" style="color:var(--red)">${fmtEur(e.amount||0)}</div>
           </div>`;
@@ -710,221 +685,208 @@ function renderListe() {
 function renderProjekte() {
   const container = document.getElementById("projekteContainer");
   if (!trips.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-title">Noch keine Projekte</div><div class="empty-sub">Tippe auf + um ein Projekt anzulegen</div></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128506;</div><div class="empty-title">Noch keine Projekte</div><div class="empty-sub">Tippe auf + um ein Projekt anzulegen</div></div>`;
     return;
   }
   container.innerHTML = trips.map(t => {
-    const calc = calcPerDiem(t);
-    const aus  = tripExpenses(t.id);
-    const diff = calc.net - aus;
+    const c  = getIncomeCalc(t.id);
+    const a  = tripExpenses(t.id);
+    const df = c.net - a;
     return `<div class="project-card">
       <div class="pc-head">
         <div>
-          <div class="pc-name">${escHtml(t.name || t.city)}</div>
-          <div class="pc-loc">${escHtml(t.city||"")}${t.country ? ", "+escHtml(t.country):""}</div>
+          <div class="pc-name">${escHtml(t.name||t.city)}</div>
+          <div class="pc-loc">${escHtml(t.city||"")}${t.country?", "+escHtml(t.country):""}</div>
         </div>
         <div class="pc-dates">${fmtDate(t.startDate)}<br>${fmtDate(t.endDate)}</div>
       </div>
       <div class="pc-metrics">
-        <div class="pc-metric"><div class="pc-metric-lbl">Netto</div><div class="pc-metric-val" style="color:var(--accent)">${fmtCompact(calc.net)}</div></div>
-        <div class="pc-metric"><div class="pc-metric-lbl">Ausgaben</div><div class="pc-metric-val" style="color:var(--red)">${fmtCompact(aus)}</div></div>
-        <div class="pc-metric"><div class="pc-metric-lbl">Differenz</div><div class="pc-metric-val" style="color:${diff>=0?"var(--accent)":"var(--red)"}">${fmtCompact(diff)}</div></div>
+        <div class="pc-metric"><div class="pc-metric-lbl">Netto</div><div class="pc-metric-val" style="color:var(--accent)">${fmtCompact(c.net)}</div></div>
+        <div class="pc-metric"><div class="pc-metric-lbl">Ausgaben</div><div class="pc-metric-val" style="color:var(--red)">${fmtCompact(a)}</div></div>
+        <div class="pc-metric"><div class="pc-metric-lbl">Differenz</div><div class="pc-metric-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</div></div>
       </div>
       <div class="pc-actions">
         <button class="pc-btn primary" onclick="openEditTrip('${t.id}')">Bearbeiten</button>
-        <button class="pc-btn danger" onclick="openEditTrip('${t.id}', true)">L&ouml;schen</button>
+        <button class="pc-btn danger" onclick="quickDeleteTrip('${t.id}','${escAttr(t.name||t.city)}')">L&ouml;schen</button>
       </div>
     </div>`;
   }).join("");
 }
 
 // ─── Projekt Form ─────────────────────────────────────────────────────────────
-window.addFormWeek = function() {
-  formWeeks.push({ fullDays: 4, frueh: 0, mittag: 0, abend: 0 });
-  renderFormWeeks();
-  updatePreview();
+window.openAddTrip = function() {
+  document.getElementById("fTripId").value = "";
+  document.getElementById("projectSheetTitle").textContent = "Neues Projekt";
+  ["fTripName","fCity","fCountry","fStartDate","fEndDate"].forEach(id => document.getElementById(id).value="");
+  document.getElementById("tripDeleteBtn").style.display = "none";
+  openSheet("projectSheet");
+};
+window.openEditTrip = function(id) {
+  const t = trips.find(tr => tr.id===id);
+  if (!t) return;
+  document.getElementById("fTripId").value    = id;
+  document.getElementById("projectSheetTitle").textContent = "Projekt bearbeiten";
+  document.getElementById("fTripName").value  = t.name||"";
+  document.getElementById("fCity").value      = t.city||"";
+  document.getElementById("fCountry").value   = t.country||"";
+  document.getElementById("fStartDate").value = t.startDate||"";
+  document.getElementById("fEndDate").value   = t.endDate||"";
+  document.getElementById("tripDeleteBtn").style.display = "block";
+  openSheet("projectSheet");
+};
+window.saveTrip = async function() {
+  const id    = document.getElementById("fTripId").value;
+  const city  = document.getElementById("fCity").value.trim();
+  const start = document.getElementById("fStartDate").value;
+  const end   = document.getElementById("fEndDate").value;
+  if (!city||!start||!end) { showToast("Stadt, Start- und Enddatum benoetigt"); return; }
+  const data = {
+    name: document.getElementById("fTripName").value.trim()||city,
+    city, country: document.getElementById("fCountry").value.trim(),
+    startDate: start, endDate: end, updated_at: new Date().toISOString()
+  };
+  setSyncStatus("syncing","Speichert...");
+  try {
+    if (id) { await updateDoc(doc(db,"trips",id), data); }
+    else    { data.created_at = new Date().toISOString(); await addDoc(tripsCol, data); }
+    closeSheets(); showToast(id?"Projekt aktualisiert":"Projekt angelegt");
+  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+};
+window.quickDeleteTrip = function(id, name) {
+  deleteTarget = { type:"trip", id };
+  document.getElementById("confirmSub").textContent = `"${name}" wird geloescht. Einnahmen und Ausgaben bleiben erhalten.`;
+  document.getElementById("confirmBox").classList.add("open");
 };
 
-window.removeFormWeek = function(idx) {
-  formWeeks.splice(idx, 1);
-  renderFormWeeks();
-  updatePreview();
+// ─── Einnahmen / Per Diem ─────────────────────────────────────────────────────
+window.addIncomeWeek = function() {
+  incomeWeeks.push({ fullDays:4, frueh:0, mittag:0, abend:0 });
+  renderIncomeWeeks(); updateIncomePreview();
+};
+window.removeIncomeWeek = function(idx) {
+  incomeWeeks.splice(idx,1); renderIncomeWeeks(); updateIncomePreview();
 };
 
-function renderFormWeeks() {
-  document.getElementById("formWeeksContainer").innerHTML = formWeeks.map((w, i) => `
+function renderIncomeWeeks() {
+  document.getElementById("incomeWeeksContainer").innerHTML = incomeWeeks.map((w,i) => `
     <div class="week-input-block">
       <div class="wib-header">
         <span class="wib-title">Woche ${i+1}</span>
-        <button class="wib-remove" onclick="removeFormWeek(${i})">Entfernen</button>
+        <button class="wib-remove" onclick="removeIncomeWeek(${i})">Entfernen</button>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Volltage</label>
           <input class="form-input small" type="number" min="0" max="7" value="${w.fullDays}"
-            oninput="formWeeks[${i}].fullDays=+this.value;updatePreview()">
+            oninput="incomeWeeks[${i}].fullDays=+this.value;updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Fr&uuml;hst&uuml;ck</label>
           <input class="form-input small" type="number" min="0" max="7" value="${w.frueh}"
-            oninput="formWeeks[${i}].frueh=+this.value;updatePreview()">
+            oninput="incomeWeeks[${i}].frueh=+this.value;updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Mittag</label>
           <input class="form-input small" type="number" min="0" max="7" value="${w.mittag}"
-            oninput="formWeeks[${i}].mittag=+this.value;updatePreview()">
+            oninput="incomeWeeks[${i}].mittag=+this.value;updateIncomePreview()">
         </div>
         <div class="form-group">
           <label class="form-label">Abend</label>
           <input class="form-input small" type="number" min="0" max="7" value="${w.abend}"
-            oninput="formWeeks[${i}].abend=+this.value;updatePreview()">
+            oninput="incomeWeeks[${i}].abend=+this.value;updateIncomePreview()">
         </div>
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
 
-window.updatePreview = function() {
-  const gN  = id => parseFloat(document.getElementById(id).value) || 0;
+window.updateIncomePreview = function() {
+  const gN = id => parseFloat(document.getElementById(id).value)||0;
   const tmp = {
-    travelDays: gN("fTravelDays"), travelDayRate: gN("fTravelDayRate"),
-    fullDayRate: gN("fFullDayRate"), freeLimit: gN("fFreeLimit"),
-    lst: gN("fLst"), sv: gN("fSv"),
-    mealFrueh: gN("fMealFrueh"), mealMittag: gN("fMealMittag"), mealAbend: gN("fMealAbend"),
-    weeks: formWeeks
+    travelDays: gN("iTravelDays"), travelDayRate: gN("iTravelDayRate"),
+    fullDayRate: gN("iFullDayRate"), freeLimit: gN("iFreeLimit"),
+    lst: gN("iLst"), sv: gN("iSv"),
+    mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
+    weeks: incomeWeeks
   };
-  const c   = calcPerDiem(tmp);
-  const el  = document.getElementById("perdiemPreview");
+  const c  = calcPerDiem(tmp);
+  const el = document.getElementById("incomePreview");
   if (c.brutto > 0) {
     el.style.display = "block";
-    document.getElementById("pdpBrutto").textContent  = fmtEur(c.brutto);
-    document.getElementById("pdpSteuern").textContent = fmtEur(c.steuern);
-    document.getElementById("pdpNetto").textContent   = fmtEur(c.net);
-  } else {
-    el.style.display = "none";
-  }
+    document.getElementById("iPdpBrutto").textContent  = fmtEur(c.brutto);
+    document.getElementById("iPdpSteuern").textContent = fmtEur(c.steuern);
+    document.getElementById("iPdpNetto").textContent   = fmtEur(c.net);
+  } else { el.style.display = "none"; }
 };
 
-window.openAddTrip = function() {
-  formWeeks = [];
-  document.getElementById("fTripId").value     = "";
-  document.getElementById("projectSheetTitle").textContent = "Neues Projekt";
-  ["fTripName","fCity","fCountry","fStartDate","fEndDate",
-   "fFullDayRate","fTravelDayRate","fFreeLimit","fLst","fSv",
-   "fMealFrueh","fMealMittag","fMealAbend"].forEach(id => document.getElementById(id).value = "");
-  document.getElementById("fTravelDays").value = "0";
-  document.getElementById("tripDeleteBtn").style.display = "none";
-  renderFormWeeks();
-  document.getElementById("perdiemPreview").style.display = "none";
-  openSheet("projectSheet");
-};
-
-window.openEditTrip = function(id, showDelete) {
-  const t = trips.find(tr => tr.id === id);
-  if (!t) return;
-  if (showDelete) {
-    // Quick delete via projekte page button
-    deleteTarget = { type: "trip", id };
-    document.getElementById("confirmSub").textContent = `"${t.name || t.city}" und alle zugehoerigen Daten werden geloescht.`;
-    document.getElementById("confirmBox").classList.add("open");
-    return;
-  }
-  formWeeks = (t.weeks || []).map(w => ({ ...w }));
-  document.getElementById("fTripId").value        = id;
-  document.getElementById("projectSheetTitle").textContent = "Projekt bearbeiten";
-  document.getElementById("fTripName").value      = t.name || "";
-  document.getElementById("fCity").value          = t.city || "";
-  document.getElementById("fCountry").value       = t.country || "";
-  document.getElementById("fStartDate").value     = t.startDate || "";
-  document.getElementById("fEndDate").value       = t.endDate || "";
-  document.getElementById("fFullDayRate").value   = t.fullDayRate || "";
-  document.getElementById("fTravelDayRate").value = t.travelDayRate || "";
-  document.getElementById("fFreeLimit").value     = t.freeLimit || "";
-  document.getElementById("fLst").value           = t.lst || "";
-  document.getElementById("fSv").value            = t.sv || "";
-  document.getElementById("fMealFrueh").value     = t.mealFrueh || "";
-  document.getElementById("fMealMittag").value    = t.mealMittag || "";
-  document.getElementById("fMealAbend").value     = t.mealAbend || "";
-  document.getElementById("fTravelDays").value    = t.travelDays || 0;
-  document.getElementById("tripDeleteBtn").style.display = "block";
-  renderFormWeeks();
-  updatePreview();
-  openSheet("projectSheet");
-};
-
-window.saveTrip = async function() {
-  const id        = document.getElementById("fTripId").value;
-  const city      = document.getElementById("fCity").value.trim();
-  const startDate = document.getElementById("fStartDate").value;
-  const endDate   = document.getElementById("fEndDate").value;
-  if (!city || !startDate || !endDate) { showToast("Stadt, Start- und Enddatum benoetigt"); return; }
-  const gN  = eid => { const v = parseFloat(document.getElementById(eid).value); return isNaN(v) ? null : v; };
-  const data = {
-    name: document.getElementById("fTripName").value.trim() || city,
-    city, country: document.getElementById("fCountry").value.trim(),
-    startDate, endDate,
-    fullDayRate: gN("fFullDayRate"), travelDayRate: gN("fTravelDayRate"),
-    freeLimit: gN("fFreeLimit"), lst: gN("fLst"), sv: gN("fSv"),
-    mealFrueh: gN("fMealFrueh"), mealMittag: gN("fMealMittag"), mealAbend: gN("fMealAbend"),
-    travelDays: parseFloat(document.getElementById("fTravelDays").value) || 0,
-    weeks: formWeeks.map(w => ({ ...w })),
-    updated_at: new Date().toISOString()
-  };
-  setSyncStatus("syncing", "Speichert...");
-  try {
-    if (id) { await updateDoc(doc(db,"trips",id), data); }
-    else    { data.created_at = new Date().toISOString(); await addDoc(tripsCol, data); }
-    closeSheets(); showToast(id ? "Projekt aktualisiert" : "Projekt angelegt");
-  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
-};
-
-// ─── Einnahmen ────────────────────────────────────────────────────────────────
 function populateTripSelect(selectId, preselect) {
   const sel = document.getElementById(selectId);
   const pre = preselect || selectedTripId;
   sel.innerHTML = trips.length
-    ? trips.map(t => `<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)}</option>`).join("")
+    ? trips.map(t=>`<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)}</option>`).join("")
     : "<option value=''>Kein Projekt</option>";
 }
 
 window.openAddIncome = function() {
-  document.getElementById("fIncomeId").value    = "";
-  document.getElementById("fIncomeAmount").value = "";
-  document.getElementById("fIncomeDate").value  = today.toISOString().slice(0,10);
-  document.getElementById("fIncomeNote").value  = "";
-  document.getElementById("incomeSheetTitle").textContent = "Einnahme hinzufuegen";
+  incomeWeeks = [];
+  document.getElementById("fIncomeId").value   = "";
+  document.getElementById("fIncomeDate").value = today.toISOString().slice(0,10);
+  document.getElementById("fIncomeNote").value = "";
+  document.getElementById("incomeSheetTitle").textContent = "Spesen erfassen";
   document.getElementById("incomeDeleteBtn").style.display = "none";
+  document.getElementById("incomePreview").style.display = "none";
+  ["iFullDayRate","iTravelDayRate","iFreeLimit","iLst","iSv","iMealFrueh","iMealMittag","iMealAbend"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("iTravelDays").value = "0";
   populateTripSelect("fIncomeTripId");
+  renderIncomeWeeks();
   openSheet("incomeSheet");
-  setTimeout(() => document.getElementById("fIncomeAmount").focus(), 350);
 };
 
 window.openIncomeEdit = function(id) {
-  const i = incomes.find(x => x.id === id);
+  const i = incomes.find(x=>x.id===id);
   if (!i) return;
-  document.getElementById("fIncomeId").value    = id;
-  document.getElementById("fIncomeAmount").value = i.amount;
-  document.getElementById("fIncomeDate").value  = i.date;
-  document.getElementById("fIncomeNote").value  = i.note || "";
-  document.getElementById("incomeSheetTitle").textContent = "Einnahme bearbeiten";
+  incomeWeeks = (i.weeks||[]).map(w=>({...w}));
+  document.getElementById("fIncomeId").value          = id;
+  document.getElementById("fIncomeDate").value        = i.date;
+  document.getElementById("fIncomeNote").value        = i.note||"";
+  document.getElementById("iFullDayRate").value       = i.fullDayRate||"";
+  document.getElementById("iTravelDayRate").value     = i.travelDayRate||"";
+  document.getElementById("iFreeLimit").value         = i.freeLimit||"";
+  document.getElementById("iLst").value               = i.lst||"";
+  document.getElementById("iSv").value                = i.sv||"";
+  document.getElementById("iMealFrueh").value         = i.mealFrueh||"";
+  document.getElementById("iMealMittag").value        = i.mealMittag||"";
+  document.getElementById("iMealAbend").value         = i.mealAbend||"";
+  document.getElementById("iTravelDays").value        = i.travelDays||0;
+  document.getElementById("incomeSheetTitle").textContent = "Spesen bearbeiten";
   document.getElementById("incomeDeleteBtn").style.display = "block";
   populateTripSelect("fIncomeTripId", i.tripId);
+  renderIncomeWeeks();
+  updateIncomePreview();
   openSheet("incomeSheet");
 };
 
 window.saveIncome = async function() {
   const id     = document.getElementById("fIncomeId").value;
-  const amount = parseFloat(document.getElementById("fIncomeAmount").value);
   const date   = document.getElementById("fIncomeDate").value;
   const note   = document.getElementById("fIncomeNote").value.trim();
   const tripId = document.getElementById("fIncomeTripId").value;
-  if (isNaN(amount) || amount <= 0 || !date) { showToast("Betrag und Datum eingeben"); return; }
-  const data = { amount, date, note, tripId, updated_at: new Date().toISOString() };
+  if (!date) { showToast("Datum eingeben"); return; }
+  const gN = eid => { const v=parseFloat(document.getElementById(eid).value); return isNaN(v)?null:v; };
+  const params = {
+    travelDays: parseFloat(document.getElementById("iTravelDays").value)||0,
+    travelDayRate: gN("iTravelDayRate"), fullDayRate: gN("iFullDayRate"),
+    freeLimit: gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
+    mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
+    weeks: incomeWeeks.map(w=>({...w}))
+  };
+  const calc = calcPerDiem(params);
+  if (calc.brutto === 0) { showToast("Bitte mindestens einen Tagessatz und Tage eingeben"); return; }
+  const data = { date, note, tripId, ...params, brutto: calc.brutto, steuern: calc.steuern, net: calc.net, updated_at: new Date().toISOString() };
   setSyncStatus("syncing","Speichert...");
   try {
     if (id) { await updateDoc(doc(db,"incomes",id), data); }
-    else    { data.created_at = new Date().toISOString(); await addDoc(incomesCol, data); }
-    closeSheets(); showToast("Einnahme gespeichert");
+    else    { data.created_at=new Date().toISOString(); await addDoc(incomesCol, data); }
+    closeSheets(); showToast("Spesen gespeichert");
   } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
 };
 
@@ -939,23 +901,21 @@ window.openAddExpense = function() {
   document.getElementById("expenseDeleteBtn").style.display = "none";
   populateTripSelect("fExpenseTripId");
   openSheet("expenseSheet");
-  setTimeout(() => document.getElementById("fExpenseName").focus(), 350);
+  setTimeout(()=>document.getElementById("fExpenseName").focus(), 350);
 };
-
 window.openExpenseEdit = function(id) {
-  const e = expenses.find(x => x.id === id);
+  const e = expenses.find(x=>x.id===id);
   if (!e) return;
   document.getElementById("fExpenseId").value     = id;
-  document.getElementById("fExpenseName").value   = e.name || "";
+  document.getElementById("fExpenseName").value   = e.name||"";
   document.getElementById("fExpenseAmount").value = e.amount;
   document.getElementById("fExpenseDate").value   = e.date;
-  document.getElementById("fExpenseNote").value   = e.note || "";
+  document.getElementById("fExpenseNote").value   = e.note||"";
   document.getElementById("expenseSheetTitle").textContent = "Ausgabe bearbeiten";
   document.getElementById("expenseDeleteBtn").style.display = "block";
   populateTripSelect("fExpenseTripId", e.tripId);
   openSheet("expenseSheet");
 };
-
 window.saveExpense = async function() {
   const id     = document.getElementById("fExpenseId").value;
   const name   = document.getElementById("fExpenseName").value.trim();
@@ -963,131 +923,87 @@ window.saveExpense = async function() {
   const date   = document.getElementById("fExpenseDate").value;
   const note   = document.getElementById("fExpenseNote").value.trim();
   const tripId = document.getElementById("fExpenseTripId").value;
-  if (!name || isNaN(amount) || amount <= 0 || !date) { showToast("Name, Betrag und Datum eingeben"); return; }
+  if (!name||isNaN(amount)||amount<=0||!date) { showToast("Name, Betrag und Datum eingeben"); return; }
   const data = { name, amount, date, note, tripId, updated_at: new Date().toISOString() };
   setSyncStatus("syncing","Speichert...");
   try {
     if (id) { await updateDoc(doc(db,"expenses",id), data); }
-    else    { data.created_at = new Date().toISOString(); await addDoc(expensesCol, data); }
+    else    { data.created_at=new Date().toISOString(); await addDoc(expensesCol, data); }
     closeSheets(); showToast("Ausgabe gespeichert");
   } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
 };
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 window.confirmDelete = function(type) {
-  const idField = type === "income" ? "fIncomeId" : type === "expense" ? "fExpenseId" : "fTripId";
+  const idField = type==="income"?"fIncomeId":type==="expense"?"fExpenseId":"fTripId";
   const id      = document.getElementById(idField).value;
   if (!id) return;
   deleteTarget  = { type, id };
-  const msg = type === "trip" ? "Das Projekt wird geloescht. Einnahmen und Ausgaben bleiben erhalten."
-            : "Dieser Eintrag wird unwiderruflich geloescht.";
-  document.getElementById("confirmSub").textContent = msg;
+  document.getElementById("confirmSub").textContent = "Dieser Eintrag wird unwiderruflich geloescht.";
   document.getElementById("confirmBox").classList.add("open");
 };
-
-window.closeConfirm = function() {
-  deleteTarget = null;
-  document.getElementById("confirmBox").classList.remove("open");
-};
-
+window.closeConfirm = function() { deleteTarget=null; document.getElementById("confirmBox").classList.remove("open"); };
 document.getElementById("confirmOk").addEventListener("click", async function() {
   if (!deleteTarget) return;
   const { type, id } = deleteTarget;
-  const colRef = type === "trip" ? "trips" : type === "income" ? "incomes" : "expenses";
-  try {
-    await deleteDoc(doc(db, colRef, id));
-    closeConfirm(); closeSheets(); showToast("Geloescht");
-  } catch(e) { showToast("Fehler beim Loeschen"); }
+  const colRef = type==="trip"?"trips":type==="income"?"incomes":"expenses";
+  try { await deleteDoc(doc(db,colRef,id)); closeConfirm(); closeSheets(); showToast("Geloescht"); }
+  catch(e) { showToast("Fehler beim Loeschen"); }
 });
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 document.querySelectorAll(".nav-tab").forEach(tab => {
   tab.addEventListener("click", function() {
     activePage = this.dataset.page;
-    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     this.classList.add("active");
-    document.getElementById("page-" + activePage).classList.add("active");
+    document.getElementById("page-"+activePage).classList.add("active");
     renderAll();
   });
 });
-
 window.selectProject = function(id) {
   selectedTripId = id;
   document.getElementById("projectSelect").value = id;
-  if (activePage !== "dashboard") {
+  if (activePage!=="dashboard") {
     activePage = "dashboard";
-    document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.querySelector("[data-page='dashboard']").classList.add("active");
     document.getElementById("page-dashboard").classList.add("active");
   }
   renderDashboard();
 };
+window.setListTab = function(tab) { activeListTab=tab; renderListe(); };
 
-window.setListTab = function(tab) {
-  activeListTab = tab;
-  renderListe();
-};
-
-// ─── FAB ──────────────────────────────────────────────────────────────────────
 document.getElementById("fabBtn").addEventListener("click", function() {
-  if (activePage === "projekte")                          window.openAddTrip();
-  else if (activePage === "liste" && activeListTab === "income") window.openAddIncome();
-  else                                                    window.openAddExpense();
+  if      (activePage==="projekte")                         window.openAddTrip();
+  else if (activePage==="liste"&&activeListTab==="income")  window.openAddIncome();
+  else                                                      window.openAddExpense();
 });
 
-// ─── Sheets ───────────────────────────────────────────────────────────────────
-function openSheet(id) {
-  document.getElementById("overlay").classList.add("open");
-  document.getElementById(id).classList.add("open");
-}
-window.closeSheets = function() {
-  document.getElementById("overlay").classList.remove("open");
-  document.querySelectorAll(".sheet").forEach(s => s.classList.remove("open"));
-};
+function openSheet(id) { document.getElementById("overlay").classList.add("open"); document.getElementById(id).classList.add("open"); }
+window.closeSheets = function() { document.getElementById("overlay").classList.remove("open"); document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("open")); };
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
-function fmtEur(n) {
-  return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
-}
+function fmtEur(n) { return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" \u20ac"; }
 function fmtCompact(n) {
-  const abs  = Math.abs(n||0);
-  const sign = (n||0) < 0 ? "−" : "";
-  if (abs >= 1000) return sign + (Math.round(abs/100)/10).toFixed(1).replace(".",",") + "k €";
-  return sign + Math.round(abs) + " €";
+  const abs=Math.abs(n||0), sign=(n||0)<0?"&#8722;":"";
+  if(abs>=1000) return sign+(Math.round(abs/100)/10).toFixed(1).replace(".",",")+"\u00a0k\u00a0\u20ac";
+  return sign+Math.round(abs)+"\u00a0\u20ac";
 }
-function fmtDate(s) {
-  if (!s) return "–";
-  return new Date(s+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"});
-}
+function fmtDate(s) { if(!s) return "&#8211;"; return new Date(s+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}); }
 function fmtDayLabel(s) {
-  const d    = new Date(s+"T12:00:00");
-  const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const day  = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const diff = (base - day) / 86400000;
-  if (diff === 0) return "Heute";
-  if (diff === 1) return "Gestern";
+  const d=new Date(s+"T12:00:00"), base=new Date(today.getFullYear(),today.getMonth(),today.getDate()), day=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const diff=(base-day)/86400000;
+  if(diff===0) return "Heute"; if(diff===1) return "Gestern";
   return d.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"short"});
 }
-function groupByDate(items) {
-  const g = {};
-  items.forEach(i => { if (!g[i.date]) g[i.date] = []; g[i.date].push(i); });
-  return g;
-}
-function escHtml(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
-}
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeSheets();
-  if (e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") window.doLogin();
-});
+function groupByDate(items) { const g={}; items.forEach(i=>{if(!g[i.date])g[i.date]=[];g[i.date].push(i);}); return g; }
+function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escAttr(s) { return escHtml(s).replace(/'/g,"&#39;"); }
+function showToast(msg) { const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeSheets(); if(e.key==="Enter"&&document.getElementById("loginScreen").style.display!=="none") window.doLogin(); });
 </script>
 </body>
 </html>
