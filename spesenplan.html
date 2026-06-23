@@ -226,6 +226,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .filter-bar::-webkit-scrollbar{display:none}
 .filter-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
 .filter-chip.active{background:var(--accent-l);border-color:var(--accent);color:var(--accent-t);font-weight:600}
+
+/* Country presets & rate summary */
+.country-preset-select{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:15px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;cursor:pointer}
+.country-preset-select:focus{border-color:var(--accent)}
+.rate-summary{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px}
+.rate-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 12px;margin-bottom:8px}
+.rs-item{font-size:11px}
+.rs-lbl{color:var(--hint);display:block;margin-bottom:1px}
+.rs-val{font-weight:600;color:var(--text)}
+.rate-edit-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:600}
+.country-mgmt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:8px}
+.country-mgmt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.country-mgmt-flag{font-size:16px;margin-right:6px}
+.country-mgmt-name{font-size:14px;font-weight:600}
+.country-mgmt-edit{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
+.country-mgmt-rates{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--hint)}
+
 </style>
 </head>
 <body>
@@ -270,6 +287,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 
 <!-- PROJEKTE -->
 <div class="page" id="page-projekte">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+    <button onclick="openCountrySheet()" style="height:34px;padding:0 14px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:var(--radius-s);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">&#127758; L&auml;nder &amp; S&auml;tze</button>
+  </div>
   <div id="projekteContainer"></div>
 </div>
 
@@ -362,81 +382,108 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
       </div>
     </div>
 
-    <!-- PER DIEM: calculator sections -->
+    <!-- PER DIEM: country preset + simplified inputs -->
     <div id="incomePerdiemSection" style="display:none;flex-direction:column;gap:14px">
-    <div class="form-section">
-      <div class="form-section-title">Tagess&auml;tze</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Volltagssatz (&#8364;)</label>
-          <input class="form-input" type="number" id="iFullDayRate" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
+
+      <!-- Country selector -->
+      <div class="form-group">
+        <label class="form-label">Land / Preset</label>
+        <select class="country-preset-select" id="iCountry" onchange="loadCountryPreset(this.value)">
+          <option value="">&#8212; Kein Preset &#8212;</option>
+        </select>
+      </div>
+
+      <!-- Compact rate summary (shown after preset selected) -->
+      <div class="rate-summary" id="iRateSummary" style="display:none">
+        <div class="rate-summary-grid" id="iRateSummaryGrid"></div>
+        <button class="rate-edit-toggle" onclick="toggleRateFields()" id="iRateToggleBtn">S&auml;tze anpassen &#9998;</button>
+      </div>
+
+      <!-- Editable rate fields (hidden, toggle) -->
+      <div id="iRateFields" style="display:none;flex-direction:column;gap:12px">
+        <div class="form-section">
+          <div class="form-section-title">Tagess&auml;tze</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Volltagssatz (&#8364;)</label>
+              <input class="form-input" type="number" id="iFullDayRate" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Anreisetag (&#8364;)</label>
+              <input class="form-input" type="number" id="iTravelDayRate" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-group">
+              <label class="form-label">Steuerfreie Grenze (&#8364;/Tag)</label>
+              <input class="form-input" type="number" id="iFreeLimit" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Einkommensteuer (%)</label>
+              <input class="form-input" type="number" id="iLst" placeholder="0" step="0.5" min="0" max="100" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-group" style="flex:0 0 48%">
+              <label class="form-label">Sozialversicherung (%)</label>
+              <input class="form-input" type="number" id="iSv" placeholder="0" step="0.5" min="0" max="100" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Anreisetag (&#8364;)</label>
-          <input class="form-input" type="number" id="iTravelDayRate" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
+        <div class="form-section">
+          <div class="form-section-title">Mahlzeitenabzug pro Mahlzeit (&#8364;)</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Fr&uuml;hst&uuml;ck</label>
+              <input class="form-input" type="number" id="iMealFrueh" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mittag</label>
+              <input class="form-input" type="number" id="iMealMittag" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Abend</label>
+              <input class="form-input" type="number" id="iMealAbend" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="form-section">
-      <div class="form-section-title">Steuer</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Steuerfreie Grenze (&#8364;/Tag)</label>
-          <input class="form-input" type="number" id="iFreeLimit" placeholder="&#8212;" step="0.5" min="0" oninput="updateIncomePreview()">
+      <!-- Simple day & meal inputs -->
+      <div class="form-section">
+        <div class="form-section-title">Tage &amp; Mahlzeiten</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Anreisetage</label>
+            <input class="form-input" type="number" id="iTravelDays" value="0" min="0" oninput="updateIncomePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Volltage</label>
+            <input class="form-input" type="number" id="iFullDays" value="0" min="0" oninput="updateIncomePreview()">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Einkommensteuer (%)</label>
-          <input class="form-input" type="number" id="iLst" placeholder="&#8212;" step="0.5" min="0" max="100" oninput="updateIncomePreview()">
+        <div class="form-row" style="margin-top:8px">
+          <div class="form-group">
+            <label class="form-label">Fr&uuml;hst&uuml;ck</label>
+            <input class="form-input small" type="number" id="iBreakfasts" value="0" min="0" oninput="updateIncomePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mittag</label>
+            <input class="form-input small" type="number" id="iLunches" value="0" min="0" oninput="updateIncomePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Abend</label>
+            <input class="form-input small" type="number" id="iDinners" value="0" min="0" oninput="updateIncomePreview()">
+          </div>
         </div>
       </div>
-      <div class="form-row" style="margin-top:8px">
-        <div class="form-group" style="flex:0 0 48%">
-          <label class="form-label">Sozialversicherung (%)</label>
-          <input class="form-input" type="number" id="iSv" placeholder="&#8212;" step="0.5" min="0" max="100" oninput="updateIncomePreview()">
-        </div>
+
+      <div class="perdiem-preview" id="incomePreview" style="display:none">
+        <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="iPdpBrutto">&#8212;</span></div>
+        <div class="pdp-row"><span class="pdp-label">Mahlzeitenabzug</span><span class="pdp-value red" id="iPdpMeals">&#8212;</span></div>
+        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="iPdpSteuern">&#8212;</span></div>
+        <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="iPdpNetto">&#8212;</span></div>
       </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">Mahlzeitenabz&uuml;ge (&#8364;/Tag)</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Fr&uuml;hst&uuml;ck</label>
-          <input class="form-input" type="number" id="iMealFrueh" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mittagessen</label>
-          <input class="form-input" type="number" id="iMealMittag" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Abendessen</label>
-          <input class="form-input" type="number" id="iMealAbend" placeholder="&#8212;" step="0.1" min="0" oninput="updateIncomePreview()">
-        </div>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">Anreisetage</div>
-      <div class="form-row">
-        <div class="form-group" style="flex:0 0 100px">
-          <label class="form-label">Anzahl</label>
-          <input class="form-input" type="number" id="iTravelDays" value="0" min="0" max="30" oninput="updateIncomePreview()">
-        </div>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">Wochen</div>
-      <div id="incomeWeeksContainer"></div>
-      <button class="btn-add-week" onclick="addIncomeWeek()">+ Woche hinzuf&uuml;gen</button>
-    </div>
-
-    <div class="perdiem-preview" id="incomePreview" style="display:none">
-      <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="iPdpBrutto">&#8212;</span></div>
-      <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="iPdpSteuern">&#8212;</span></div>
-      <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="iPdpNetto">&#8212;</span></div>
-    </div>
 
     </div><!-- /incomePerdiemSection -->
 
@@ -481,6 +528,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   </div>
 </div>
 
+
+<!-- SHEET: Länder / Presets -->
+<div class="sheet" id="countrySheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">L&auml;nder &amp; Per Diem S&auml;tze</span>
+    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
+  </div>
+  <div class="form-body">
+    <p style="font-size:13px;color:var(--muted);margin-top:-6px">Hinterlege deine S&auml;tze pro Land. Im Per Diem Rechner wird das Land ausgew&auml;hlt und alles automatisch eingetragen.</p>
+    <div id="countryListEl"></div>
+    <button class="btn-add-week" style="margin-top:4px" onclick="addCountryRow()">+ Land hinzuf&uuml;gen</button>
+    <button class="btn-submit" onclick="saveCountries()" style="margin-top:8px">Speichern</button>
+  </div>
+</div>
+
 <!-- Confirm -->
 <div class="confirm-box" id="confirmBox">
   <div class="confirm-card">
@@ -517,7 +580,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy }
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, query, orderBy }
   from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
@@ -542,11 +605,20 @@ const expensesCol = collection(db, "expenses");
 // ─── State ───────────────────────────────────────────────────────────────────
 let trips = [], incomes = [], expenses = [];
 let listProjectFilter = null;
+let countryPresets    = [];   // loaded from Firebase / localStorage
+
+const COUNTRY_DEFAULTS = [
+  { code:"nl", flag:"\u{1F1F3}\u{1F1F1}", name:"Niederlande",           fullDayRate:0, travelDayRate:0, freeLimit:30,    lst:37,   sv:17.9, mealFrueh:5.50,  mealMittag:10.00, mealAbend:12.50 },
+  { code:"de", flag:"\u{1F1E9}\u{1F1EA}", name:"Deutschland",           fullDayRate:0, travelDayRate:0, freeLimit:28,    lst:42,   sv:20,   mealFrueh:5.60,  mealMittag:11.20, mealAbend:11.20 },
+  { code:"ch", flag:"\u{1F1E8}\u{1F1ED}", name:"Schweiz",              fullDayRate:0, travelDayRate:0, freeLimit:40,    lst:35,   sv:15,   mealFrueh:8.00,  mealMittag:15.00, mealAbend:15.00 },
+  { code:"at", flag:"\u{1F1E6}\u{1F1F9}", name:"\u00D6sterreich",     fullDayRate:0, travelDayRate:0, freeLimit:26.40, lst:42,   sv:18,   mealFrueh:5.00,  mealMittag:10.00, mealAbend:10.00 },
+  { code:"fr", flag:"\u{1F1EB}\u{1F1F7}", name:"Frankreich",           fullDayRate:0, travelDayRate:0, freeLimit:30,    lst:45,   sv:22,   mealFrueh:7.00,  mealMittag:13.00, mealAbend:13.00 },
+  { code:"gb", flag:"\u{1F1EC}\u{1F1E7}", name:"Vereinigtes K\u00F6nigreich", fullDayRate:0, travelDayRate:0, freeLimit:35, lst:40, sv:12, mealFrueh:6.00, mealMittag:12.00, mealAbend:12.00 },
+];
 let selectedTripId = null;
 let activePage     = "dashboard";
 let activeListTab  = "income";
 let deleteTarget   = null;
-let incomeWeeks    = [];   // per diem weeks while income form is open
 const today        = new Date();
 let snapUnsubs     = [];
 
@@ -577,6 +649,7 @@ onAuthStateChanged(auth, user => {
 
 function startListeners() {
   setSyncStatus("syncing", "Verbinde...");
+  loadCountrySettings();
   snapUnsubs.push(onSnapshot(query(tripsCol, orderBy("startDate","desc")), snap => {
     trips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     autoSelectTrip(); renderAll();
@@ -603,33 +676,28 @@ function autoSelectTrip() {
   selectedTripId = active ? active.id : trips[0].id;
 }
 
-// ─── Per Diem Berechnung ─────────────────────────────────────────────────────
-// Identische Logik wie per_diem_calculator_EN.html
-function calcPerDiem(params) {
-  const arrDays  = params.travelDays || 0;
-  const arrRate  = params.travelDayRate || 0;
-  let totalBrutto   = arrDays * arrRate;
-  let totalFree     = totalBrutto;
-  let totalTaxable  = 0;
-  (params.weeks || []).forEach(week => {
-    const full      = week.fullDays || 0;
-    const mealDed   = (week.frueh  || 0) * (params.mealFrueh  || 0)
-                    + (week.mittag || 0) * (params.mealMittag || 0)
-                    + (week.abend  || 0) * (params.mealAbend  || 0);
-    const mealPerDay = full > 0 ? mealDed / full : 0;
-    const freeLimit  = params.freeLimit  || 0;
-    const fullRate   = params.fullDayRate || 0;
-    for (let d = 0; d < full; d++) {
-      const rate    = Math.max(0, fullRate - mealPerDay);
-      totalBrutto  += rate;
-      totalFree    += Math.min(rate, freeLimit);
-      totalTaxable += Math.max(0, rate - freeLimit);
-    }
-  });
-  const lst     = params.lst != null ? totalTaxable * (params.lst / 100) : 0;
-  const sv      = params.sv  != null ? (totalTaxable - lst) * (params.sv / 100) : 0;
+// ─── Per Diem Berechnung (vereinfacht: globale Tage + Mahlzeiten, keine Wochen)
+function calcPerDiem(p) {
+  const travelBrutto = (p.travelDays || 0) * (p.travelDayRate || 0);
+  const fullDays     = p.fullDays || 0;
+  const fullRate     = p.fullDayRate || 0;
+  const freeLimit    = p.freeLimit  || 0;
+  // Gesamter Mahlzeitenabzug (Anzahl × Satz)
+  const mealDed  = (p.breakfasts || 0) * (p.mealFrueh  || 0)
+                 + (p.lunches    || 0) * (p.mealMittag || 0)
+                 + (p.dinners    || 0) * (p.mealAbend  || 0);
+  // Effektiver Tagessatz nach Mahlzeitenabzug
+  const mealPerDay    = fullDays > 0 ? mealDed / fullDays : 0;
+  const effectiveRate = Math.max(0, fullRate - mealPerDay);
+  const fullBrutto    = effectiveRate * fullDays;
+  // Steuerpflichtiger Anteil (nur Volltage, Anreisetage immer steuerfrei)
+  const taxablePerDay = Math.max(0, effectiveRate - freeLimit);
+  const totalTaxable  = taxablePerDay * fullDays;
+  const lst     = p.lst != null ? totalTaxable * (p.lst / 100) : 0;
+  const sv      = p.sv  != null ? (totalTaxable - lst) * (p.sv  / 100) : 0;
   const steuern = lst + sv;
-  return { brutto: totalBrutto, steuern, net: totalBrutto - steuern };
+  const brutto  = travelBrutto + fullBrutto;
+  return { brutto, steuern, net: brutto - steuern };
 }
 
 // Summiert gespeicherte berechnete Werte aus Einnahmen-Eintraegen
@@ -644,6 +712,125 @@ function getIncomeCalc(tripId) {
 function tripExpenses(tripId) {
   return expenses.filter(e => e.tripId === tripId).reduce((s,e) => s + (e.amount||0), 0);
 }
+
+
+// ─── Country Presets ─────────────────────────────────────────────────────────
+async function loadCountrySettings() {
+  try {
+    const snap = await getDoc(doc(db, "settings", "countries"));
+    if (snap.exists() && snap.data().list) {
+      countryPresets = snap.data().list;
+    } else {
+      countryPresets = COUNTRY_DEFAULTS.map(c => ({...c}));
+    }
+  } catch(e) {
+    countryPresets = COUNTRY_DEFAULTS.map(c => ({...c}));
+  }
+  populateCountryDropdown();
+}
+
+async function saveCountrySettings() {
+  try {
+    await setDoc(doc(db, "settings", "countries"), { list: countryPresets, updated_at: new Date().toISOString() });
+  } catch(e) {}
+}
+
+function populateCountryDropdown() {
+  const sel = document.getElementById("iCountry");
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = "<option value=''>&#8212; Kein Preset &#8212;</option>" +
+    countryPresets.map(c => `<option value="${c.code}">${c.flag || ""} ${escHtml(c.name)}</option>`).join("");
+  if (cur) sel.value = cur;
+}
+
+window.loadCountryPreset = function(code) {
+  if (!code) { document.getElementById("iRateSummary").style.display="none"; updateIncomePreview(); return; }
+  const p = countryPresets.find(c => c.code === code);
+  if (!p) return;
+  const setV = (id, v) => { const el=document.getElementById(id); if(el) el.value = v!=null&&v!==0 ? v : ""; };
+  setV("iFullDayRate",   p.fullDayRate);
+  setV("iTravelDayRate", p.travelDayRate);
+  setV("iFreeLimit",     p.freeLimit);
+  setV("iLst",           p.lst);
+  setV("iSv",            p.sv);
+  setV("iMealFrueh",     p.mealFrueh);
+  setV("iMealMittag",    p.mealMittag);
+  setV("iMealAbend",     p.mealAbend);
+  updateRateSummary();
+  updateIncomePreview();
+};
+
+window.updateRateSummary = function() {
+  const gN = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const fdr = gN("iFullDayRate"), tdr = gN("iTravelDayRate"), fl = gN("iFreeLimit"),
+        lst = gN("iLst"), sv = gN("iSv"),
+        mf  = gN("iMealFrueh"), mm = gN("iMealMittag"), ma = gN("iMealAbend");
+  const el = document.getElementById("iRateSummary");
+  if (!el) return;
+  if (fdr > 0 || fl > 0) {
+    document.getElementById("iRateSummaryGrid").innerHTML = [
+      ["Volltagssatz", fdr > 0 ? fmtEur(fdr) : "&#8212;"],
+      ["Anreisetag",   tdr > 0 ? fmtEur(tdr) : "&#8212;"],
+      ["Steuerfreie Grenze", fl > 0 ? fmtEur(fl)+"/Tag" : "&#8212;"],
+      ["Einkommensteuer",    lst > 0 ? lst+"%" : "&#8212;"],
+      ["Sozialversicherung", sv  > 0 ? sv+"%"  : "&#8212;"],
+      ["Früh/Mittag/Abend", `${fmtEur(mf)} / ${fmtEur(mm)} / ${fmtEur(ma)}`],
+    ].map(([l,v]) => `<div class="rs-item"><span class="rs-lbl">${l}</span><span class="rs-val">${v}</span></div>`).join("");
+    el.style.display = "block";
+  } else { el.style.display = "none"; }
+};
+
+window.toggleRateFields = function() {
+  const el  = document.getElementById("iRateFields");
+  const btn = document.getElementById("iRateToggleBtn");
+  const vis = el.style.display !== "none";
+  el.style.display  = vis ? "none" : "flex";
+  btn.textContent   = vis ? "Sätze anpassen ✎" : "Sätze ausblenden ✕";
+};
+
+// Country management sheet
+window.openCountrySheet = function() {
+  renderCountryList();
+  openSheet("countrySheet");
+};
+
+function renderCountryList() {
+  const el = document.getElementById("countryListEl");
+  el.innerHTML = countryPresets.map((c, i) => `
+    <div class="country-mgmt-card">
+      <div class="country-mgmt-head">
+        <span><span class="country-mgmt-flag">${c.flag||""}</span><span class="country-mgmt-name">${escHtml(c.name)}</span></span>
+        <button class="country-mgmt-edit" onclick="removeCountry(${i})">&#x2715; entfernen</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+        <div><div class="form-label" style="font-size:10px;margin-bottom:3px">Land</div>
+          <input class="form-input" style="height:36px;font-size:13px" type="text" value="${escAttr(c.name)}" oninput="countryPresets[${i}].name=this.value"></div>
+        <div><div class="form-label" style="font-size:10px;margin-bottom:3px">Flag (Emoji)</div>
+          <input class="form-input" style="height:36px;font-size:16px" type="text" value="${c.flag||""}" oninput="countryPresets[${i}].flag=this.value"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        ${["fullDayRate:Volltagssatz (€)","travelDayRate:Anreisetag (€)","freeLimit:Steuerfreie Grenze (€)","lst:Einkommensteuer (%)","sv:Sozialversicherung (%)","mealFrueh:Abzug Frühstück (€)","mealMittag:Abzug Mittag (€)","mealAbend:Abzug Abend (€)"]
+          .map(s => { const [k,lbl] = s.split(":"); return `<div><div class="form-label" style="font-size:10px;margin-bottom:3px">${lbl}</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="${c[k]||""}" oninput="countryPresets[${i}].${k}=+this.value"></div>`; }).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+window.addCountryRow = function() {
+  countryPresets.push({ code: "new_" + Date.now(), flag: "", name: "Neues Land", fullDayRate:0, travelDayRate:0, freeLimit:0, lst:0, sv:0, mealFrueh:0, mealMittag:0, mealAbend:0 });
+  renderCountryList();
+};
+window.removeCountry = function(i) {
+  countryPresets.splice(i, 1);
+  renderCountryList();
+};
+window.saveCountries = async function() {
+  await saveCountrySettings();
+  populateCountryDropdown();
+  closeSheets();
+  showToast("Länder-Einstellungen gespeichert");
+};
 
 // ─── Render ───────────────────────────────────────────────────────────────────
 function renderAll() {
@@ -905,60 +1092,28 @@ window.quickDeleteTrip = function(id, name) {
 };
 
 // ─── Einnahmen / Per Diem ─────────────────────────────────────────────────────
-window.addIncomeWeek = function() {
-  incomeWeeks.push({ fullDays:4, frueh:0, mittag:0, abend:0 });
-  renderIncomeWeeks(); updateIncomePreview();
-};
-window.removeIncomeWeek = function(idx) {
-  incomeWeeks.splice(idx,1); renderIncomeWeeks(); updateIncomePreview();
-};
+// incomeWeeks removed - simplified to global day/meal counts
 
-function renderIncomeWeeks() {
-  document.getElementById("incomeWeeksContainer").innerHTML = incomeWeeks.map((w,i) => `
-    <div class="week-input-block">
-      <div class="wib-header">
-        <span class="wib-title">Woche ${i+1}</span>
-        <button class="wib-remove" onclick="removeIncomeWeek(${i})">Entfernen</button>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Volltage</label>
-          <input class="form-input small" type="number" min="0" max="7" value="${w.fullDays}"
-            oninput="incomeWeeks[${i}].fullDays=+this.value;updateIncomePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Fr&uuml;hst&uuml;ck</label>
-          <input class="form-input small" type="number" min="0" max="7" value="${w.frueh}"
-            oninput="incomeWeeks[${i}].frueh=+this.value;updateIncomePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mittag</label>
-          <input class="form-input small" type="number" min="0" max="7" value="${w.mittag}"
-            oninput="incomeWeeks[${i}].mittag=+this.value;updateIncomePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Abend</label>
-          <input class="form-input small" type="number" min="0" max="7" value="${w.abend}"
-            oninput="incomeWeeks[${i}].abend=+this.value;updateIncomePreview()">
-        </div>
-      </div>
-    </div>`).join("");
-}
 
 window.updateIncomePreview = function() {
-  const gN = id => parseFloat(document.getElementById(id).value)||0;
+  const gN = id => { const el=document.getElementById(id); return el ? (parseFloat(el.value)||0) : 0; };
+  const breakfasts = gN("iBreakfasts"), lunches = gN("iLunches"), dinners = gN("iDinners");
+  const mealFrueh  = gN("iMealFrueh"),  mealMittag = gN("iMealMittag"), mealAbend = gN("iMealAbend");
+  const mealDed = breakfasts*mealFrueh + lunches*mealMittag + dinners*mealAbend;
   const tmp = {
     travelDays: gN("iTravelDays"), travelDayRate: gN("iTravelDayRate"),
-    fullDayRate: gN("iFullDayRate"), freeLimit: gN("iFreeLimit"),
-    lst: gN("iLst"), sv: gN("iSv"),
-    mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
-    weeks: incomeWeeks
+    fullDays:   gN("iFullDays"),   fullDayRate:   gN("iFullDayRate"),
+    freeLimit:  gN("iFreeLimit"),  lst: gN("iLst"), sv: gN("iSv"),
+    mealFrueh, mealMittag, mealAbend, breakfasts, lunches, dinners
   };
   const c  = calcPerDiem(tmp);
   const el = document.getElementById("incomePreview");
   if (c.brutto > 0) {
     el.style.display = "block";
-    document.getElementById("iPdpBrutto").textContent  = fmtEur(c.brutto);
+    // Show gross BEFORE meals so user sees the deduction clearly
+    const grossBeforeMeals = (tmp.travelDays*tmp.travelDayRate) + (tmp.fullDays*tmp.fullDayRate);
+    document.getElementById("iPdpBrutto").textContent  = fmtEur(grossBeforeMeals) + (mealDed>0 ? " \u2212 " + fmtEur(mealDed) + " = " + fmtEur(c.brutto) : "");
+    document.getElementById("iPdpMeals").textContent   = mealDed > 0 ? "\u2212 " + fmtEur(mealDed) : "keine";
     document.getElementById("iPdpSteuern").textContent = fmtEur(c.steuern);
     document.getElementById("iPdpNetto").textContent   = fmtEur(c.net);
   } else { el.style.display = "none"; }
@@ -993,7 +1148,6 @@ window.updateSimplePreview = function() {
 };
 
 window.openAddIncome = function() {
-  incomeWeeks = [];
   document.getElementById("fIncomeId").value      = "";
   document.getElementById("fIncomeDate").value    = today.toISOString().slice(0,10);
   document.getElementById("fIncomeNote").value    = "";
@@ -1003,10 +1157,13 @@ window.openAddIncome = function() {
   document.getElementById("incomeDeleteBtn").style.display = "none";
   document.getElementById("incomePreview").style.display  = "none";
   document.getElementById("simplePreview").style.display  = "none";
+  document.getElementById("iRateSummary").style.display   = "none";
+  document.getElementById("iRateFields").style.display    = "none";
   ["iFullDayRate","iTravelDayRate","iFreeLimit","iLst","iSv","iMealFrueh","iMealMittag","iMealAbend"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("iTravelDays").value = "0";
+  ["iTravelDays","iFullDays","iBreakfasts","iLunches","iDinners"].forEach(id=>document.getElementById(id).value="0");
+  document.getElementById("iCountry").value = "";
   populateTripSelect("fIncomeTripId");
-  renderIncomeWeeks();
+  populateCountryDropdown();
   window.setIncomeMode("simple");
   openSheet("incomeSheet");
 };
@@ -1015,7 +1172,6 @@ window.openIncomeEdit = function(id) {
   const i = incomes.find(x=>x.id===id);
   if (!i) return;
   const mode = i.type === "perdiem" ? "perdiem" : "simple";
-  incomeWeeks = (i.weeks||[]).map(w=>({...w}));
   document.getElementById("fIncomeId").value          = id;
   document.getElementById("fIncomeDate").value        = i.date;
   document.getElementById("fIncomeNote").value        = i.note||"";
@@ -1032,13 +1188,22 @@ window.openIncomeEdit = function(id) {
   document.getElementById("iMealMittag").value        = i.mealMittag||"";
   document.getElementById("iMealAbend").value         = i.mealAbend||"";
   document.getElementById("iTravelDays").value        = i.travelDays||0;
+  document.getElementById("iFullDays").value          = i.fullDays||0;
+  document.getElementById("iBreakfasts").value        = i.breakfasts||0;
+  document.getElementById("iLunches").value           = i.lunches||0;
+  document.getElementById("iDinners").value           = i.dinners||0;
+  // Restore country selection
+  const matchedCountry = countryPresets.find(c =>
+    c.fullDayRate===(i.fullDayRate||0) && c.freeLimit===(i.freeLimit||0)
+  );
+  document.getElementById("iCountry").value = matchedCountry ? matchedCountry.code : "";
   document.getElementById("incomeSheetTitle").textContent = "Spesen bearbeiten";
   document.getElementById("incomeDeleteBtn").style.display = "block";
   populateTripSelect("fIncomeTripId", i.tripId);
-  renderIncomeWeeks();
+  populateCountryDropdown();
   window.setIncomeMode(mode);
   if (mode==="simple") { window.updateSimplePreview(); }
-  else                 { updateIncomePreview(); }
+  else                 { updateRateSummary(); updateIncomePreview(); }
   openSheet("incomeSheet");
 };
 
@@ -1059,11 +1224,15 @@ window.saveIncome = async function() {
   } else {
     const gN = eid => { const v=parseFloat(document.getElementById(eid).value); return isNaN(v)?null:v; };
     const params = {
-      travelDays: parseFloat(document.getElementById("iTravelDays").value)||0,
+      travelDays:    parseFloat(document.getElementById("iTravelDays").value)||0,
+      fullDays:      parseFloat(document.getElementById("iFullDays").value)||0,
+      breakfasts:    parseFloat(document.getElementById("iBreakfasts").value)||0,
+      lunches:       parseFloat(document.getElementById("iLunches").value)||0,
+      dinners:       parseFloat(document.getElementById("iDinners").value)||0,
       travelDayRate: gN("iTravelDayRate"), fullDayRate: gN("iFullDayRate"),
-      freeLimit: gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
-      mealFrueh: gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
-      weeks: incomeWeeks.map(w=>({...w}))
+      freeLimit:     gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
+      mealFrueh:     gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
+      countryCode:   document.getElementById("iCountry").value || ""
     };
     const calc = calcPerDiem(params);
     if (calc.brutto === 0) { showToast("Tagessatz und Tage eingeben"); return; }
