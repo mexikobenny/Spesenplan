@@ -175,6 +175,57 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .empty-icon{font-size:36px;margin-bottom:10px}
 .empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .empty-sub{font-size:13px;color:var(--hint)}
+
+/* ── Dashboard redesign ────────────────────────────────────────── */
+.dash-proj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:flex-start}
+.dash-proj-left{flex:1;min-width:0}
+.dash-proj-name{font-size:19px;font-weight:700;letter-spacing:-0.4px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-proj-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.status-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:4px 10px;border-radius:20px;flex-shrink:0;margin-left:10px;margin-top:2px}
+.status-badge.aktiv{background:var(--accent-l);color:var(--accent-t)}
+.status-badge.abgeschlossen{background:var(--border);color:var(--muted)}
+.status-badge.bevorstehend{background:var(--blue-l);color:var(--blue)}
+
+.spesen-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.spesen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;box-shadow:var(--shadow)}
+.spesen-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px}
+.spesen-val{font-size:15px;font-weight:700;letter-spacing:-0.3px}
+.spesen-val.blue{color:var(--blue)}.spesen-val.green{color:var(--accent)}.spesen-val.orange{color:var(--orange)}
+
+.aus-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.aus-card:active{opacity:0.85}
+.aus-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.aus-lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
+.aus-right{text-align:right}
+.aus-val{font-size:17px;font-weight:700}
+.aus-pct{font-size:11px;color:var(--hint);margin-top:1px}
+.aus-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.aus-fill{height:100%;border-radius:4px;transition:width 0.4s}
+.aus-fill.green{background:var(--accent)}
+.aus-fill.orange{background:var(--orange)}
+.aus-fill.red{background:var(--red)}
+
+.diff-card{border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.diff-card.pos{background:var(--accent-l);border:1px solid var(--accent)}
+.diff-card.neg{background:var(--red-l);border:1px solid var(--red)}
+.diff-lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
+.diff-lbl.pos{color:var(--accent-t)}
+.diff-lbl.neg{color:var(--red)}
+.diff-val{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.diff-val.pos{color:var(--accent-t)}
+.diff-val.neg{color:var(--red)}
+
+.insights-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
+.insight-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px}
+.insight-val{font-size:18px;font-weight:700;letter-spacing:-0.4px}
+.insight-sub{font-size:11px;color:var(--hint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Liste filter bar ───────────────────────────────────────────── */
+.filter-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:12px;-webkit-overflow-scrolling:touch}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.filter-chip.active{background:var(--accent-l);border-color:var(--accent);color:var(--accent-t);font-weight:600}
 </style>
 </head>
 <body>
@@ -204,9 +255,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
-  <div id="dashCurrentProject"></div>
-  <div class="section-title" id="dashAllTitle" style="display:none">Alle Projekte</div>
-  <div class="projects-grid" id="dashProjectsGrid"></div>
+  <div id="dashContent"></div>
 </div>
 
 <!-- LISTE -->
@@ -215,6 +264,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
     <button class="list-toggle-btn active" id="toggleIncome" onclick="setListTab('income')">Einnahmen</button>
     <button class="list-toggle-btn" id="toggleExpense" onclick="setListTab('expense')">Ausgaben</button>
   </div>
+  <div class="filter-bar" id="projectFilterBar"></div>
   <div id="listeContainer"></div>
 </div>
 
@@ -491,6 +541,7 @@ const expensesCol = collection(db, "expenses");
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let trips = [], incomes = [], expenses = [];
+let listProjectFilter = null;
 let selectedTripId = null;
 let activePage     = "dashboard";
 let activeListTab  = "income";
@@ -603,6 +654,18 @@ function renderAll() {
   else if (activePage === "projekte")  renderProjekte();
 }
 
+// Navigate to expense list filtered by current trip
+window.goToExpenseList = function(tripId) {
+  listProjectFilter = tripId || selectedTripId || null;
+  activeListTab = "expense";
+  activePage = "liste";
+  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelector("[data-page='liste']").classList.add("active");
+  document.getElementById("page-liste").classList.add("active");
+  renderListe();
+};
+
 function updateProjectSelect() {
   const sel = document.getElementById("projectSelect");
   sel.innerHTML = trips.length
@@ -611,72 +674,117 @@ function updateProjectSelect() {
 }
 
 function renderDashboard() {
-  const trip    = selectedTripId ? trips.find(t => t.id === selectedTripId) : null;
-  const cpEl    = document.getElementById("dashCurrentProject");
-  const allTitle = document.getElementById("dashAllTitle");
-  const gridEl  = document.getElementById("dashProjectsGrid");
+  const el   = document.getElementById("dashContent");
+  const trip = selectedTripId ? trips.find(t => t.id === selectedTripId) : null;
 
   if (!trip) {
-    cpEl.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128193;</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
-    allTitle.style.display = "none"; gridEl.innerHTML = ""; return;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128193;</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
+    return;
   }
 
-  const calc = getIncomeCalc(trip.id);
-  const aus  = tripExpenses(trip.id);
-  const diff = calc.net - aus;
+  const calc      = getIncomeCalc(trip.id);
+  const tripExps  = expenses.filter(e => e.tripId === trip.id);
+  const aus       = tripExps.reduce((s,e) => s+(e.amount||0), 0);
+  const diff      = calc.net - aus;
+  const diffPct   = calc.net > 0 ? Math.round(aus / calc.net * 100) : 0;
 
-  cpEl.innerHTML = `
-    <div class="current-project-card">
-      <div class="cpj-name">${escHtml(trip.name||trip.city)}</div>
-      <div class="cpj-meta">${escHtml(trip.city||"")}${trip.country?", "+escHtml(trip.country):""} &middot; ${fmtDate(trip.startDate)} &ndash; ${fmtDate(trip.endDate)}</div>
+  // Status
+  const todayStr  = today.toISOString().slice(0,10);
+  const status    = trip.startDate > todayStr ? "bevorstehend"
+                  : trip.endDate   < todayStr ? "abgeschlossen"
+                  : "aktiv";
+
+  // Insights
+  const maxExp     = tripExps.length ? tripExps.reduce((a,b) => b.amount>a.amount?b:a) : null;
+  const uniqueDays = new Set(tripExps.map(e=>e.date)).size;
+  const avgDaily   = uniqueDays > 0 ? aus / uniqueDays : 0;
+  const netLeft    = Math.max(0, diff);
+  const netLeftPct = calc.net > 0 ? Math.round(netLeft / calc.net * 100) : 0;
+
+  // Progress color
+  const barColor = diffPct > 100 ? "red" : diffPct > 80 ? "orange" : "green";
+
+  el.innerHTML = `
+    <div class="dash-proj-card">
+      <div class="dash-proj-left">
+        <div class="dash-proj-name">${escHtml(trip.name||trip.city)}</div>
+        <div class="dash-proj-sub">${fmtDate(trip.startDate)}–${fmtDate(trip.endDate)}${trip.city ? " · " + escHtml(trip.city) : ""}</div>
+      </div>
+      <span class="status-badge ${status}">${status}</span>
     </div>
-    <div class="metrics-row five">
-      <div class="metric-card"><div class="metric-label">Einnahmen (Brutto)</div><div class="metric-value blue">${fmtEur(calc.brutto)}</div></div>
-      <div class="metric-card"><div class="metric-label">Steuern</div><div class="metric-value orange">${fmtEur(calc.steuern)}</div></div>
-      <div class="metric-card"><div class="metric-label">Netto Spesen</div><div class="metric-value green">${fmtEur(calc.net)}</div></div>
-      <div class="metric-card"><div class="metric-label">Ausgaben</div><div class="metric-value red">${fmtEur(aus)}</div></div>
-      <div class="metric-card"><div class="metric-label">Differenz</div><div class="metric-value ${diff>=0?"green":"red"}">${fmtEur(diff)}</div></div>
-    </div>`;
 
-  if (trips.length > 1) {
-    allTitle.style.display = "";
-    gridEl.innerHTML = trips.map(t => {
-      const c  = getIncomeCalc(t.id);
-      const a  = tripExpenses(t.id);
-      const df = c.net - a;
-      return `<div class="project-tile${t.id===selectedTripId?" is-active":""}" onclick="selectProject('${t.id}')">
-        <div class="pt-name">${escHtml(t.name||t.city)}</div>
-        <div class="pt-meta">${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</div>
-        <div class="pt-row"><span class="pt-label">Netto</span><span class="pt-val" style="color:var(--accent)">${fmtCompact(c.net)}</span></div>
-        <div class="pt-row"><span class="pt-label">Ausgaben</span><span class="pt-val" style="color:var(--red)">${fmtCompact(a)}</span></div>
-        <div class="pt-row"><span class="pt-label">Differenz</span><span class="pt-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</span></div>
-      </div>`;
-    }).join("");
-  } else { allTitle.style.display="none"; gridEl.innerHTML=""; }
+    <div class="spesen-row">
+      <div class="spesen-card"><div class="spesen-lbl">Spesen (Brutto)</div><div class="spesen-val blue">${fmtEur(calc.brutto)}</div></div>
+      <div class="spesen-card"><div class="spesen-lbl">Steuern</div><div class="spesen-val orange">${fmtEur(calc.steuern)}</div></div>
+      <div class="spesen-card"><div class="spesen-lbl">Netto</div><div class="spesen-val green">${fmtEur(calc.net)}</div></div>
+    </div>
+
+    <div class="aus-card" onclick="goToExpenseList()">
+      <div class="aus-top">
+        <span class="aus-lbl">Ausgaben &#8250;</span>
+        <div class="aus-right">
+          <div class="aus-val ${diffPct>100?"red":""}">${fmtEur(aus)}</div>
+          <div class="aus-pct">${diffPct} % von Netto</div>
+        </div>
+      </div>
+      <div class="aus-track"><div class="aus-fill ${barColor}" style="width:${Math.min(diffPct,100)}%"></div></div>
+    </div>
+
+    <div class="diff-card ${diff>=0?"pos":"neg"}">
+      <span class="diff-lbl ${diff>=0?"pos":"neg"}">Differenz</span>
+      <span class="diff-val ${diff>=0?"pos":"neg"}">${diff>=0?"+":"−"}${fmtEur(Math.abs(diff))}</span>
+    </div>
+
+    <div class="section-title">Insights</div>
+    <div class="insights-grid">
+      ${maxExp ? `<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">${fmtEur(maxExp.amount)}</div><div class="insight-sub">${escHtml(maxExp.name)}</div></div>` : `<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">&#8211;</div></div>`}
+      <div class="insight-card"><div class="insight-lbl">&#216; pro Tag (Ausgaben)</div><div class="insight-val">${fmtEur(avgDaily)}</div><div class="insight-sub">${uniqueDays} Tage mit Ausgaben</div></div>
+      <div class="insight-card"><div class="insight-lbl">Anzahl Ausgaben</div><div class="insight-val">${tripExps.length}</div><div class="insight-sub">${trips.length > 1 ? trips.length + " Projekte gesamt" : "1 Projekt"}</div></div>
+      <div class="insight-card"><div class="insight-lbl">Netto verbleibend</div><div class="insight-val ${diff>=0?"green":"red"}">${netLeftPct} %</div><div class="insight-sub">${fmtEur(netLeft)} &#252;brig</div></div>
+    </div>
+  `;
 }
 
 function renderListe() {
   document.getElementById("toggleIncome").classList.toggle("active", activeListTab==="income");
   document.getElementById("toggleExpense").classList.toggle("active", activeListTab==="expense");
+
+  // Project filter chips
+  const filterBar = document.getElementById("projectFilterBar");
+  const relevantTrips = trips.filter(t =>
+    (activeListTab==="income"  && incomes.some(i=>i.tripId===t.id)) ||
+    (activeListTab==="expense" && expenses.some(e=>e.tripId===t.id))
+  );
+  if (relevantTrips.length > 1) {
+    filterBar.innerHTML =
+      `<button class="filter-chip${listProjectFilter===null?" active":""}" onclick="setListProjectFilter(null)">Alle</button>` +
+      relevantTrips.map(t =>
+        `<button class="filter-chip${listProjectFilter===t.id?" active":""}" onclick="setListProjectFilter('${t.id}')">${escHtml(t.name||t.city)} (${fmtDate(t.startDate)})</button>`
+      ).join("");
+    filterBar.style.display = "";
+  } else { filterBar.style.display = "none"; }
+
   const container = document.getElementById("listeContainer");
 
   if (activeListTab === "income") {
-    if (!incomes.length) {
+    let items = [...incomes];
+    if (listProjectFilter) items = items.filter(i=>i.tripId===listProjectFilter);
+    if (!items.length) {
       container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128182;</div><div class="empty-title">Keine Spesen erfasst</div><div class="empty-sub">Tippe auf + um Spesen einzutragen</div></div>`;
       return;
     }
-    const groups = groupByDate(incomes);
+    const groups = groupByDate(items);
     container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
       const daySum = groups[date].reduce((s,i) => s+(i.brutto||0), 0);
       return `<div class="day-group">
         <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)} brutto</span></div>
         ${groups[date].map(i => {
-          const t = trips.find(tr => tr.id===i.tripId);
+          const t = trips.find(tr=>tr.id===i.tripId);
           return `<div class="list-item" onclick="openIncomeEdit('${i.id}')">
             <div class="list-icon" style="background:var(--accent-l)">&#128182;</div>
             <div class="li-info">
-              <div class="li-name">${escHtml(i.note||"Spesen")}</div>
-              <div class="li-meta">${t?escHtml(t.name||t.city):"&#8211;"}</div>
+              <div class="li-name">${escHtml(i.note||"Spesenzahlung")}</div>
+              <div class="li-meta">${t ? escHtml(t.name||t.city)+" ("+fmtDate(t.startDate)+")" : "&#8211;"}</div>
             </div>
             <div>
               <div class="li-amount" style="color:var(--accent)">${fmtEur(i.net||0)} netto</div>
@@ -687,22 +795,24 @@ function renderListe() {
       </div>`;
     }).join("");
   } else {
-    if (!expenses.length) {
+    let items = [...expenses];
+    if (listProjectFilter) items = items.filter(e=>e.tripId===listProjectFilter);
+    if (!items.length) {
       container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#129534;</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>`;
       return;
     }
-    const groups = groupByDate(expenses);
+    const groups = groupByDate(items);
     container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
       const daySum = groups[date].reduce((s,e) => s+(e.amount||0), 0);
       return `<div class="day-group">
         <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
         ${groups[date].map(e => {
-          const t = trips.find(tr => tr.id===e.tripId);
+          const t = trips.find(tr=>tr.id===e.tripId);
           return `<div class="list-item" onclick="openExpenseEdit('${e.id}')">
             <div class="list-icon" style="background:var(--red-l)">&#129534;</div>
             <div class="li-info">
               <div class="li-name">${escHtml(e.name||"Ausgabe")}</div>
-              <div class="li-meta">${t?escHtml(t.name||t.city):"&#8211;"}</div>
+              <div class="li-meta">${t ? escHtml(t.name||t.city)+" ("+fmtDate(t.startDate)+")" : "&#8211;"}</div>
             </div>
             <div class="li-amount" style="color:var(--red)">${fmtEur(e.amount||0)}</div>
           </div>`;
@@ -711,6 +821,12 @@ function renderListe() {
     }).join("");
   }
 }
+
+window.setListProjectFilter = function(tripId) {
+  listProjectFilter = tripId;
+  renderListe();
+};
+
 
 function renderProjekte() {
   const container = document.getElementById("projekteContainer");
@@ -1046,7 +1162,7 @@ window.selectProject = function(id) {
   }
   renderDashboard();
 };
-window.setListTab = function(tab) { activeListTab=tab; renderListe(); };
+window.setListTab = function(tab) { activeListTab=tab; listProjectFilter=null; renderListe(); };
 
 document.getElementById("fabBtn").addEventListener("click", function() {
   if      (activePage==="projekte")                         window.openAddTrip();
