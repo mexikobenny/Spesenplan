@@ -7,79 +7,88 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Spesenplan">
 <title>Spesenplan</title>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <style>
-:root {
-  --bg:#F7F6F3;--surface:#FFFFFF;--border:#E8E6E1;--border2:#D4D1CB;
-  --text:#1A1917;--muted:#6B6860;--hint:#A09E99;
-  --accent:#2D6A4F;--accent-l:#E8F4EE;--accent-t:#1B4332;
-  --red:#C0392B;--red-l:#FDF0EE;
-  --blue:#2D5FA4;--blue-l:#EBF2FA;
-  --orange:#B7621A;--orange-l:#FDF3E3;
-  --radius:12px;--radius-s:8px;
-  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-}
-@media(prefers-color-scheme:dark){:root{
-  --bg:#111110;--surface:#1C1C1A;--border:#2A2A27;--border2:#3A3A36;
-  --text:#F0EEE9;--muted:#8A8880;--hint:#5A5955;
-  --accent:#52B788;--accent-l:#1A3328;--accent-t:#A7F3D0;
-  --red:#E57373;--red-l:#2C1A1A;
-  --blue:#5B9BD5;--blue-l:#1A2535;
-  --orange:#E59B4A;--orange-l:#2C1F0A;
-}}
+:root{--bg:#F7F6F3;--surface:#FFFFFF;--border:#E8E6E1;--border2:#D4D1CB;--text:#1A1917;--muted:#6B6860;--hint:#A09E99;--accent:#2D6A4F;--accent-l:#E8F4EE;--accent-t:#1B4332;--red:#C0392B;--red-l:#FDF0EE;--blue:#2D5FA4;--blue-l:#EBF2FA;--orange:#B7621A;--orange-l:#FDF3E3;--radius:12px;--radius-s:8px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)}
+@media(prefers-color-scheme:dark){:root{--bg:#111110;--surface:#1C1C1A;--border:#2A2A27;--border2:#3A3A36;--text:#F0EEE9;--muted:#8A8880;--hint:#5A5955;--accent:#52B788;--accent-l:#1A3328;--accent-t:#A7F3D0;--red:#E57373;--red-l:#2C1A1A;--blue:#5B9BD5;--blue-l:#1A2535;--orange:#E59B4A;--orange-l:#2C1F0A}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;min-height:100vh;padding-bottom:80px}
-
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px 10px;position:sticky;top:0;z-index:100}
 .header-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.app-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;flex-shrink:0}
-.project-switcher select{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-s);padding:5px 10px;font-size:12px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer;max-width:160px;-webkit-appearance:none;outline:none}
-.project-switcher select:focus{border-color:var(--accent)}
-
+.app-title{font-size:20px;font-weight:700;letter-spacing:-.5px;flex-shrink:0}
+.proj-sel{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-s);padding:5px 10px;font-size:12px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer;max-width:160px;-webkit-appearance:none;outline:none}
+.proj-sel:focus{border-color:var(--accent)}
 .top-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:57px;z-index:99}
 .top-nav::-webkit-scrollbar{display:none}
-.nav-tab{flex-shrink:0;padding:10px 18px;font-size:14px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;transition:color 0.15s}
+.nav-tab{flex-shrink:0;padding:10px 18px;font-size:14px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
 .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
-
 .sync-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--hint);padding:5px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--hint);flex-shrink:0}
 .sync-dot.syncing{background:#B7621A;animation:pulse 1s infinite}
 .sync-dot.synced{background:var(--accent)}
 .sync-dot.error{background:var(--red)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .page{display:none;padding:20px}
 .page.active{display:block}
-
-.metrics-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
-@media(min-width:380px){.metrics-row.five{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* metrics */
+.metrics-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(min-width:380px){.metrics-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
-.metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:0.3px}
-.metric-value{font-size:18px;font-weight:700;letter-spacing:-0.5px}
-.metric-value.green{color:var(--accent)}
-.metric-value.red{color:var(--red)}
-.metric-value.orange{color:var(--orange)}
-.metric-value.blue{color:var(--blue)}
-
-.current-project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow)}
-.cpj-name{font-size:17px;font-weight:700;letter-spacing:-0.3px}
-.cpj-meta{font-size:12px;color:var(--muted);margin-top:2px;margin-bottom:12px}
-
-.section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px}
-
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:10px;margin-bottom:20px}
-.project-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:border-color 0.15s}
-.project-tile.is-active{border-color:var(--accent)}
-.project-tile:active{opacity:0.85}
+.metric-label{font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+.metric-value{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.metric-value.green{color:var(--accent)}.metric-value.red{color:var(--red)}.metric-value.orange{color:var(--orange)}.metric-value.blue{color:var(--blue)}
+/* dashboard */
+.dash-proj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:flex-start}
+.dash-proj-name{font-size:18px;font-weight:700;letter-spacing:-.4px;margin-bottom:2px}
+.dash-proj-sub{font-size:12px;color:var(--muted)}
+.status-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:20px;flex-shrink:0;margin-left:10px;margin-top:2px}
+.status-badge.aktiv{background:var(--accent-l);color:var(--accent-t)}
+.status-badge.abgeschlossen{background:var(--border);color:var(--muted)}
+.status-badge.bevorstehend{background:var(--blue-l);color:var(--blue)}
+.spesen-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.spesen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;box-shadow:var(--shadow)}
+.spesen-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.spesen-val{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.spesen-val.blue{color:var(--blue)}.spesen-val.green{color:var(--accent)}.spesen-val.orange{color:var(--orange)}
+.aus-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer}
+.aus-card:active{opacity:.85}
+.aus-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.aus-lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.aus-right{text-align:right}
+.aus-val{font-size:17px;font-weight:700}
+.aus-val.red{color:var(--red)}
+.aus-pct{font-size:11px;color:var(--hint);margin-top:1px}
+.aus-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.aus-fill{height:100%;border-radius:4px;transition:width .4s}
+.aus-fill.green{background:var(--accent)}.aus-fill.orange{background:var(--orange)}.aus-fill.red{background:var(--red)}
+.diff-card{border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.diff-card.pos{background:var(--accent-l);border:1px solid var(--accent)}
+.diff-card.neg{background:var(--red-l);border:1px solid var(--red)}
+.diff-lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.diff-lbl.pos{color:var(--accent-t)}.diff-lbl.neg{color:var(--red)}
+.diff-val{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.diff-val.pos{color:var(--accent-t)}.diff-val.neg{color:var(--red)}
+.insights-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
+.insight-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.insight-val{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.insight-val.green{color:var(--accent)}.insight-val.red{color:var(--red)}
+.insight-sub{font-size:11px;color:var(--hint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:20px}
+.project-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);cursor:pointer}
+.project-tile:active{opacity:.85}
 .pt-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-meta{font-size:10px;color:var(--hint);margin-top:1px;margin-bottom:8px}
-.pt-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-top:4px}
-.pt-label{color:var(--muted)}
-.pt-val{font-weight:600}
-
-.list-toggle{display:flex;background:var(--border);border-radius:var(--radius-s);padding:3px;margin-bottom:16px}
-.list-toggle-btn{flex:1;height:34px;border-radius:6px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit;transition:background 0.15s}
+.pt-row{display:flex;justify-content:space-between;font-size:11px;margin-top:4px}
+.pt-label{color:var(--muted)}.pt-val{font-weight:600}
+/* liste */
+.list-toggle{display:flex;background:var(--border);border-radius:var(--radius-s);padding:3px;margin-bottom:12px}
+.list-toggle-btn{flex:1;height:34px;border-radius:6px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit}
 .list-toggle-btn.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
+.filter-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:12px}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.filter-chip.active{background:var(--accent-l);border-color:var(--accent);color:var(--accent-t);font-weight:600}
 .list-item{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:var(--shadow)}
 .list-item:active{border-color:var(--border2)}
 .list-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
@@ -88,12 +97,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .li-meta{font-size:11px;color:var(--hint);margin-top:2px}
 .li-amount{font-size:15px;font-weight:600;flex-shrink:0}
 .li-sub{font-size:11px;color:var(--muted);text-align:right;margin-top:1px}
-
 .day-group{margin-bottom:16px}
 .day-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
-.day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .day-sum{font-size:11px;color:var(--muted)}
-
+/* projekte */
 .project-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
 .pc-name{font-size:16px;font-weight:700}
@@ -101,32 +109,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .pc-dates{font-size:11px;color:var(--hint);text-align:right;flex-shrink:0;margin-left:8px}
 .pc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .pc-metric{background:var(--bg);border-radius:var(--radius-s);padding:8px;text-align:center}
-.pc-metric-lbl{font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:0.3px}
+.pc-metric-lbl{font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:.3px}
 .pc-metric-val{font-size:13px;font-weight:700;margin-top:2px}
 .pc-actions{display:flex;gap:8px}
 .pc-btn{flex:1;height:34px;border-radius:var(--radius-s);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border2);background:transparent;color:var(--text)}
 .pc-btn.primary{background:var(--accent-l);color:var(--accent-t);border-color:var(--accent)}
 .pc-btn.danger{background:var(--red-l);color:var(--red);border-color:var(--red)}
-
+/* forms */
 .form-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px}
-.form-section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px}
+.form-section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
 .perdiem-preview{background:var(--accent-l);border:1px solid var(--accent);border-radius:var(--radius-s);padding:12px}
 .pdp-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
-.pdp-row.total{font-weight:700;font-size:14px;border-top:1px solid rgba(45,106,79,0.2);padding-top:8px;margin-top:4px}
-.pdp-label{color:var(--accent-t)}
-.pdp-value{font-weight:600;color:var(--accent-t)}
-.pdp-value.red{color:var(--red)}
-
-.week-input-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:8px}
-.wib-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.wib-title{font-size:12px;font-weight:600;color:var(--muted)}
-.wib-remove{font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
-
-.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:28px;background:var(--accent);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(45,106,79,0.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform 0.15s}
-.fab:active{transform:scale(0.94)}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.pdp-row.total{font-weight:700;font-size:14px;border-top:1px solid rgba(45,106,79,.2);padding-top:8px;margin-top:4px}
+.pdp-label{color:var(--accent-t)}.pdp-value{font-weight:600;color:var(--accent-t)}.pdp-value.red{color:var(--red)}
+.rate-summary{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px}
+.rate-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 12px;margin-bottom:8px}
+.rs-item{font-size:11px}
+.rs-lbl{color:var(--hint);display:block;margin-bottom:1px}
+.rs-val{font-weight:600;color:var(--text)}
+.rate-edit-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:600}
+.country-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:8px}
+.country-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.country-card-name{font-size:14px;font-weight:600}
+.country-remove{font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;font-family:inherit}
+/* fab overlay sheet */
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:28px;background:var(--accent);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 12px rgba(45,106,79,.35);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform .15s}
+.fab:active{transform:scale(.94)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
 .overlay.open{opacity:1;pointer-events:all}
-.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);z-index:400;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:92vh;overflow-y:auto}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);z-index:400;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:92vh;overflow-y:auto}
 .sheet.open{transform:translateY(0)}
 .sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
 .sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border)}
@@ -135,18 +146,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .form-body{padding:20px;display:flex;flex-direction:column;gap:14px}
 .form-row{display:flex;gap:10px}
 .form-group{display:flex;flex-direction:column;gap:5px;flex:1}
-.form-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
-.form-input{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:16px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;transition:border-color 0.15s}
+.form-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.form-input{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:16px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;transition:border-color .15s}
 .form-input:focus{border-color:var(--accent)}
+.form-input.sm{height:40px;font-size:14px}
 .form-select{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:15px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;cursor:pointer}
 .form-select:focus{border-color:var(--accent)}
-.form-input.small{height:40px;font-size:14px}
 .btn-submit{height:52px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-submit:active{opacity:0.85}
-.btn-add-week{height:38px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-s);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;width:100%}
+.btn-submit:active{opacity:.85}
+.btn-add{height:38px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-s);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;width:100%}
 .btn-delete{width:100%;height:46px;background:var(--red-l);color:var(--red);border:1px solid var(--red);border-radius:var(--radius-s);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
-
-.confirm-box{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s}
+/* confirm */
+.confirm-box{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s}
 .confirm-box.open{opacity:1;pointer-events:all}
 .confirm-card{background:var(--surface);border-radius:var(--radius);padding:24px 20px 20px;width:100%;max-width:320px;text-align:center}
 .confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
@@ -155,403 +166,205 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .confirm-btn{flex:1;height:46px;border-radius:var(--radius-s);font-size:15px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
 .confirm-cancel{background:var(--bg);color:var(--text);border:1px solid var(--border2)}
 .confirm-ok{background:var(--red);color:#fff}
-
+/* login */
 .login-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;width:100%;max-width:360px;box-shadow:var(--shadow)}
 .login-title{font-size:24px;font-weight:700;margin-bottom:6px}
 .login-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
 .login-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.login-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
+.login-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
 .login-input{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:16px;padding:0 14px;outline:none;width:100%;font-family:inherit}
 .login-input:focus{border-color:var(--accent)}
 .login-btn{height:52px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;margin-top:8px}
 .login-error{font-size:13px;color:var(--red);margin-top:8px;text-align:center;min-height:18px}
 .logout-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit}
-
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--surface);padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:600;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;white-space:nowrap}
+/* toast */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--surface);padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:600;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
 .empty-state{text-align:center;padding:48px 20px}
 .empty-icon{font-size:36px;margin-bottom:10px}
 .empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .empty-sub{font-size:13px;color:var(--hint)}
-
-/* ── Dashboard redesign ────────────────────────────────────────── */
-.dash-proj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:flex-start}
-.dash-proj-left{flex:1;min-width:0}
-.dash-proj-name{font-size:19px;font-weight:700;letter-spacing:-0.4px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash-proj-sub{font-size:12px;color:var(--muted);margin-top:1px}
-.status-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:4px 10px;border-radius:20px;flex-shrink:0;margin-left:10px;margin-top:2px}
-.status-badge.aktiv{background:var(--accent-l);color:var(--accent-t)}
-.status-badge.abgeschlossen{background:var(--border);color:var(--muted)}
-.status-badge.bevorstehend{background:var(--blue-l);color:var(--blue)}
-
-.spesen-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.spesen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;box-shadow:var(--shadow)}
-.spesen-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px}
-.spesen-val{font-size:15px;font-weight:700;letter-spacing:-0.3px}
-.spesen-val.blue{color:var(--blue)}.spesen-val.green{color:var(--accent)}.spesen-val.orange{color:var(--orange)}
-
-.aus-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.aus-card:active{opacity:0.85}
-.aus-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.aus-lbl{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px}
-.aus-right{text-align:right}
-.aus-val{font-size:17px;font-weight:700}
-.aus-pct{font-size:11px;color:var(--hint);margin-top:1px}
-.aus-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden}
-.aus-fill{height:100%;border-radius:4px;transition:width 0.4s}
-.aus-fill.green{background:var(--accent)}
-.aus-fill.orange{background:var(--orange)}
-.aus-fill.red{background:var(--red)}
-
-.diff-card{border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
-.diff-card.pos{background:var(--accent-l);border:1px solid var(--accent)}
-.diff-card.neg{background:var(--red-l);border:1px solid var(--red)}
-.diff-lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
-.diff-lbl.pos{color:var(--accent-t)}
-.diff-lbl.neg{color:var(--red)}
-.diff-val{font-size:22px;font-weight:700;letter-spacing:-0.5px}
-.diff-val.pos{color:var(--accent-t)}
-.diff-val.neg{color:var(--red)}
-
-.insights-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
-.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:12px 14px;box-shadow:var(--shadow)}
-.insight-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px}
-.insight-val{font-size:18px;font-weight:700;letter-spacing:-0.4px}
-.insight-sub{font-size:11px;color:var(--hint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* ── Liste filter bar ───────────────────────────────────────────── */
-.filter-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:12px;-webkit-overflow-scrolling:touch}
-.filter-bar::-webkit-scrollbar{display:none}
-.filter-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
-.filter-chip.active{background:var(--accent-l);border-color:var(--accent);color:var(--accent-t);font-weight:600}
-
-/* Country presets & rate summary */
-.country-preset-select{height:46px;border:1px solid var(--border2);border-radius:var(--radius-s);background:var(--bg);color:var(--text);font-size:15px;padding:0 12px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;cursor:pointer}
-.country-preset-select:focus{border-color:var(--accent)}
-.rate-summary{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px}
-.rate-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 12px;margin-bottom:8px}
-.rs-item{font-size:11px}
-.rs-lbl{color:var(--hint);display:block;margin-bottom:1px}
-.rs-val{font-weight:600;color:var(--text)}
-.rate-edit-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;font-weight:600}
-.country-mgmt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:10px 12px;margin-bottom:8px}
-.country-mgmt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.country-mgmt-flag{font-size:16px;margin-right:6px}
-.country-mgmt-name{font-size:14px;font-weight:600}
-.country-mgmt-edit{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
-.country-mgmt-rates{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--hint)}
-
 </style>
 </head>
 <body>
-
 <header class="header">
   <div class="header-top">
     <span class="app-title">Spesenplan</span>
-    <div class="project-switcher">
-      <select id="projectSelect" onchange="selectProject(this.value)">
-        <option value="">Kein Projekt</option>
-      </select>
-    </div>
+    <select class="proj-sel" id="projectSelect" onchange="selectProject(this.value)"><option value="">...</option></select>
   </div>
 </header>
-
 <nav class="top-nav">
   <button class="nav-tab active" data-page="dashboard">Dashboard</button>
   <button class="nav-tab" data-page="liste">Liste</button>
   <button class="nav-tab" data-page="projekte">Projekte</button>
 </nav>
-
 <div class="sync-bar">
   <div class="sync-dot" id="syncDot"></div>
   <span id="syncText">Verbinde...</span>
   <button class="logout-btn" onclick="doLogout()" style="margin-left:auto">Abmelden</button>
 </div>
-
-<!-- DASHBOARD -->
-<div class="page active" id="page-dashboard">
-  <div id="dashContent"></div>
-</div>
-
-<!-- LISTE -->
+<div class="page active" id="page-dashboard"><div id="dashContent"></div></div>
 <div class="page" id="page-liste">
   <div class="list-toggle">
-    <button class="list-toggle-btn active" id="toggleIncome" onclick="setListTab('income')">Einnahmen</button>
-    <button class="list-toggle-btn" id="toggleExpense" onclick="setListTab('expense')">Ausgaben</button>
+    <button class="list-toggle-btn active" id="tabIncome" onclick="setListTab('income')">Einnahmen</button>
+    <button class="list-toggle-btn" id="tabExpense" onclick="setListTab('expense')">Ausgaben</button>
   </div>
-  <div class="filter-bar" id="projectFilterBar"></div>
-  <div id="listeContainer"></div>
+  <div class="filter-bar" id="projFilterBar"></div>
+  <div id="listeContent"></div>
 </div>
-
-<!-- PROJEKTE -->
 <div class="page" id="page-projekte">
-  <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
-    <button onclick="openCountrySheet()" style="height:34px;padding:0 14px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:var(--radius-s);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">&#127758; L&auml;nder &amp; S&auml;tze</button>
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button onclick="openCountrySheet()" style="height:34px;padding:0 14px;background:var(--blue-l);color:var(--blue);border:1px solid var(--blue);border-radius:var(--radius-s);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">&#127758; Laender &amp; Saetze</button>
   </div>
-  <div id="projekteContainer"></div>
+  <div id="projekteContent"></div>
 </div>
 
-<!-- SHEET: Projekt (simpel) -->
-<div class="sheet" id="projectSheet">
+<!-- Sheet: Projekt -->
+<div class="sheet" id="sheetProject">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title" id="projectSheetTitle">Neues Projekt</span>
-    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
-  </div>
+  <div class="sheet-header"><span class="sheet-title" id="sheetProjectTitle">Neues Projekt</span><button class="sheet-close" onclick="closeSheets()">&#x2715;</button></div>
   <div class="form-body">
-    <input type="hidden" id="fTripId">
-    <div class="form-group">
-      <label class="form-label">Projektname</label>
-      <input class="form-input" type="text" id="fTripName" placeholder="z.B. Amsterdam Q1 2026">
+    <input type="hidden" id="fProjId">
+    <div class="form-group"><label class="form-label">Projektname</label><input class="form-input" type="text" id="fProjName" placeholder="z.B. Amsterdam Q1 2026"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Stadt</label><input class="form-input" type="text" id="fProjCity" placeholder="Amsterdam"></div>
+      <div class="form-group"><label class="form-label">Land</label><input class="form-input" type="text" id="fProjCountry" placeholder="Niederlande"></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Stadt</label>
-        <input class="form-input" type="text" id="fCity" placeholder="Amsterdam">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Land</label>
-        <input class="form-input" type="text" id="fCountry" placeholder="Niederlande">
-      </div>
+      <div class="form-group"><label class="form-label">Von</label><input class="form-input" type="date" id="fProjStart"></div>
+      <div class="form-group"><label class="form-label">Bis</label><input class="form-input" type="date" id="fProjEnd"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Startdatum</label>
-        <input class="form-input" type="date" id="fStartDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Enddatum</label>
-        <input class="form-input" type="date" id="fEndDate">
-      </div>
-    </div>
-    <button class="btn-submit" onclick="saveTrip()">Projekt speichern</button>
-    <button class="btn-delete" id="tripDeleteBtn" style="display:none" onclick="confirmDelete('trip')">Projekt l&ouml;schen</button>
+    <button class="btn-submit" onclick="saveProject()">Speichern</button>
+    <button class="btn-delete" id="btnProjDelete" style="display:none" onclick="confirmDelete('project')">Projekt loeschen</button>
   </div>
 </div>
 
-<!-- SHEET: Einnahme (Einfach oder Per Diem) -->
-<div class="sheet" id="incomeSheet">
+<!-- Sheet: Einnahme -->
+<div class="sheet" id="sheetIncome">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title" id="incomeSheetTitle">Spesen erfassen</span>
-    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
-  </div>
+  <div class="sheet-header"><span class="sheet-title" id="sheetIncomeTitle">Spesen erfassen</span><button class="sheet-close" onclick="closeSheets()">&#x2715;</button></div>
   <div class="form-body">
-    <input type="hidden" id="fIncomeId">
-    <input type="hidden" id="fIncomeMode" value="simple">
-
-    <!-- Mode toggle -->
-    <div class="list-toggle">
+    <input type="hidden" id="fIncId">
+    <input type="hidden" id="fIncMode" value="simple">
+    <div class="list-toggle" style="margin-bottom:0">
       <button class="list-toggle-btn active" id="incModeSimpleBtn" onclick="setIncomeMode('simple')">Einfach</button>
-      <button class="list-toggle-btn" id="incModePerdiemBtn" onclick="setIncomeMode('perdiem')">Per Diem Rechner</button>
+      <button class="list-toggle-btn" id="incModePerdiemBtn" onclick="setIncomeMode('perdiem')">Per Diem</button>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Projekt</label>
-        <select class="form-select" id="fIncomeTripId"></select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Datum</label>
-        <input class="form-input" type="date" id="fIncomeDate">
-      </div>
+      <div class="form-group"><label class="form-label">Projekt</label><select class="form-select" id="fIncProject"></select></div>
+      <div class="form-group"><label class="form-label">Datum</label><input class="form-input" type="date" id="fIncDate"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Notiz (optional)</label>
-      <input class="form-input" type="text" id="fIncomeNote" placeholder="z.B. Spesen KW 3" autocomplete="off">
-    </div>
+    <div class="form-group"><label class="form-label">Notiz (optional)</label><input class="form-input" type="text" id="fIncNote" placeholder="z.B. Spesen KW 3" autocomplete="off"></div>
 
-    <!-- EINFACH: direkte Betrags-Eingabe -->
-    <div id="incomeSimpleSection">
+    <!-- Einfach -->
+    <div id="secSimple">
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Einnahme / Brutto (&#8364;)</label>
-          <input class="form-input" type="number" id="iSimpleAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="updateSimplePreview()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Steuern (&#8364;, optional)</label>
-          <input class="form-input" type="number" id="iSimpleTax" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="updateSimplePreview()">
-        </div>
+        <div class="form-group"><label class="form-label">Brutto (&#8364;)</label><input class="form-input" type="number" id="fIncAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="previewSimple()"></div>
+        <div class="form-group"><label class="form-label">Steuern (&#8364;, optional)</label><input class="form-input" type="number" id="fIncTax" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="previewSimple()"></div>
       </div>
-      <div class="perdiem-preview" id="simplePreview" style="display:none">
-        <div class="pdp-row"><span class="pdp-label">Brutto</span><span class="pdp-value" id="sPdpBrutto">&#8212;</span></div>
-        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="sPdpSteuern">&#8212;</span></div>
-        <div class="pdp-row total"><span class="pdp-label">Netto</span><span class="pdp-value" id="sPdpNetto">&#8212;</span></div>
+      <div class="perdiem-preview" id="previewSimpleEl" style="display:none">
+        <div class="pdp-row"><span class="pdp-label">Brutto</span><span class="pdp-value" id="psBrutto">-</span></div>
+        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="psSteuern">-</span></div>
+        <div class="pdp-row total"><span class="pdp-label">Netto</span><span class="pdp-value" id="psNetto">-</span></div>
       </div>
     </div>
 
-    <!-- PER DIEM: country preset + simplified inputs -->
-    <div id="incomePerdiemSection" style="display:none;flex-direction:column;gap:14px">
-
-      <!-- Country selector -->
-      <div class="form-group">
-        <label class="form-label">Land / Preset</label>
-        <select class="country-preset-select" id="iCountry" onchange="loadCountryPreset(this.value)">
-          <option value="">&#8212; Kein Preset &#8212;</option>
-        </select>
+    <!-- Per Diem -->
+    <div id="secPerdiem" style="display:none;flex-direction:column;gap:14px">
+      <div class="form-group"><label class="form-label">Land / Preset</label><select class="form-select" id="fIncCountry" onchange="loadPreset(this.value)"><option value="">-- Kein Preset --</option></select></div>
+      <div class="rate-summary" id="rateSummary" style="display:none">
+        <div class="rate-summary-grid" id="rateSummaryGrid"></div>
+        <button class="rate-edit-toggle" onclick="toggleRateEdit()" id="rateEditBtn">Saetze anpassen &#9998;</button>
       </div>
-
-      <!-- Compact rate summary (shown after preset selected) -->
-      <div class="rate-summary" id="iRateSummary" style="display:none">
-        <div class="rate-summary-grid" id="iRateSummaryGrid"></div>
-        <button class="rate-edit-toggle" onclick="toggleRateFields()" id="iRateToggleBtn">S&auml;tze anpassen &#9998;</button>
-      </div>
-
-      <!-- Editable rate fields (hidden, toggle) -->
-      <div id="iRateFields" style="display:none;flex-direction:column;gap:12px">
+      <div id="rateFields" style="display:none;flex-direction:column;gap:12px">
         <div class="form-section">
-          <div class="form-section-title">Tagess&auml;tze</div>
+          <div class="form-section-title">Tagessaetze</div>
           <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Volltagssatz (&#8364;)</label>
-              <input class="form-input" type="number" id="iFullDayRate" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Anreisetag (&#8364;)</label>
-              <input class="form-input" type="number" id="iTravelDayRate" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
+            <div class="form-group"><label class="form-label">Volltagssatz (&#8364;)</label><input class="form-input" type="number" id="fFullRate" placeholder="0" step="0.5" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
+            <div class="form-group"><label class="form-label">Anreisetag (&#8364;)</label><input class="form-input" type="number" id="fTravelRate" placeholder="0" step="0.5" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
           </div>
           <div class="form-row" style="margin-top:8px">
-            <div class="form-group">
-              <label class="form-label">Steuerfreie Grenze (&#8364;/Tag)</label>
-              <input class="form-input" type="number" id="iFreeLimit" placeholder="0" step="0.5" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Einkommensteuer (%)</label>
-              <input class="form-input" type="number" id="iLst" placeholder="0" step="0.5" min="0" max="100" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
+            <div class="form-group"><label class="form-label">Steuerfreie Grenze (&#8364;/Tag)</label><input class="form-input" type="number" id="fFreeLimit" placeholder="0" step="0.5" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
+            <div class="form-group"><label class="form-label">Einkommensteuer (%)</label><input class="form-input" type="number" id="fLst" placeholder="0" step="0.5" min="0" max="100" oninput="syncRateSummary();previewPerdiem()"></div>
           </div>
           <div class="form-row" style="margin-top:8px">
-            <div class="form-group" style="flex:0 0 48%">
-              <label class="form-label">Sozialversicherung (%)</label>
-              <input class="form-input" type="number" id="iSv" placeholder="0" step="0.5" min="0" max="100" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
+            <div class="form-group" style="flex:0 0 48%"><label class="form-label">Sozialversicherung (%)</label><input class="form-input" type="number" id="fSv" placeholder="0" step="0.5" min="0" max="100" oninput="syncRateSummary();previewPerdiem()"></div>
           </div>
         </div>
         <div class="form-section">
           <div class="form-section-title">Mahlzeitenabzug pro Mahlzeit (&#8364;)</div>
           <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Fr&uuml;hst&uuml;ck</label>
-              <input class="form-input" type="number" id="iMealFrueh" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Mittag</label>
-              <input class="form-input" type="number" id="iMealMittag" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Abend</label>
-              <input class="form-input" type="number" id="iMealAbend" placeholder="0" step="0.1" min="0" oninput="updateRateSummary();updateIncomePreview()">
-            </div>
+            <div class="form-group"><label class="form-label">Fruehstueck</label><input class="form-input" type="number" id="fMealF" placeholder="0" step="0.1" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
+            <div class="form-group"><label class="form-label">Mittag</label><input class="form-input" type="number" id="fMealM" placeholder="0" step="0.1" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
+            <div class="form-group"><label class="form-label">Abend</label><input class="form-input" type="number" id="fMealA" placeholder="0" step="0.1" min="0" oninput="syncRateSummary();previewPerdiem()"></div>
           </div>
         </div>
       </div>
-
-      <!-- Simple day & meal inputs -->
       <div class="form-section">
         <div class="form-section-title">Tage &amp; Mahlzeiten</div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Anreisetage</label>
-            <input class="form-input" type="number" id="iTravelDays" value="0" min="0" oninput="updateIncomePreview()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Volltage</label>
-            <input class="form-input" type="number" id="iFullDays" value="0" min="0" oninput="updateIncomePreview()">
-          </div>
+          <div class="form-group"><label class="form-label">Anreisetage</label><input class="form-input" type="number" id="fTravelDays" value="0" min="0" oninput="previewPerdiem()"></div>
+          <div class="form-group"><label class="form-label">Volltage</label><input class="form-input" type="number" id="fFullDays" value="0" min="0" oninput="previewPerdiem()"></div>
         </div>
         <div class="form-row" style="margin-top:8px">
-          <div class="form-group">
-            <label class="form-label">Fr&uuml;hst&uuml;ck</label>
-            <input class="form-input small" type="number" id="iBreakfasts" value="0" min="0" oninput="updateIncomePreview()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mittag</label>
-            <input class="form-input small" type="number" id="iLunches" value="0" min="0" oninput="updateIncomePreview()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Abend</label>
-            <input class="form-input small" type="number" id="iDinners" value="0" min="0" oninput="updateIncomePreview()">
-          </div>
+          <div class="form-group"><label class="form-label">Fruehstueck</label><input class="form-input sm" type="number" id="fBreakfasts" value="0" min="0" oninput="previewPerdiem()"></div>
+          <div class="form-group"><label class="form-label">Mittag</label><input class="form-input sm" type="number" id="fLunches" value="0" min="0" oninput="previewPerdiem()"></div>
+          <div class="form-group"><label class="form-label">Abend</label><input class="form-input sm" type="number" id="fDinners" value="0" min="0" oninput="previewPerdiem()"></div>
         </div>
       </div>
-
-      <div class="perdiem-preview" id="incomePreview" style="display:none">
-        <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="iPdpBrutto">&#8212;</span></div>
-        <div class="pdp-row"><span class="pdp-label">Mahlzeitenabzug</span><span class="pdp-value red" id="iPdpMeals">&#8212;</span></div>
-        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="iPdpSteuern">&#8212;</span></div>
-        <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="iPdpNetto">&#8212;</span></div>
+      <div class="perdiem-preview" id="previewPerdiemEl" style="display:none">
+        <div class="pdp-row"><span class="pdp-label">Brutto (vor Mahlzeiten)</span><span class="pdp-value" id="ppBruttoRaw">-</span></div>
+        <div class="pdp-row"><span class="pdp-label">Mahlzeitenabzug</span><span class="pdp-value red" id="ppMeals">-</span></div>
+        <div class="pdp-row"><span class="pdp-label">Brutto Spesen</span><span class="pdp-value" id="ppBrutto">-</span></div>
+        <div class="pdp-row"><span class="pdp-label">Steuern</span><span class="pdp-value red" id="ppSteuern">-</span></div>
+        <div class="pdp-row total"><span class="pdp-label">Netto Spesen</span><span class="pdp-value" id="ppNetto">-</span></div>
       </div>
-
-    </div><!-- /incomePerdiemSection -->
+    </div>
 
     <button class="btn-submit" onclick="saveIncome()">Speichern</button>
-    <button class="btn-delete" id="incomeDeleteBtn" style="display:none" onclick="confirmDelete('income')">Einnahme l&ouml;schen</button>
+    <button class="btn-delete" id="btnIncDelete" style="display:none" onclick="confirmDelete('income')">Einnahme loeschen</button>
   </div>
 </div>
 
-<!-- SHEET: Ausgabe -->
-<div class="sheet" id="expenseSheet">
+<!-- Sheet: Ausgabe -->
+<div class="sheet" id="sheetExpense">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title" id="expenseSheetTitle">Ausgabe hinzuf&uuml;gen</span>
-    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
-  </div>
+  <div class="sheet-header"><span class="sheet-title" id="sheetExpenseTitle">Ausgabe hinzufuegen</span><button class="sheet-close" onclick="closeSheets()">&#x2715;</button></div>
   <div class="form-body">
-    <input type="hidden" id="fExpenseId">
-    <div class="form-group">
-      <label class="form-label">Bezeichnung</label>
-      <input class="form-input" type="text" id="fExpenseName" placeholder="z.B. Supermarkt" autocomplete="off">
-    </div>
+    <input type="hidden" id="fExpId">
+    <div class="form-group"><label class="form-label">Bezeichnung</label><input class="form-input" type="text" id="fExpName" placeholder="z.B. Supermarkt" autocomplete="off"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Betrag (&#8364;)</label>
-        <input class="form-input" type="number" id="fExpenseAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Datum</label>
-        <input class="form-input" type="date" id="fExpenseDate">
-      </div>
+      <div class="form-group"><label class="form-label">Betrag (&#8364;)</label><input class="form-input" type="number" id="fExpAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal"></div>
+      <div class="form-group"><label class="form-label">Datum</label><input class="form-input" type="date" id="fExpDate"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Projekt</label>
-      <select class="form-select" id="fExpenseTripId"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notiz (optional)</label>
-      <input class="form-input" type="text" id="fExpenseNote" placeholder="optional" autocomplete="off">
-    </div>
+    <div class="form-group"><label class="form-label">Projekt</label><select class="form-select" id="fExpProject"></select></div>
+    <div class="form-group"><label class="form-label">Notiz (optional)</label><input class="form-input" type="text" id="fExpNote" placeholder="optional" autocomplete="off"></div>
     <button class="btn-submit" onclick="saveExpense()">Speichern</button>
-    <button class="btn-delete" id="expenseDeleteBtn" style="display:none" onclick="confirmDelete('expense')">Ausgabe l&ouml;schen</button>
+    <button class="btn-delete" id="btnExpDelete" style="display:none" onclick="confirmDelete('expense')">Ausgabe loeschen</button>
   </div>
 </div>
 
-
-<!-- SHEET: Länder / Presets -->
-<div class="sheet" id="countrySheet">
+<!-- Sheet: Laender -->
+<div class="sheet" id="sheetCountry">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title">L&auml;nder &amp; Per Diem S&auml;tze</span>
-    <button class="sheet-close" onclick="closeSheets()">&#x2715;</button>
-  </div>
+  <div class="sheet-header"><span class="sheet-title">Laender &amp; Per Diem Saetze</span><button class="sheet-close" onclick="closeSheets()">&#x2715;</button></div>
   <div class="form-body">
-    <p style="font-size:13px;color:var(--muted);margin-top:-6px">Hinterlege deine S&auml;tze pro Land. Im Per Diem Rechner wird das Land ausgew&auml;hlt und alles automatisch eingetragen.</p>
-    <div id="countryListEl"></div>
-    <button class="btn-add-week" style="margin-top:4px" onclick="addCountryRow()">+ Land hinzuf&uuml;gen</button>
-    <button class="btn-submit" onclick="saveCountries()" style="margin-top:8px">Speichern</button>
+    <p style="font-size:13px;color:var(--muted);margin-top:-6px">Hinterlege deine Saetze pro Land. Beim Per Diem Eintrag waehle das Land und alles wird automatisch eingetragen.</p>
+    <div id="countryList"></div>
+    <button class="btn-add" onclick="addCountry()">+ Land hinzufuegen</button>
+    <button class="btn-submit" onclick="saveCountries()">Speichern</button>
   </div>
 </div>
 
 <!-- Confirm -->
 <div class="confirm-box" id="confirmBox">
   <div class="confirm-card">
-    <div class="confirm-title">Eintrag l&ouml;schen?</div>
-    <div class="confirm-sub" id="confirmSub">Diese Aktion kann nicht r&uuml;ckg&auml;ngig gemacht werden.</div>
+    <div class="confirm-title">Loeschen?</div>
+    <div class="confirm-sub" id="confirmSub">Diese Aktion kann nicht rueckgaengig gemacht werden.</div>
     <div class="confirm-btns">
       <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">Abbrechen</button>
-      <button class="confirm-btn confirm-ok" id="confirmOk">L&ouml;schen</button>
+      <button class="confirm-btn confirm-ok" id="confirmOk">Loeschen</button>
     </div>
   </div>
 </div>
@@ -560,19 +373,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 <div class="overlay" id="overlay" onclick="closeSheets()"></div>
 <div class="toast" id="toast"></div>
 
-<!-- Login -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-title">Spesenplan</div>
     <div class="login-sub">Bitte melde dich an.</div>
-    <div class="login-group">
-      <label class="login-label">E-Mail</label>
-      <input class="login-input" type="email" id="loginEmail" placeholder="deine@email.com" autocomplete="email">
-    </div>
-    <div class="login-group">
-      <label class="login-label">Passwort</label>
-      <input class="login-input" type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password">
-    </div>
+    <div class="login-group"><label class="login-label">E-Mail</label><input class="login-input" type="email" id="loginEmail" placeholder="deine@email.com" autocomplete="email"></div>
+    <div class="login-group"><label class="login-label">Passwort</label><input class="login-input" type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password"></div>
     <div class="login-error" id="loginError"></div>
     <button class="login-btn" onclick="doLogin()">Anmelden</button>
   </div>
@@ -580,10 +386,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, query, orderBy }
-  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey:            "AIzaSyAJv4fpNnsmJbgCzkN_8hoMj_fmyI6xc6E",
@@ -597,721 +401,458 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
+const colTrips    = collection(db, "trips");
+const colIncomes  = collection(db, "incomes");
+const colExpenses = collection(db, "expenses");
 
-const tripsCol    = collection(db, "trips");
-const incomesCol  = collection(db, "incomes");
-const expensesCol = collection(db, "expenses");
+// ── State ─────────────────────────────────────────────────────────────────────
+let trips = [], incomes = [], expenses = [], countryPresets = [];
+let selProject   = null;  // tripId or "all"
+let activePage   = "dashboard";
+let listTab      = "income";
+let listFilter   = null;  // tripId filter for list
+let deleteTarget = null;
+const today      = new Date();
+let unsubs       = [];
 
-// ─── State ───────────────────────────────────────────────────────────────────
-let trips = [], incomes = [], expenses = [];
-let listProjectFilter = null;
-let countryPresets    = [];   // loaded from Firebase / localStorage
-
-const COUNTRY_DEFAULTS = [
-  { code:"nl", flag:"\u{1F1F3}\u{1F1F1}", name:"Niederlande",           fullDayRate:0, travelDayRate:0, freeLimit:30,    lst:37,   sv:17.9, mealFrueh:5.50,  mealMittag:10.00, mealAbend:12.50 },
-  { code:"de", flag:"\u{1F1E9}\u{1F1EA}", name:"Deutschland",           fullDayRate:0, travelDayRate:0, freeLimit:28,    lst:42,   sv:20,   mealFrueh:5.60,  mealMittag:11.20, mealAbend:11.20 },
-  { code:"ch", flag:"\u{1F1E8}\u{1F1ED}", name:"Schweiz",              fullDayRate:0, travelDayRate:0, freeLimit:40,    lst:35,   sv:15,   mealFrueh:8.00,  mealMittag:15.00, mealAbend:15.00 },
-  { code:"at", flag:"\u{1F1E6}\u{1F1F9}", name:"\u00D6sterreich",     fullDayRate:0, travelDayRate:0, freeLimit:26.40, lst:42,   sv:18,   mealFrueh:5.00,  mealMittag:10.00, mealAbend:10.00 },
-  { code:"fr", flag:"\u{1F1EB}\u{1F1F7}", name:"Frankreich",           fullDayRate:0, travelDayRate:0, freeLimit:30,    lst:45,   sv:22,   mealFrueh:7.00,  mealMittag:13.00, mealAbend:13.00 },
-  { code:"gb", flag:"\u{1F1EC}\u{1F1E7}", name:"Vereinigtes K\u00F6nigreich", fullDayRate:0, travelDayRate:0, freeLimit:35, lst:40, sv:12, mealFrueh:6.00, mealMittag:12.00, mealAbend:12.00 },
-];
-let selectedTripId = null;
-let activePage     = "dashboard";
-let activeListTab  = "income";
-let deleteTarget   = null;
-const today        = new Date();
-let snapUnsubs     = [];
-
-// ─── Auth ────────────────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────────────────────
 window.doLogin = async function() {
   const email = document.getElementById("loginEmail").value.trim();
   const pw    = document.getElementById("loginPassword").value;
-  const errEl = document.getElementById("loginError");
-  errEl.textContent = "";
-  if (!email || !pw) { errEl.textContent = "E-Mail und Passwort eingeben."; return; }
+  const err   = document.getElementById("loginError");
+  err.textContent = "";
+  if (!email || !pw) { err.textContent = "E-Mail und Passwort eingeben."; return; }
   try { await signInWithEmailAndPassword(auth, email, pw); }
-  catch(e) { errEl.textContent = "Anmeldung fehlgeschlagen."; }
+  catch(e) { err.textContent = "Anmeldung fehlgeschlagen. Bitte pruefen."; }
 };
 window.doLogout = async function() {
-  snapUnsubs.forEach(u => u()); snapUnsubs = [];
-  await signOut(auth); showToast("Abgemeldet");
+  unsubs.forEach(u => u()); unsubs = [];
+  await signOut(auth);
+  showToast("Abgemeldet");
 };
 onAuthStateChanged(auth, user => {
-  if (user) {
-    document.getElementById("loginScreen").style.display = "none";
-    startListeners();
-  } else {
-    document.getElementById("loginScreen").style.display = "flex";
-    trips = []; incomes = []; expenses = [];
-    snapUnsubs.forEach(u => u()); snapUnsubs = [];
-  }
+  document.getElementById("loginScreen").style.display = user ? "none" : "flex";
+  if (user) { startListeners(); }
+  else { trips = []; incomes = []; expenses = []; unsubs.forEach(u => u()); unsubs = []; }
 });
 
 function startListeners() {
   setSyncStatus("syncing", "Verbinde...");
-  loadCountrySettings();
-  snapUnsubs.push(onSnapshot(query(tripsCol, orderBy("startDate","desc")), snap => {
-    trips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    autoSelectTrip(); renderAll();
-  }, () => setSyncStatus("error","Verbindungsfehler")));
-  snapUnsubs.push(onSnapshot(query(incomesCol, orderBy("date","desc")), snap => {
-    incomes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderAll();
-  }, () => {}));
-  snapUnsubs.push(onSnapshot(query(expensesCol, orderBy("date","desc")), snap => {
-    expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderAll();
-  }, () => {}));
+  unsubs.push(onSnapshot(query(colTrips,    orderBy("startDate","desc")), s => { trips    = s.docs.map(d=>({id:d.id,...d.data()})); autoSel(); renderAll(); }, ()=>setSyncStatus("error","Fehler")));
+  unsubs.push(onSnapshot(query(colIncomes,  orderBy("date","desc")),      s => { incomes  = s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{}));
+  unsubs.push(onSnapshot(query(colExpenses, orderBy("date","desc")),      s => { expenses = s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); }, ()=>{}));
+  loadCountries();
+}
+function setSyncStatus(s,t) { document.getElementById("syncDot").className="sync-dot "+s; document.getElementById("syncText").textContent=t; }
+function autoSel() {
+  if (!trips.length) { selProject=null; return; }
+  if (selProject && (selProject==="all" || trips.find(t=>t.id===selProject))) return;
+  const ts  = today.toISOString().slice(0,10);
+  const act = trips.find(t=>t.startDate<=ts && t.endDate>=ts);
+  selProject = act ? act.id : (trips.length>1 ? "all" : trips[0].id);
 }
 
-function setSyncStatus(s, t) {
-  document.getElementById("syncDot").className = "sync-dot " + s;
-  document.getElementById("syncText").textContent = t;
-}
-function autoSelectTrip() {
-  if (!trips.length) { selectedTripId = null; return; }
-  if (selectedTripId && trips.find(t => t.id === selectedTripId)) return;
-  const todayStr = today.toISOString().slice(0,10);
-  const active   = trips.find(t => t.startDate <= todayStr && t.endDate >= todayStr);
-  selectedTripId = active ? active.id : trips[0].id;
-}
-
-// ─── Per Diem Berechnung (vereinfacht: globale Tage + Mahlzeiten, keine Wochen)
-function calcPerDiem(p) {
-  const travelBrutto = (p.travelDays || 0) * (p.travelDayRate || 0);
-  const fullDays     = p.fullDays || 0;
-  const fullRate     = p.fullDayRate || 0;
-  const freeLimit    = p.freeLimit  || 0;
-  // Gesamter Mahlzeitenabzug (Anzahl × Satz)
-  const mealDed  = (p.breakfasts || 0) * (p.mealFrueh  || 0)
-                 + (p.lunches    || 0) * (p.mealMittag || 0)
-                 + (p.dinners    || 0) * (p.mealAbend  || 0);
-  // Effektiver Tagessatz nach Mahlzeitenabzug
-  const mealPerDay    = fullDays > 0 ? mealDed / fullDays : 0;
-  const effectiveRate = Math.max(0, fullRate - mealPerDay);
-  const fullBrutto    = effectiveRate * fullDays;
-  // Steuerpflichtiger Anteil (nur Volltage, Anreisetage immer steuerfrei)
-  const taxablePerDay = Math.max(0, effectiveRate - freeLimit);
-  const totalTaxable  = taxablePerDay * fullDays;
-  const lst     = p.lst != null ? totalTaxable * (p.lst / 100) : 0;
-  const sv      = p.sv  != null ? (totalTaxable - lst) * (p.sv  / 100) : 0;
-  const steuern = lst + sv;
-  const brutto  = travelBrutto + fullBrutto;
-  return { brutto, steuern, net: brutto - steuern };
+// ── Per Diem Calc ─────────────────────────────────────────────────────────────
+function calcPD(p) {
+  const travelGross = (p.travelDays||0) * (p.travelDayRate||0);
+  const fullDays    = p.fullDays||0;
+  const fullRate    = p.fullDayRate||0;
+  const freeLimit   = p.freeLimit||0;
+  const mealDed     = (p.breakfasts||0)*(p.mealFrueh||0) + (p.lunches||0)*(p.mealMittag||0) + (p.dinners||0)*(p.mealAbend||0);
+  const mealPerDay  = fullDays>0 ? mealDed/fullDays : 0;
+  const effRate     = Math.max(0, fullRate - mealPerDay);
+  const fullGross   = effRate * fullDays;
+  const taxable     = Math.max(0, effRate - freeLimit) * fullDays;
+  const lst         = p.lst!=null ? taxable*(p.lst/100) : 0;
+  const sv          = p.sv!=null  ? (taxable-lst)*(p.sv/100) : 0;
+  const brutto      = travelGross + fullGross;
+  return { bruttoRaw: travelGross + fullDays*fullRate, mealDed, brutto, steuern: lst+sv, net: brutto-lst-sv };
 }
 
-// Summiert gespeicherte berechnete Werte aus Einnahmen-Eintraegen
-function getIncomeCalc(tripId) {
-  const its = tripId ? incomes.filter(i => i.tripId === tripId) : incomes;
-  return {
-    brutto:  its.reduce((s,i) => s + (i.brutto  || 0), 0),
-    steuern: its.reduce((s,i) => s + (i.steuern || 0), 0),
-    net:     its.reduce((s,i) => s + (i.net     || 0), 0)
-  };
+// ── Aggregates ────────────────────────────────────────────────────────────────
+function incCalc(tid) {
+  const arr = tid&&tid!=="all" ? incomes.filter(i=>i.tripId===tid) : incomes;
+  return { brutto: arr.reduce((s,i)=>s+(i.brutto||0),0), steuern: arr.reduce((s,i)=>s+(i.steuern||0),0), net: arr.reduce((s,i)=>s+(i.net||0),0) };
 }
-function tripExpenses(tripId) {
-  return expenses.filter(e => e.tripId === tripId).reduce((s,e) => s + (e.amount||0), 0);
+function expTotal(tid) {
+  const arr = tid&&tid!=="all" ? expenses.filter(e=>e.tripId===tid) : expenses;
+  return arr.reduce((s,e)=>s+(e.amount||0),0);
 }
-
-
-// ─── Country Presets ─────────────────────────────────────────────────────────
-async function loadCountrySettings() {
-  try {
-    const snap = await getDoc(doc(db, "settings", "countries"));
-    if (snap.exists() && snap.data().list) {
-      countryPresets = snap.data().list;
-    } else {
-      countryPresets = COUNTRY_DEFAULTS.map(c => ({...c}));
-    }
-  } catch(e) {
-    countryPresets = COUNTRY_DEFAULTS.map(c => ({...c}));
-  }
-  populateCountryDropdown();
+function avgPerDay(tid) {
+  const arr = (tid&&tid!=="all" ? incomes.filter(i=>i.tripId===tid) : incomes).filter(i=>i.type==="perdiem"&&(i.fullDays||0)+(i.travelDays||0)>0);
+  const days = arr.reduce((s,i)=>s+(i.fullDays||0)+(i.travelDays||0),0);
+  const brut = arr.reduce((s,i)=>s+(i.brutto||0),0);
+  return { avg: days>0?brut/days:0, days, count: arr.length };
 }
 
-async function saveCountrySettings() {
-  try {
-    await setDoc(doc(db, "settings", "countries"), { list: countryPresets, updated_at: new Date().toISOString() });
-  } catch(e) {}
-}
-
-function populateCountryDropdown() {
-  const sel = document.getElementById("iCountry");
-  if (!sel) return;
-  const cur = sel.value;
-  sel.innerHTML = "<option value=''>&#8212; Kein Preset &#8212;</option>" +
-    countryPresets.map(c => `<option value="${c.code}">${c.flag || ""} ${escHtml(c.name)}</option>`).join("");
-  if (cur) sel.value = cur;
-}
-
-window.loadCountryPreset = function(code) {
-  if (!code) { document.getElementById("iRateSummary").style.display="none"; updateIncomePreview(); return; }
-  const p = countryPresets.find(c => c.code === code);
-  if (!p) return;
-  const setV = (id, v) => { const el=document.getElementById(id); if(el) el.value = v!=null&&v!==0 ? v : ""; };
-  setV("iFullDayRate",   p.fullDayRate);
-  setV("iTravelDayRate", p.travelDayRate);
-  setV("iFreeLimit",     p.freeLimit);
-  setV("iLst",           p.lst);
-  setV("iSv",            p.sv);
-  setV("iMealFrueh",     p.mealFrueh);
-  setV("iMealMittag",    p.mealMittag);
-  setV("iMealAbend",     p.mealAbend);
-  updateRateSummary();
-  updateIncomePreview();
-};
-
-window.updateRateSummary = function() {
-  const gN = id => parseFloat(document.getElementById(id)?.value) || 0;
-  const fdr = gN("iFullDayRate"), tdr = gN("iTravelDayRate"), fl = gN("iFreeLimit"),
-        lst = gN("iLst"), sv = gN("iSv"),
-        mf  = gN("iMealFrueh"), mm = gN("iMealMittag"), ma = gN("iMealAbend");
-  const el = document.getElementById("iRateSummary");
-  if (!el) return;
-  if (fdr > 0 || fl > 0) {
-    document.getElementById("iRateSummaryGrid").innerHTML = [
-      ["Volltagssatz", fdr > 0 ? fmtEur(fdr) : "&#8212;"],
-      ["Anreisetag",   tdr > 0 ? fmtEur(tdr) : "&#8212;"],
-      ["Steuerfreie Grenze", fl > 0 ? fmtEur(fl)+"/Tag" : "&#8212;"],
-      ["Einkommensteuer",    lst > 0 ? lst+"%" : "&#8212;"],
-      ["Sozialversicherung", sv  > 0 ? sv+"%"  : "&#8212;"],
-      ["Früh/Mittag/Abend", `${fmtEur(mf)} / ${fmtEur(mm)} / ${fmtEur(ma)}`],
-    ].map(([l,v]) => `<div class="rs-item"><span class="rs-lbl">${l}</span><span class="rs-val">${v}</span></div>`).join("");
-    el.style.display = "block";
-  } else { el.style.display = "none"; }
-};
-
-window.toggleRateFields = function() {
-  const el  = document.getElementById("iRateFields");
-  const btn = document.getElementById("iRateToggleBtn");
-  const vis = el.style.display !== "none";
-  el.style.display  = vis ? "none" : "flex";
-  btn.textContent   = vis ? "Sätze anpassen ✎" : "Sätze ausblenden ✕";
-};
-
-// Country management sheet
-window.openCountrySheet = function() {
-  renderCountryList();
-  openSheet("countrySheet");
-};
-
-function renderCountryList() {
-  const el = document.getElementById("countryListEl");
-  el.innerHTML = countryPresets.map((c, i) => `
-    <div class="country-mgmt-card">
-      <div class="country-mgmt-head">
-        <span><span class="country-mgmt-flag">${c.flag||""}</span><span class="country-mgmt-name">${escHtml(c.name)}</span></span>
-        <button class="country-mgmt-edit" onclick="removeCountry(${i})">&#x2715; entfernen</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
-        <div><div class="form-label" style="font-size:10px;margin-bottom:3px">Land</div>
-          <input class="form-input" style="height:36px;font-size:13px" type="text" value="${escAttr(c.name)}" oninput="countryPresets[${i}].name=this.value"></div>
-        <div><div class="form-label" style="font-size:10px;margin-bottom:3px">Flag (Emoji)</div>
-          <input class="form-input" style="height:36px;font-size:16px" type="text" value="${c.flag||""}" oninput="countryPresets[${i}].flag=this.value"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        ${["fullDayRate:Volltagssatz (€)","travelDayRate:Anreisetag (€)","freeLimit:Steuerfreie Grenze (€)","lst:Einkommensteuer (%)","sv:Sozialversicherung (%)","mealFrueh:Abzug Frühstück (€)","mealMittag:Abzug Mittag (€)","mealAbend:Abzug Abend (€)"]
-          .map(s => { const [k,lbl] = s.split(":"); return `<div><div class="form-label" style="font-size:10px;margin-bottom:3px">${lbl}</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="${c[k]||""}" oninput="countryPresets[${i}].${k}=+this.value"></div>`; }).join("")}
-      </div>
-    </div>
-  `).join("");
-}
-
-window.addCountryRow = function() {
-  countryPresets.push({ code: "new_" + Date.now(), flag: "", name: "Neues Land", fullDayRate:0, travelDayRate:0, freeLimit:0, lst:0, sv:0, mealFrueh:0, mealMittag:0, mealAbend:0 });
-  renderCountryList();
-};
-window.removeCountry = function(i) {
-  countryPresets.splice(i, 1);
-  renderCountryList();
-};
-window.saveCountries = async function() {
-  await saveCountrySettings();
-  populateCountryDropdown();
-  closeSheets();
-  showToast("Länder-Einstellungen gespeichert");
-};
-
-// ─── Render ───────────────────────────────────────────────────────────────────
+// ── Render All ────────────────────────────────────────────────────────────────
 function renderAll() {
   setSyncStatus("synced","Synchronisiert");
-  updateProjectSelect();
-  if      (activePage === "dashboard") renderDashboard();
-  else if (activePage === "liste")     renderListe();
-  else if (activePage === "projekte")  renderProjekte();
+  updateProjSel();
+  if      (activePage==="dashboard") renderDashboard();
+  else if (activePage==="liste")     renderListe();
+  else if (activePage==="projekte")  renderProjekte();
 }
-
-// Navigate to expense list filtered by current trip
-window.goToExpenseList = function(tripId) {
-  listProjectFilter = tripId || selectedTripId || null;
-  activeListTab = "expense";
-  activePage = "liste";
-  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.querySelector("[data-page='liste']").classList.add("active");
-  document.getElementById("page-liste").classList.add("active");
-  renderListe();
-};
-
-function updateProjectSelect() {
+function updateProjSel() {
   const sel = document.getElementById("projectSelect");
-  sel.innerHTML = trips.length
-    ? trips.map(t => `<option value="${t.id}"${t.id===selectedTripId?" selected":""}>${escHtml(t.name||t.city||"Projekt")}</option>`).join("")
-    : "<option value=''>Kein Projekt</option>";
+  if (!trips.length) { sel.innerHTML="<option value=''>Kein Projekt</option>"; return; }
+  sel.innerHTML =
+    '<option value="all"'+(selProject==="all"?" selected":"")+'>Alle Projekte</option>'+
+    trips.map(t=>'<option value="'+t.id+'"'+(t.id===selProject?" selected":"")+'>'+esc(t.name||t.city)+" ("+fd(t.startDate)+")"+'</option>').join("");
 }
 
+// ── Dashboard ─────────────────────────────────────────────────────────────────
 function renderDashboard() {
-  const el   = document.getElementById("dashContent");
-  const trip = selectedTripId ? trips.find(t => t.id === selectedTripId) : null;
+  const el = document.getElementById("dashContent");
+  if (!trips.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128193;</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>'; return; }
 
-  if (!trip) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128193;</div><div class="empty-title">Noch kein Projekt</div><div class="empty-sub">Lege im Tab Projekte ein erstes Projekt an</div></div>`;
+  if (selProject==="all" || !selProject) {
+    const c   = incCalc("all"), aus = expTotal("all"), diff = c.net-aus;
+    const pct = c.net>0?Math.round(aus/c.net*100):0;
+    const bar = pct>100?"red":pct>80?"orange":"green";
+    const ap  = avgPerDay("all");
+    const mx  = expenses.length ? expenses.reduce((a,b)=>b.amount>a.amount?b:a) : null;
+    el.innerHTML =
+      '<div class="dash-proj-card"><div class="dash-proj-left"><div class="dash-proj-name">Alle Projekte</div><div class="dash-proj-sub">'+trips.length+' Projekte &middot; '+incomes.length+' Buchungen</div></div><span class="status-badge aktiv">'+trips.length+' Projekte</span></div>'+
+      '<div class="spesen-row"><div class="spesen-card"><div class="spesen-lbl">Spesen (Brutto)</div><div class="spesen-val blue">'+fe(c.brutto)+'</div></div><div class="spesen-card"><div class="spesen-lbl">Steuern</div><div class="spesen-val orange">'+fe(c.steuern)+'</div></div><div class="spesen-card"><div class="spesen-lbl">Netto gesamt</div><div class="spesen-val green">'+fe(c.net)+'</div></div></div>'+
+      '<div class="aus-card" onclick="goExpList(null)"><div class="aus-top"><span class="aus-lbl">Ausgaben &#8250;</span><div class="aus-right"><div class="aus-val'+(pct>100?" red":"")+'">'+fe(aus)+'</div><div class="aus-pct">'+pct+'&#8239;% von Netto</div></div></div><div class="aus-track"><div class="aus-fill '+bar+'" style="width:'+Math.min(pct,100)+'%"></div></div></div>'+
+      '<div class="diff-card '+(diff>=0?"pos":"neg")+'"><span class="diff-lbl '+(diff>=0?"pos":"neg")+'">Differenz gesamt</span><span class="diff-val '+(diff>=0?"pos":"neg")+'">'+(diff>=0?"+":"&#8722;")+fe(Math.abs(diff))+'</span></div>'+
+      '<div class="section-title">Insights</div>'+
+      '<div class="insights-grid">'+
+        '<div class="insight-card"><div class="insight-lbl">&#216; Spesen pro Tag</div><div class="insight-val">'+(ap.avg>0?fe(ap.avg):"&#8211;")+'</div><div class="insight-sub">'+(ap.days>0?ap.days+" Tage / "+ap.count+" Buchungen":"Keine Tagesdaten")+'</div></div>'+
+        (mx?'<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">'+fe(mx.amount)+'</div><div class="insight-sub">'+esc(mx.name)+'</div></div>':'<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">&#8211;</div></div>')+
+        '<div class="insight-card"><div class="insight-lbl">Anzahl Ausgaben</div><div class="insight-val">'+expenses.length+'</div><div class="insight-sub">&#216; '+fe(expenses.length>0?aus/expenses.length:0)+' pro Ausgabe</div></div>'+
+        '<div class="insight-card"><div class="insight-lbl">Netto verbleibend</div><div class="insight-val '+(diff>=0?"green":"red")+'">'+(c.net>0?Math.round(Math.max(0,diff)/c.net*100):0)+'&#8239;%</div><div class="insight-sub">'+fe(Math.max(0,diff))+' uebrig</div></div>'+
+      '</div>'+
+      '<div class="section-title">Projekte im Ueberblick</div>'+
+      '<div class="projects-grid">'+trips.map(t=>{
+        const tc=incCalc(t.id),ta=expTotal(t.id),td=tc.net-ta;
+        return '<div class="project-tile" onclick="selectProject(\''+t.id+'\')"><div class="pt-name">'+esc(t.name||t.city)+'</div><div class="pt-meta">'+fd(t.startDate)+'&#8211;'+fd(t.endDate)+'</div><div class="pt-row"><span class="pt-label">Netto</span><span class="pt-val" style="color:var(--accent)">'+fc(tc.net)+'</span></div><div class="pt-row"><span class="pt-label">Ausgaben</span><span class="pt-val" style="color:var(--red)">'+fc(ta)+'</span></div><div class="pt-row"><span class="pt-label">Differenz</span><span class="pt-val" style="color:'+(td>=0?"var(--accent)":"var(--red)")+'">'+fc(td)+'</span></div></div>';
+      }).join("")+'</div>';
     return;
   }
 
-  const calc      = getIncomeCalc(trip.id);
-  const tripExps  = expenses.filter(e => e.tripId === trip.id);
-  const aus       = tripExps.reduce((s,e) => s+(e.amount||0), 0);
-  const diff      = calc.net - aus;
-  const diffPct   = calc.net > 0 ? Math.round(aus / calc.net * 100) : 0;
-
-  // Status
-  const todayStr  = today.toISOString().slice(0,10);
-  const status    = trip.startDate > todayStr ? "bevorstehend"
-                  : trip.endDate   < todayStr ? "abgeschlossen"
-                  : "aktiv";
-
-  // Insights
-  const maxExp     = tripExps.length ? tripExps.reduce((a,b) => b.amount>a.amount?b:a) : null;
-  const uniqueDays = new Set(tripExps.map(e=>e.date)).size;
-  const avgDaily   = uniqueDays > 0 ? aus / uniqueDays : 0;
-  const netLeft    = Math.max(0, diff);
-  const netLeftPct = calc.net > 0 ? Math.round(netLeft / calc.net * 100) : 0;
-
-  // Progress color
-  const barColor = diffPct > 100 ? "red" : diffPct > 80 ? "orange" : "green";
-
-  el.innerHTML = `
-    <div class="dash-proj-card">
-      <div class="dash-proj-left">
-        <div class="dash-proj-name">${escHtml(trip.name||trip.city)}</div>
-        <div class="dash-proj-sub">${fmtDate(trip.startDate)}–${fmtDate(trip.endDate)}${trip.city ? " · " + escHtml(trip.city) : ""}</div>
-      </div>
-      <span class="status-badge ${status}">${status}</span>
-    </div>
-
-    <div class="spesen-row">
-      <div class="spesen-card"><div class="spesen-lbl">Spesen (Brutto)</div><div class="spesen-val blue">${fmtEur(calc.brutto)}</div></div>
-      <div class="spesen-card"><div class="spesen-lbl">Steuern</div><div class="spesen-val orange">${fmtEur(calc.steuern)}</div></div>
-      <div class="spesen-card"><div class="spesen-lbl">Netto</div><div class="spesen-val green">${fmtEur(calc.net)}</div></div>
-    </div>
-
-    <div class="aus-card" onclick="goToExpenseList()">
-      <div class="aus-top">
-        <span class="aus-lbl">Ausgaben &#8250;</span>
-        <div class="aus-right">
-          <div class="aus-val ${diffPct>100?"red":""}">${fmtEur(aus)}</div>
-          <div class="aus-pct">${diffPct} % von Netto</div>
-        </div>
-      </div>
-      <div class="aus-track"><div class="aus-fill ${barColor}" style="width:${Math.min(diffPct,100)}%"></div></div>
-    </div>
-
-    <div class="diff-card ${diff>=0?"pos":"neg"}">
-      <span class="diff-lbl ${diff>=0?"pos":"neg"}">Differenz</span>
-      <span class="diff-val ${diff>=0?"pos":"neg"}">${diff>=0?"+":"−"}${fmtEur(Math.abs(diff))}</span>
-    </div>
-
-    <div class="section-title">Insights</div>
-    <div class="insights-grid">
-      ${maxExp ? `<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">${fmtEur(maxExp.amount)}</div><div class="insight-sub">${escHtml(maxExp.name)}</div></div>` : `<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">&#8211;</div></div>`}
-      <div class="insight-card"><div class="insight-lbl">&#216; pro Tag (Ausgaben)</div><div class="insight-val">${fmtEur(avgDaily)}</div><div class="insight-sub">${uniqueDays} Tage mit Ausgaben</div></div>
-      <div class="insight-card"><div class="insight-lbl">Anzahl Ausgaben</div><div class="insight-val">${tripExps.length}</div><div class="insight-sub">${trips.length > 1 ? trips.length + " Projekte gesamt" : "1 Projekt"}</div></div>
-      <div class="insight-card"><div class="insight-lbl">Netto verbleibend</div><div class="insight-val ${diff>=0?"green":"red"}">${netLeftPct} %</div><div class="insight-sub">${fmtEur(netLeft)} &#252;brig</div></div>
-    </div>
-  `;
+  const trip = trips.find(t=>t.id===selProject);
+  if (!trip) return;
+  const c     = incCalc(trip.id);
+  const texps = expenses.filter(e=>e.tripId===trip.id);
+  const aus   = texps.reduce((s,e)=>s+(e.amount||0),0);
+  const diff  = c.net-aus;
+  const pct   = c.net>0?Math.round(aus/c.net*100):0;
+  const ts    = today.toISOString().slice(0,10);
+  const stat  = trip.startDate>ts?"bevorstehend":trip.endDate<ts?"abgeschlossen":"aktiv";
+  const bar   = pct>100?"red":pct>80?"orange":"green";
+  const mx    = texps.length ? texps.reduce((a,b)=>b.amount>a.amount?b:a) : null;
+  const udays = new Set(texps.map(e=>e.date)).size;
+  const apd   = avgPerDay(trip.id);
+  el.innerHTML =
+    '<div class="dash-proj-card"><div class="dash-proj-left"><div class="dash-proj-name">'+esc(trip.name||trip.city)+'</div><div class="dash-proj-sub">'+fd(trip.startDate)+'&#8211;'+fd(trip.endDate)+(trip.city?" &middot; "+esc(trip.city):"")+'</div></div><span class="status-badge '+stat+'">'+stat+'</span></div>'+
+    '<div class="spesen-row"><div class="spesen-card"><div class="spesen-lbl">Spesen (Brutto)</div><div class="spesen-val blue">'+fe(c.brutto)+'</div></div><div class="spesen-card"><div class="spesen-lbl">Steuern</div><div class="spesen-val orange">'+fe(c.steuern)+'</div></div><div class="spesen-card"><div class="spesen-lbl">Netto</div><div class="spesen-val green">'+fe(c.net)+'</div></div></div>'+
+    '<div class="aus-card" onclick="goExpList(\''+trip.id+'\')"><div class="aus-top"><span class="aus-lbl">Ausgaben &#8250;</span><div class="aus-right"><div class="aus-val'+(pct>100?" red":"")+'">'+fe(aus)+'</div><div class="aus-pct">'+pct+'&#8239;% von Netto</div></div></div><div class="aus-track"><div class="aus-fill '+bar+'" style="width:'+Math.min(pct,100)+'%"></div></div></div>'+
+    '<div class="diff-card '+(diff>=0?"pos":"neg")+'"><span class="diff-lbl '+(diff>=0?"pos":"neg")+'">Differenz</span><span class="diff-val '+(diff>=0?"pos":"neg")+'">'+(diff>=0?"+":"&#8722;")+fe(Math.abs(diff))+'</span></div>'+
+    '<div class="section-title">Insights</div>'+
+    '<div class="insights-grid">'+
+      '<div class="insight-card"><div class="insight-lbl">&#216; Spesen pro Tag</div><div class="insight-val">'+(apd.avg>0?fe(apd.avg):"&#8211;")+'</div><div class="insight-sub">'+(apd.days>0?apd.days+" Tage erfasst":"Keine Tagesdaten")+'</div></div>'+
+      (mx?'<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">'+fe(mx.amount)+'</div><div class="insight-sub">'+esc(mx.name)+'</div></div>':'<div class="insight-card"><div class="insight-lbl">Gr&#246;&#223;te Ausgabe</div><div class="insight-val">&#8211;</div></div>')+
+      '<div class="insight-card"><div class="insight-lbl">&#216; Ausgaben / Tag</div><div class="insight-val">'+fe(udays>0?aus/udays:0)+'</div><div class="insight-sub">'+udays+' Tage mit Ausgaben</div></div>'+
+      '<div class="insight-card"><div class="insight-lbl">Netto verbleibend</div><div class="insight-val '+(diff>=0?"green":"red")+'">'+(c.net>0?Math.round(Math.max(0,diff)/c.net*100):0)+'&#8239;%</div><div class="insight-sub">'+fe(Math.max(0,diff))+' uebrig</div></div>'+
+    '</div>';
 }
 
+// ── Liste ─────────────────────────────────────────────────────────────────────
 function renderListe() {
-  document.getElementById("toggleIncome").classList.toggle("active", activeListTab==="income");
-  document.getElementById("toggleExpense").classList.toggle("active", activeListTab==="expense");
-
-  // Project filter chips
-  const filterBar = document.getElementById("projectFilterBar");
-  const relevantTrips = trips.filter(t =>
-    (activeListTab==="income"  && incomes.some(i=>i.tripId===t.id)) ||
-    (activeListTab==="expense" && expenses.some(e=>e.tripId===t.id))
-  );
-  if (relevantTrips.length > 1) {
-    filterBar.innerHTML =
-      `<button class="filter-chip${listProjectFilter===null?" active":""}" onclick="setListProjectFilter(null)">Alle</button>` +
-      relevantTrips.map(t =>
-        `<button class="filter-chip${listProjectFilter===t.id?" active":""}" onclick="setListProjectFilter('${t.id}')">${escHtml(t.name||t.city)} (${fmtDate(t.startDate)})</button>`
-      ).join("");
-    filterBar.style.display = "";
-  } else { filterBar.style.display = "none"; }
-
-  const container = document.getElementById("listeContainer");
-
-  if (activeListTab === "income") {
-    let items = [...incomes];
-    if (listProjectFilter) items = items.filter(i=>i.tripId===listProjectFilter);
-    if (!items.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128182;</div><div class="empty-title">Keine Spesen erfasst</div><div class="empty-sub">Tippe auf + um Spesen einzutragen</div></div>`;
-      return;
-    }
-    const groups = groupByDate(items);
-    container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
-      const daySum = groups[date].reduce((s,i) => s+(i.brutto||0), 0);
-      return `<div class="day-group">
-        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)} brutto</span></div>
-        ${groups[date].map(i => {
-          const t = trips.find(tr=>tr.id===i.tripId);
-          return `<div class="list-item" onclick="openIncomeEdit('${i.id}')">
-            <div class="list-icon" style="background:var(--accent-l)">&#128182;</div>
-            <div class="li-info">
-              <div class="li-name">${escHtml(i.note||"Spesenzahlung")}</div>
-              <div class="li-meta">${t ? escHtml(t.name||t.city)+" ("+fmtDate(t.startDate)+")" : "&#8211;"}</div>
-            </div>
-            <div>
-              <div class="li-amount" style="color:var(--accent)">${fmtEur(i.net||0)} netto</div>
-              <div class="li-sub">${fmtEur(i.brutto||0)} brutto</div>
-            </div>
-          </div>`;
-        }).join("")}
-      </div>`;
+  document.getElementById("tabIncome").classList.toggle("active", listTab==="income");
+  document.getElementById("tabExpense").classList.toggle("active", listTab==="expense");
+  const fb = document.getElementById("projFilterBar");
+  const rel = trips.filter(t => listTab==="income" ? incomes.some(i=>i.tripId===t.id) : expenses.some(e=>e.tripId===t.id));
+  if (rel.length>1) {
+    fb.style.display="";
+    fb.innerHTML='<button class="filter-chip'+(listFilter===null?" active":"")+'" onclick="setListFilter(null)">Alle</button>'+
+      rel.map(t=>'<button class="filter-chip'+(listFilter===t.id?" active":"")+'" onclick="setListFilter(\''+t.id+'\')">'+esc(t.name||t.city)+' ('+fd(t.startDate)+')</button>').join("");
+  } else { fb.style.display="none"; }
+  const el = document.getElementById("listeContent");
+  if (listTab==="income") {
+    let arr = listFilter ? incomes.filter(i=>i.tripId===listFilter) : [...incomes];
+    if (!arr.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128182;</div><div class="empty-title">Keine Spesen erfasst</div><div class="empty-sub">Tippe auf + um Spesen einzutragen</div></div>'; return; }
+    el.innerHTML = byDate(arr).map(([date,items])=>{
+      const s=items.reduce((x,i)=>x+(i.brutto||0),0);
+      return '<div class="day-group"><div class="day-header"><span class="day-label">'+dl(date)+'</span><span class="day-sum">'+fe(s)+' brutto</span></div>'+
+        items.map(i=>{ const t=trips.find(x=>x.id===i.tripId); return '<div class="list-item" onclick="editIncome(\''+i.id+'\')"><div class="list-icon" style="background:var(--accent-l)">&#128182;</div><div class="li-info"><div class="li-name">'+esc(i.note||"Spesenzahlung")+'</div><div class="li-meta">'+(t?esc(t.name||t.city)+" ("+fd(t.startDate)+")":"&#8211;")+'</div></div><div><div class="li-amount" style="color:var(--accent)">'+fe(i.net||0)+' netto</div><div class="li-sub">'+fe(i.brutto||0)+' brutto</div></div></div>'; }).join("")+
+      '</div>';
     }).join("");
   } else {
-    let items = [...expenses];
-    if (listProjectFilter) items = items.filter(e=>e.tripId===listProjectFilter);
-    if (!items.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#129534;</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>`;
-      return;
-    }
-    const groups = groupByDate(items);
-    container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date => {
-      const daySum = groups[date].reduce((s,e) => s+(e.amount||0), 0);
-      return `<div class="day-group">
-        <div class="day-header"><span class="day-label">${fmtDayLabel(date)}</span><span class="day-sum">${fmtEur(daySum)}</span></div>
-        ${groups[date].map(e => {
-          const t = trips.find(tr=>tr.id===e.tripId);
-          return `<div class="list-item" onclick="openExpenseEdit('${e.id}')">
-            <div class="list-icon" style="background:var(--red-l)">&#129534;</div>
-            <div class="li-info">
-              <div class="li-name">${escHtml(e.name||"Ausgabe")}</div>
-              <div class="li-meta">${t ? escHtml(t.name||t.city)+" ("+fmtDate(t.startDate)+")" : "&#8211;"}</div>
-            </div>
-            <div class="li-amount" style="color:var(--red)">${fmtEur(e.amount||0)}</div>
-          </div>`;
-        }).join("")}
-      </div>`;
+    let arr = listFilter ? expenses.filter(e=>e.tripId===listFilter) : [...expenses];
+    if (!arr.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">&#129534;</div><div class="empty-title">Keine Ausgaben</div><div class="empty-sub">Tippe auf + um eine Ausgabe zu erfassen</div></div>'; return; }
+    el.innerHTML = byDate(arr).map(([date,items])=>{
+      const s=items.reduce((x,e)=>x+(e.amount||0),0);
+      return '<div class="day-group"><div class="day-header"><span class="day-label">'+dl(date)+'</span><span class="day-sum">'+fe(s)+'</span></div>'+
+        items.map(e=>{ const t=trips.find(x=>x.id===e.tripId); return '<div class="list-item" onclick="editExpense(\''+e.id+'\')"><div class="list-icon" style="background:var(--red-l)">&#129534;</div><div class="li-info"><div class="li-name">'+esc(e.name||"Ausgabe")+'</div><div class="li-meta">'+(t?esc(t.name||t.city)+" ("+fd(t.startDate)+")":"&#8211;")+'</div></div><div class="li-amount" style="color:var(--red)">'+fe(e.amount||0)+'</div></div>'; }).join("")+
+      '</div>';
     }).join("");
   }
 }
+window.setListFilter = function(id) { listFilter=id; renderListe(); };
+window.setListTab    = function(t)  { listTab=t; listFilter=null; renderListe(); };
 
-window.setListProjectFilter = function(tripId) {
-  listProjectFilter = tripId;
-  renderListe();
-};
-
-
+// ── Projekte ──────────────────────────────────────────────────────────────────
 function renderProjekte() {
-  const container = document.getElementById("projekteContainer");
-  if (!trips.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">&#128506;</div><div class="empty-title">Noch keine Projekte</div><div class="empty-sub">Tippe auf + um ein Projekt anzulegen</div></div>`;
-    return;
-  }
-  container.innerHTML = trips.map(t => {
-    const c  = getIncomeCalc(t.id);
-    const a  = tripExpenses(t.id);
-    const df = c.net - a;
-    return `<div class="project-card">
-      <div class="pc-head">
-        <div>
-          <div class="pc-name">${escHtml(t.name||t.city)}</div>
-          <div class="pc-loc">${escHtml(t.city||"")}${t.country?", "+escHtml(t.country):""}</div>
-        </div>
-        <div class="pc-dates">${fmtDate(t.startDate)}<br>${fmtDate(t.endDate)}</div>
-      </div>
-      <div class="pc-metrics">
-        <div class="pc-metric"><div class="pc-metric-lbl">Netto</div><div class="pc-metric-val" style="color:var(--accent)">${fmtCompact(c.net)}</div></div>
-        <div class="pc-metric"><div class="pc-metric-lbl">Ausgaben</div><div class="pc-metric-val" style="color:var(--red)">${fmtCompact(a)}</div></div>
-        <div class="pc-metric"><div class="pc-metric-lbl">Differenz</div><div class="pc-metric-val" style="color:${df>=0?"var(--accent)":"var(--red)"}">${fmtCompact(df)}</div></div>
-      </div>
-      <div class="pc-actions">
-        <button class="pc-btn primary" onclick="openEditTrip('${t.id}')">Bearbeiten</button>
-        <button class="pc-btn danger" onclick="quickDeleteTrip('${t.id}','${escAttr(t.name||t.city)}')">L&ouml;schen</button>
-      </div>
-    </div>`;
+  const el = document.getElementById("projekteContent");
+  if (!trips.length) { el.innerHTML='<div class="empty-state"><div class="empty-icon">&#128506;</div><div class="empty-title">Noch keine Projekte</div><div class="empty-sub">Tippe auf + um ein Projekt anzulegen</div></div>'; return; }
+  el.innerHTML = trips.map(t=>{
+    const c=incCalc(t.id), a=expTotal(t.id), d=c.net-a;
+    return '<div class="project-card"><div class="pc-head"><div><div class="pc-name">'+esc(t.name||t.city)+'</div><div class="pc-loc">'+esc(t.city||"")+(t.country?", "+esc(t.country):"")+'</div></div><div class="pc-dates">'+fd(t.startDate)+'<br>'+fd(t.endDate)+'</div></div><div class="pc-metrics"><div class="pc-metric"><div class="pc-metric-lbl">Netto</div><div class="pc-metric-val" style="color:var(--accent)">'+fc(c.net)+'</div></div><div class="pc-metric"><div class="pc-metric-lbl">Ausgaben</div><div class="pc-metric-val" style="color:var(--red)">'+fc(a)+'</div></div><div class="pc-metric"><div class="pc-metric-lbl">Differenz</div><div class="pc-metric-val" style="color:'+(d>=0?"var(--accent)":"var(--red)")+'">'+fc(d)+'</div></div></div><div class="pc-actions"><button class="pc-btn primary" onclick="editProject(\''+t.id+'\')">Bearbeiten</button><button class="pc-btn danger" onclick="confirmDeleteProject(\''+t.id+'\',\''+esca(t.name||t.city)+'\')">Loeschen</button></div></div>';
   }).join("");
 }
 
-// ─── Projekt Form ─────────────────────────────────────────────────────────────
-window.openAddTrip = function() {
-  document.getElementById("fTripId").value = "";
-  document.getElementById("projectSheetTitle").textContent = "Neues Projekt";
-  ["fTripName","fCity","fCountry","fStartDate","fEndDate"].forEach(id => document.getElementById(id).value="");
-  document.getElementById("tripDeleteBtn").style.display = "none";
-  openSheet("projectSheet");
+// ── Project CRUD ──────────────────────────────────────────────────────────────
+window.openAddProject = function() {
+  document.getElementById("fProjId").value=""; document.getElementById("sheetProjectTitle").textContent="Neues Projekt";
+  ["fProjName","fProjCity","fProjCountry","fProjStart","fProjEnd"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("btnProjDelete").style.display="none";
+  openSheet("sheetProject");
 };
-window.openEditTrip = function(id) {
-  const t = trips.find(tr => tr.id===id);
-  if (!t) return;
-  document.getElementById("fTripId").value    = id;
-  document.getElementById("projectSheetTitle").textContent = "Projekt bearbeiten";
-  document.getElementById("fTripName").value  = t.name||"";
-  document.getElementById("fCity").value      = t.city||"";
-  document.getElementById("fCountry").value   = t.country||"";
-  document.getElementById("fStartDate").value = t.startDate||"";
-  document.getElementById("fEndDate").value   = t.endDate||"";
-  document.getElementById("tripDeleteBtn").style.display = "block";
-  openSheet("projectSheet");
+window.editProject = function(id) {
+  const t=trips.find(x=>x.id===id); if (!t) return;
+  document.getElementById("fProjId").value=id; document.getElementById("sheetProjectTitle").textContent="Projekt bearbeiten";
+  document.getElementById("fProjName").value=t.name||""; document.getElementById("fProjCity").value=t.city||"";
+  document.getElementById("fProjCountry").value=t.country||""; document.getElementById("fProjStart").value=t.startDate||"";
+  document.getElementById("fProjEnd").value=t.endDate||"";
+  document.getElementById("btnProjDelete").style.display="block";
+  openSheet("sheetProject");
 };
-window.saveTrip = async function() {
-  const id    = document.getElementById("fTripId").value;
-  const city  = document.getElementById("fCity").value.trim();
-  const start = document.getElementById("fStartDate").value;
-  const end   = document.getElementById("fEndDate").value;
-  if (!city||!start||!end) { showToast("Stadt, Start- und Enddatum benoetigt"); return; }
-  const data = {
-    name: document.getElementById("fTripName").value.trim()||city,
-    city, country: document.getElementById("fCountry").value.trim(),
-    startDate: start, endDate: end, updated_at: new Date().toISOString()
-  };
-  setSyncStatus("syncing","Speichert...");
+window.saveProject = async function() {
+  const id=document.getElementById("fProjId").value;
+  const city=document.getElementById("fProjCity").value.trim();
+  const s=document.getElementById("fProjStart").value, e=document.getElementById("fProjEnd").value;
+  if (!city||!s||!e) { showToast("Stadt, Start und Ende benoetigt"); return; }
+  const d={name:document.getElementById("fProjName").value.trim()||city, city, country:document.getElementById("fProjCountry").value.trim(), startDate:s, endDate:e, updated_at:new Date().toISOString()};
   try {
-    if (id) { await updateDoc(doc(db,"trips",id), data); }
-    else    { data.created_at = new Date().toISOString(); await addDoc(tripsCol, data); }
+    if (id) { await updateDoc(doc(db,"trips",id),d); } else { d.created_at=new Date().toISOString(); await addDoc(colTrips,d); }
     closeSheets(); showToast(id?"Projekt aktualisiert":"Projekt angelegt");
-  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+  } catch(ex) { showToast("Fehler beim Speichern"); }
 };
-window.quickDeleteTrip = function(id, name) {
-  deleteTarget = { type:"trip", id };
-  document.getElementById("confirmSub").textContent = `"${name}" wird geloescht. Einnahmen und Ausgaben bleiben erhalten.`;
+window.confirmDeleteProject = function(id, name) {
+  deleteTarget={type:"trip",id};
+  document.getElementById("confirmSub").textContent='"'+name+'" wird geloescht.';
   document.getElementById("confirmBox").classList.add("open");
 };
 
-// ─── Einnahmen / Per Diem ─────────────────────────────────────────────────────
-// incomeWeeks removed - simplified to global day/meal counts
-
-
-window.updateIncomePreview = function() {
-  const gN = id => { const el=document.getElementById(id); return el ? (parseFloat(el.value)||0) : 0; };
-  const breakfasts = gN("iBreakfasts"), lunches = gN("iLunches"), dinners = gN("iDinners");
-  const mealFrueh  = gN("iMealFrueh"),  mealMittag = gN("iMealMittag"), mealAbend = gN("iMealAbend");
-  const mealDed = breakfasts*mealFrueh + lunches*mealMittag + dinners*mealAbend;
-  const tmp = {
-    travelDays: gN("iTravelDays"), travelDayRate: gN("iTravelDayRate"),
-    fullDays:   gN("iFullDays"),   fullDayRate:   gN("iFullDayRate"),
-    freeLimit:  gN("iFreeLimit"),  lst: gN("iLst"), sv: gN("iSv"),
-    mealFrueh, mealMittag, mealAbend, breakfasts, lunches, dinners
-  };
-  const c  = calcPerDiem(tmp);
-  const el = document.getElementById("incomePreview");
-  if (c.brutto > 0) {
-    el.style.display = "block";
-    // Show gross BEFORE meals so user sees the deduction clearly
-    const grossBeforeMeals = (tmp.travelDays*tmp.travelDayRate) + (tmp.fullDays*tmp.fullDayRate);
-    document.getElementById("iPdpBrutto").textContent  = fmtEur(grossBeforeMeals) + (mealDed>0 ? " \u2212 " + fmtEur(mealDed) + " = " + fmtEur(c.brutto) : "");
-    document.getElementById("iPdpMeals").textContent   = mealDed > 0 ? "\u2212 " + fmtEur(mealDed) : "keine";
-    document.getElementById("iPdpSteuern").textContent = fmtEur(c.steuern);
-    document.getElementById("iPdpNetto").textContent   = fmtEur(c.net);
-  } else { el.style.display = "none"; }
-};
-
-function populateTripSelect(selectId, preselect) {
-  const sel = document.getElementById(selectId);
-  const pre = preselect || selectedTripId;
-  sel.innerHTML = trips.length
-    ? trips.map(t=>`<option value="${t.id}"${t.id===pre?" selected":""}>${escHtml(t.name||t.city)} (${fmtDate(t.startDate)}–${fmtDate(t.endDate)})</option>`).join("")
-    : "<option value=''>Kein Projekt</option>";
+// ── Income CRUD ───────────────────────────────────────────────────────────────
+function fillProjSelect(selId, presel) {
+  const s=document.getElementById(selId), pre=presel||(selProject!=="all"?selProject:null)||(trips[0]&&trips[0].id);
+  s.innerHTML=trips.map(t=>'<option value="'+t.id+'"'+(t.id===pre?" selected":"")+'>'+esc(t.name||t.city)+' ('+fd(t.startDate)+')</option>').join("");
 }
-
-window.setIncomeMode = function(mode) {
-  document.getElementById("fIncomeMode").value = mode;
-  document.getElementById("incModeSimpleBtn").classList.toggle("active", mode==="simple");
-  document.getElementById("incModePerdiemBtn").classList.toggle("active", mode==="perdiem");
-  document.getElementById("incomeSimpleSection").style.display  = mode==="simple"  ? "block" : "none";
-  document.getElementById("incomePerdiemSection").style.display = mode==="perdiem" ? "flex"  : "none";
-};
-
-window.updateSimplePreview = function() {
-  const brutto = parseFloat(document.getElementById("iSimpleAmount").value) || 0;
-  const steuern = parseFloat(document.getElementById("iSimpleTax").value) || 0;
-  const el = document.getElementById("simplePreview");
-  if (brutto > 0) {
-    el.style.display = "block";
-    document.getElementById("sPdpBrutto").textContent  = fmtEur(brutto);
-    document.getElementById("sPdpSteuern").textContent = fmtEur(steuern);
-    document.getElementById("sPdpNetto").textContent   = fmtEur(brutto - steuern);
-  } else { el.style.display = "none"; }
-};
-
+function fillCountrySelect() {
+  const s=document.getElementById("fIncCountry");
+  s.innerHTML='<option value="">-- Kein Preset --</option>'+countryPresets.map(c=>'<option value="'+esca(c.code||c.name)+'">'+esc(c.flag?c.flag+" ":"")+esc(c.name)+'</option>').join("");
+}
 window.openAddIncome = function() {
-  document.getElementById("fIncomeId").value      = "";
-  document.getElementById("fIncomeDate").value    = today.toISOString().slice(0,10);
-  document.getElementById("fIncomeNote").value    = "";
-  document.getElementById("iSimpleAmount").value  = "";
-  document.getElementById("iSimpleTax").value     = "";
-  document.getElementById("incomeSheetTitle").textContent = "Spesen erfassen";
-  document.getElementById("incomeDeleteBtn").style.display = "none";
-  document.getElementById("incomePreview").style.display  = "none";
-  document.getElementById("simplePreview").style.display  = "none";
-  document.getElementById("iRateSummary").style.display   = "none";
-  document.getElementById("iRateFields").style.display    = "none";
-  ["iFullDayRate","iTravelDayRate","iFreeLimit","iLst","iSv","iMealFrueh","iMealMittag","iMealAbend"].forEach(id=>document.getElementById(id).value="");
-  ["iTravelDays","iFullDays","iBreakfasts","iLunches","iDinners"].forEach(id=>document.getElementById(id).value="0");
-  document.getElementById("iCountry").value = "";
-  populateTripSelect("fIncomeTripId");
-  populateCountryDropdown();
-  window.setIncomeMode("simple");
-  openSheet("incomeSheet");
+  document.getElementById("fIncId").value=""; document.getElementById("sheetIncomeTitle").textContent="Spesen erfassen";
+  document.getElementById("fIncDate").value=today.toISOString().slice(0,10);
+  document.getElementById("fIncNote").value=""; document.getElementById("fIncAmount").value=""; document.getElementById("fIncTax").value="";
+  document.getElementById("btnIncDelete").style.display="none";
+  document.getElementById("previewSimpleEl").style.display="none";
+  document.getElementById("previewPerdiemEl").style.display="none";
+  document.getElementById("rateSummary").style.display="none";
+  document.getElementById("rateFields").style.display="none";
+  ["fFullRate","fTravelRate","fFreeLimit","fLst","fSv","fMealF","fMealM","fMealA"].forEach(id=>document.getElementById(id).value="");
+  ["fTravelDays","fFullDays","fBreakfasts","fLunches","fDinners"].forEach(id=>document.getElementById(id).value="0");
+  fillProjSelect("fIncProject"); fillCountrySelect();
+  setIncomeMode("simple"); openSheet("sheetIncome");
 };
-
-window.openIncomeEdit = function(id) {
-  const i = incomes.find(x=>x.id===id);
-  if (!i) return;
-  const mode = i.type === "perdiem" ? "perdiem" : "simple";
-  document.getElementById("fIncomeId").value          = id;
-  document.getElementById("fIncomeDate").value        = i.date;
-  document.getElementById("fIncomeNote").value        = i.note||"";
-  // Simple fields
-  document.getElementById("iSimpleAmount").value      = mode==="simple" ? (i.brutto||"") : "";
-  document.getElementById("iSimpleTax").value         = mode==="simple" ? (i.steuern||"") : "";
-  // Per diem fields
-  document.getElementById("iFullDayRate").value       = i.fullDayRate||"";
-  document.getElementById("iTravelDayRate").value     = i.travelDayRate||"";
-  document.getElementById("iFreeLimit").value         = i.freeLimit||"";
-  document.getElementById("iLst").value               = i.lst||"";
-  document.getElementById("iSv").value                = i.sv||"";
-  document.getElementById("iMealFrueh").value         = i.mealFrueh||"";
-  document.getElementById("iMealMittag").value        = i.mealMittag||"";
-  document.getElementById("iMealAbend").value         = i.mealAbend||"";
-  document.getElementById("iTravelDays").value        = i.travelDays||0;
-  document.getElementById("iFullDays").value          = i.fullDays||0;
-  document.getElementById("iBreakfasts").value        = i.breakfasts||0;
-  document.getElementById("iLunches").value           = i.lunches||0;
-  document.getElementById("iDinners").value           = i.dinners||0;
-  // Restore country selection
-  const matchedCountry = countryPresets.find(c =>
-    c.fullDayRate===(i.fullDayRate||0) && c.freeLimit===(i.freeLimit||0)
-  );
-  document.getElementById("iCountry").value = matchedCountry ? matchedCountry.code : "";
-  document.getElementById("incomeSheetTitle").textContent = "Spesen bearbeiten";
-  document.getElementById("incomeDeleteBtn").style.display = "block";
-  populateTripSelect("fIncomeTripId", i.tripId);
-  populateCountryDropdown();
-  window.setIncomeMode(mode);
-  if (mode==="simple") { window.updateSimplePreview(); }
-  else                 { updateRateSummary(); updateIncomePreview(); }
-  openSheet("incomeSheet");
+window.editIncome = function(id) {
+  const i=incomes.find(x=>x.id===id); if (!i) return;
+  const mode=i.type==="perdiem"?"perdiem":"simple";
+  document.getElementById("fIncId").value=id; document.getElementById("sheetIncomeTitle").textContent="Spesen bearbeiten";
+  document.getElementById("fIncDate").value=i.date||""; document.getElementById("fIncNote").value=i.note||"";
+  document.getElementById("btnIncDelete").style.display="block";
+  document.getElementById("fIncAmount").value=mode==="simple"?(i.brutto||""):"";
+  document.getElementById("fIncTax").value=mode==="simple"?(i.steuern||""):"";
+  const gv=k=>document.getElementById(k).value=i[k.replace(/f([A-Z])/,(_,c)=>c.toLowerCase())]||"";
+  ["fFullRate","fTravelRate","fFreeLimit","fLst","fSv","fMealF","fMealM","fMealA"].forEach(k=>{
+    const map={fFullRate:"fullDayRate",fTravelRate:"travelDayRate",fFreeLimit:"freeLimit",fLst:"lst",fSv:"sv",fMealF:"mealFrueh",fMealM:"mealMittag",fMealA:"mealAbend"};
+    document.getElementById(k).value=i[map[k]]||"";
+  });
+  document.getElementById("fTravelDays").value=i.travelDays||0;
+  document.getElementById("fFullDays").value=i.fullDays||0;
+  document.getElementById("fBreakfasts").value=i.breakfasts||0;
+  document.getElementById("fLunches").value=i.lunches||0;
+  document.getElementById("fDinners").value=i.dinners||0;
+  fillProjSelect("fIncProject", i.tripId); fillCountrySelect();
+  const mc=countryPresets.find(c=>c.fullDayRate===(i.fullDayRate||0)&&c.freeLimit===(i.freeLimit||0));
+  if (mc) document.getElementById("fIncCountry").value=mc.code||mc.name;
+  setIncomeMode(mode);
+  if (mode==="simple") previewSimple(); else { syncRateSummary(); previewPerdiem(); }
+  openSheet("sheetIncome");
 };
-
 window.saveIncome = async function() {
-  const id     = document.getElementById("fIncomeId").value;
-  const date   = document.getElementById("fIncomeDate").value;
-  const note   = document.getElementById("fIncomeNote").value.trim();
-  const tripId = document.getElementById("fIncomeTripId").value;
-  const mode   = document.getElementById("fIncomeMode").value;
+  const id=document.getElementById("fIncId").value;
+  const date=document.getElementById("fIncDate").value;
+  const note=document.getElementById("fIncNote").value.trim();
+  const tripId=document.getElementById("fIncProject").value;
+  const mode=document.getElementById("fIncMode").value;
   if (!date) { showToast("Datum eingeben"); return; }
-
   let data;
-  if (mode === "simple") {
-    const brutto  = parseFloat(document.getElementById("iSimpleAmount").value);
-    if (isNaN(brutto) || brutto <= 0) { showToast("Betrag eingeben"); return; }
-    const steuern = parseFloat(document.getElementById("iSimpleTax").value) || 0;
-    data = { date, note, tripId, type: "simple", brutto, steuern, net: brutto - steuern, updated_at: new Date().toISOString() };
+  if (mode==="simple") {
+    const br=parseFloat(document.getElementById("fIncAmount").value);
+    if (isNaN(br)||br<=0) { showToast("Betrag eingeben"); return; }
+    const st=parseFloat(document.getElementById("fIncTax").value)||0;
+    data={date,note,tripId,type:"simple",brutto:br,steuern:st,net:br-st,updated_at:new Date().toISOString()};
   } else {
-    const gN = eid => { const v=parseFloat(document.getElementById(eid).value); return isNaN(v)?null:v; };
-    const params = {
-      travelDays:    parseFloat(document.getElementById("iTravelDays").value)||0,
-      fullDays:      parseFloat(document.getElementById("iFullDays").value)||0,
-      breakfasts:    parseFloat(document.getElementById("iBreakfasts").value)||0,
-      lunches:       parseFloat(document.getElementById("iLunches").value)||0,
-      dinners:       parseFloat(document.getElementById("iDinners").value)||0,
-      travelDayRate: gN("iTravelDayRate"), fullDayRate: gN("iFullDayRate"),
-      freeLimit:     gN("iFreeLimit"), lst: gN("iLst"), sv: gN("iSv"),
-      mealFrueh:     gN("iMealFrueh"), mealMittag: gN("iMealMittag"), mealAbend: gN("iMealAbend"),
-      countryCode:   document.getElementById("iCountry").value || ""
-    };
-    const calc = calcPerDiem(params);
-    if (calc.brutto === 0) { showToast("Tagessatz und Tage eingeben"); return; }
-    data = { date, note, tripId, type: "perdiem", ...params, brutto: calc.brutto, steuern: calc.steuern, net: calc.net, updated_at: new Date().toISOString() };
+    const gn=id=>parseFloat(document.getElementById(id).value)||0;
+    const p={travelDays:gn("fTravelDays"),fullDays:gn("fFullDays"),breakfasts:gn("fBreakfasts"),lunches:gn("fLunches"),dinners:gn("fDinners"),travelDayRate:gn("fTravelRate"),fullDayRate:gn("fFullRate"),freeLimit:gn("fFreeLimit"),lst:gn("fLst"),sv:gn("fSv"),mealFrueh:gn("fMealF"),mealMittag:gn("fMealM"),mealAbend:gn("fMealA")};
+    const c=calcPD(p);
+    if (c.brutto===0) { showToast("Tagessatz und Tage eingeben"); return; }
+    data={date,note,tripId,type:"perdiem",...p,brutto:c.brutto,steuern:c.steuern,net:c.net,updated_at:new Date().toISOString()};
   }
-
-  setSyncStatus("syncing","Speichert...");
   try {
-    if (id) { await updateDoc(doc(db,"incomes",id), data); }
-    else    { data.created_at=new Date().toISOString(); await addDoc(incomesCol, data); }
+    if (id) { await updateDoc(doc(db,"incomes",id),data); } else { data.created_at=new Date().toISOString(); await addDoc(colIncomes,data); }
     closeSheets(); showToast("Spesen gespeichert");
-  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+  } catch(ex) { showToast("Fehler beim Speichern"); }
 };
 
-// ─── Ausgaben ─────────────────────────────────────────────────────────────────
+// ── Expense CRUD ──────────────────────────────────────────────────────────────
 window.openAddExpense = function() {
-  document.getElementById("fExpenseId").value     = "";
-  document.getElementById("fExpenseName").value   = "";
-  document.getElementById("fExpenseAmount").value = "";
-  document.getElementById("fExpenseDate").value   = today.toISOString().slice(0,10);
-  document.getElementById("fExpenseNote").value   = "";
-  document.getElementById("expenseSheetTitle").textContent = "Ausgabe hinzufuegen";
-  document.getElementById("expenseDeleteBtn").style.display = "none";
-  populateTripSelect("fExpenseTripId");
-  openSheet("expenseSheet");
-  setTimeout(()=>document.getElementById("fExpenseName").focus(), 350);
+  document.getElementById("fExpId").value=""; document.getElementById("sheetExpenseTitle").textContent="Ausgabe hinzufuegen";
+  document.getElementById("fExpName").value=""; document.getElementById("fExpAmount").value="";
+  document.getElementById("fExpDate").value=today.toISOString().slice(0,10);
+  document.getElementById("fExpNote").value=""; document.getElementById("btnExpDelete").style.display="none";
+  fillProjSelect("fExpProject"); openSheet("sheetExpense");
+  setTimeout(()=>document.getElementById("fExpName").focus(),350);
 };
-window.openExpenseEdit = function(id) {
-  const e = expenses.find(x=>x.id===id);
-  if (!e) return;
-  document.getElementById("fExpenseId").value     = id;
-  document.getElementById("fExpenseName").value   = e.name||"";
-  document.getElementById("fExpenseAmount").value = e.amount;
-  document.getElementById("fExpenseDate").value   = e.date;
-  document.getElementById("fExpenseNote").value   = e.note||"";
-  document.getElementById("expenseSheetTitle").textContent = "Ausgabe bearbeiten";
-  document.getElementById("expenseDeleteBtn").style.display = "block";
-  populateTripSelect("fExpenseTripId", e.tripId);
-  openSheet("expenseSheet");
+window.editExpense = function(id) {
+  const e=expenses.find(x=>x.id===id); if (!e) return;
+  document.getElementById("fExpId").value=id; document.getElementById("sheetExpenseTitle").textContent="Ausgabe bearbeiten";
+  document.getElementById("fExpName").value=e.name||""; document.getElementById("fExpAmount").value=e.amount||"";
+  document.getElementById("fExpDate").value=e.date||""; document.getElementById("fExpNote").value=e.note||"";
+  document.getElementById("btnExpDelete").style.display="block";
+  fillProjSelect("fExpProject",e.tripId); openSheet("sheetExpense");
 };
 window.saveExpense = async function() {
-  const id     = document.getElementById("fExpenseId").value;
-  const name   = document.getElementById("fExpenseName").value.trim();
-  const amount = parseFloat(document.getElementById("fExpenseAmount").value);
-  const date   = document.getElementById("fExpenseDate").value;
-  const note   = document.getElementById("fExpenseNote").value.trim();
-  const tripId = document.getElementById("fExpenseTripId").value;
-  if (!name||isNaN(amount)||amount<=0||!date) { showToast("Name, Betrag und Datum eingeben"); return; }
-  const data = { name, amount, date, note, tripId, updated_at: new Date().toISOString() };
-  setSyncStatus("syncing","Speichert...");
+  const id=document.getElementById("fExpId").value;
+  const name=document.getElementById("fExpName").value.trim();
+  const amt=parseFloat(document.getElementById("fExpAmount").value);
+  const date=document.getElementById("fExpDate").value;
+  if (!name||isNaN(amt)||amt<=0||!date) { showToast("Name, Betrag und Datum eingeben"); return; }
+  const d={name,amount:amt,date,note:document.getElementById("fExpNote").value.trim(),tripId:document.getElementById("fExpProject").value,updated_at:new Date().toISOString()};
   try {
-    if (id) { await updateDoc(doc(db,"expenses",id), data); }
-    else    { data.created_at=new Date().toISOString(); await addDoc(expensesCol, data); }
+    if (id) { await updateDoc(doc(db,"expenses",id),d); } else { d.created_at=new Date().toISOString(); await addDoc(colExpenses,d); }
     closeSheets(); showToast("Ausgabe gespeichert");
-  } catch(e) { setSyncStatus("error","Fehler"); showToast("Fehler beim Speichern"); }
+  } catch(ex) { showToast("Fehler beim Speichern"); }
 };
 
-// ─── Delete ───────────────────────────────────────────────────────────────────
+// ── Per Diem UI ───────────────────────────────────────────────────────────────
+window.setIncomeMode = function(m) {
+  document.getElementById("fIncMode").value=m;
+  document.getElementById("incModeSimpleBtn").classList.toggle("active",m==="simple");
+  document.getElementById("incModePerdiemBtn").classList.toggle("active",m==="perdiem");
+  document.getElementById("secSimple").style.display=m==="simple"?"block":"none";
+  document.getElementById("secPerdiem").style.display=m==="perdiem"?"flex":"none";
+};
+window.previewSimple = function() {
+  const br=parseFloat(document.getElementById("fIncAmount").value)||0;
+  const st=parseFloat(document.getElementById("fIncTax").value)||0;
+  const el=document.getElementById("previewSimpleEl");
+  if (br>0) { el.style.display="block"; document.getElementById("psBrutto").textContent=fe(br); document.getElementById("psSteuern").textContent=fe(st); document.getElementById("psNetto").textContent=fe(br-st); }
+  else el.style.display="none";
+};
+window.previewPerdiem = function() {
+  const gn=id=>parseFloat(document.getElementById(id).value)||0;
+  const p={travelDays:gn("fTravelDays"),fullDays:gn("fFullDays"),breakfasts:gn("fBreakfasts"),lunches:gn("fLunches"),dinners:gn("fDinners"),travelDayRate:gn("fTravelRate"),fullDayRate:gn("fFullRate"),freeLimit:gn("fFreeLimit"),lst:gn("fLst"),sv:gn("fSv"),mealFrueh:gn("fMealF"),mealMittag:gn("fMealM"),mealAbend:gn("fMealA")};
+  const c=calcPD(p); const el=document.getElementById("previewPerdiemEl");
+  if (c.bruttoRaw>0) {
+    el.style.display="block";
+    document.getElementById("ppBruttoRaw").textContent=fe(c.bruttoRaw);
+    document.getElementById("ppMeals").textContent=c.mealDed>0?"\u2212"+fe(c.mealDed):"keine";
+    document.getElementById("ppBrutto").textContent=fe(c.brutto);
+    document.getElementById("ppSteuern").textContent=fe(c.steuern);
+    document.getElementById("ppNetto").textContent=fe(c.net);
+  } else el.style.display="none";
+};
+window.syncRateSummary = function() {
+  const gn=id=>parseFloat(document.getElementById(id).value)||0;
+  const fr=gn("fFullRate"),tr=gn("fTravelRate"),fl=gn("fFreeLimit"),lst=gn("fLst"),sv=gn("fSv"),mf=gn("fMealF"),mm=gn("fMealM"),ma=gn("fMealA");
+  const el=document.getElementById("rateSummary");
+  if (fr>0||fl>0) {
+    document.getElementById("rateSummaryGrid").innerHTML=[["Volltagssatz",fr>0?fe(fr):"&#8212;"],["Anreisetag",tr>0?fe(tr):"&#8212;"],["Steuerfreie Grenze",fl>0?fe(fl)+"/Tag":"&#8212;"],["Einkommensteuer",lst>0?lst+"%":"&#8212;"],["Sozialvers.",sv>0?sv+"%":"&#8212;"],["Fr/Mi/Ab",fe(mf)+" / "+fe(mm)+" / "+fe(ma)]].map(([l,v])=>'<div class="rs-item"><span class="rs-lbl">'+l+'</span><span class="rs-val">'+v+'</span></div>').join("");
+    el.style.display="block";
+  } else el.style.display="none";
+};
+window.toggleRateEdit = function() {
+  const el=document.getElementById("rateFields"), btn=document.getElementById("rateEditBtn");
+  const vis=el.style.display!=="none";
+  el.style.display=vis?"none":"flex";
+  btn.textContent=vis?"Saetze anpassen \u270e":"Saetze ausblenden \u2715";
+};
+window.loadPreset = function(code) {
+  if (!code) { document.getElementById("rateSummary").style.display="none"; return; }
+  const p=countryPresets.find(c=>(c.code||c.name)===code); if (!p) return;
+  const sv=id=>{ const el=document.getElementById(id); if(el) el.value=p[{fFullRate:"fullDayRate",fTravelRate:"travelDayRate",fFreeLimit:"freeLimit",fLst:"lst",fSv:"sv",fMealF:"mealFrueh",fMealM:"mealMittag",fMealA:"mealAbend"}[id]]||""; };
+  ["fFullRate","fTravelRate","fFreeLimit","fLst","fSv","fMealF","fMealM","fMealA"].forEach(sv);
+  syncRateSummary(); previewPerdiem();
+};
+
+// ── Countries ─────────────────────────────────────────────────────────────────
+async function loadCountries() {
+  try {
+    const s=await getDoc(doc(db,"settings","countries"));
+    countryPresets = s.exists()&&s.data().list ? s.data().list : getDefaultCountries();
+  } catch(e) { countryPresets=getDefaultCountries(); }
+}
+function getDefaultCountries() {
+  return [
+    {code:"nl",flag:"NL",name:"Niederlande",   fullDayRate:0,travelDayRate:0,freeLimit:30,   lst:37,  sv:17.9,mealFrueh:5.50,mealMittag:10.00,mealAbend:12.50},
+    {code:"de",flag:"DE",name:"Deutschland",   fullDayRate:0,travelDayRate:0,freeLimit:28,   lst:42,  sv:20,  mealFrueh:5.60,mealMittag:11.20,mealAbend:11.20},
+    {code:"ch",flag:"CH",name:"Schweiz",       fullDayRate:0,travelDayRate:0,freeLimit:40,   lst:35,  sv:15,  mealFrueh:8.00,mealMittag:15.00,mealAbend:15.00},
+    {code:"at",flag:"AT",name:"Oesterreich",   fullDayRate:0,travelDayRate:0,freeLimit:26.40,lst:42,  sv:18,  mealFrueh:5.00,mealMittag:10.00,mealAbend:10.00},
+    {code:"fr",flag:"FR",name:"Frankreich",    fullDayRate:0,travelDayRate:0,freeLimit:30,   lst:45,  sv:22,  mealFrueh:7.00,mealMittag:13.00,mealAbend:13.00},
+    {code:"gb",flag:"GB",name:"Grossbritannien",fullDayRate:0,travelDayRate:0,freeLimit:35,  lst:40,  sv:12,  mealFrueh:6.00,mealMittag:12.00,mealAbend:12.00}
+  ];
+}
+window.openCountrySheet = function() { renderCountryList(); openSheet("sheetCountry"); };
+function renderCountryList() {
+  document.getElementById("countryList").innerHTML = countryPresets.map((c,i)=>{
+    const fields=[["fullDayRate","Volltagssatz"],["travelDayRate","Anreisetag"],["freeLimit","Steuerfreie Grenze"],["lst","Einkommensteuer (%)"],["sv","Sozialvers. (%)"],["mealFrueh","Abzug Fruehst."],["mealMittag","Abzug Mittag"],["mealAbend","Abzug Abend"]];
+    return '<div class="country-card"><div class="country-card-head"><span class="country-card-name">'+esc(c.flag?"["+c.flag+"] ":"")+esc(c.name)+'</span><button class="country-remove" onclick="removeCountry('+i+')">&#x2715; entfernen</button></div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Name</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.name)+'" oninput="countryPresets['+i+'].name=this.value"></div>'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Kuerzel</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.flag||c.code||"")+'" oninput="countryPresets['+i+'].flag=this.value"></div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
+        fields.map(([k,lbl])=>'<div><div class="form-label" style="font-size:10px;margin-bottom:3px">'+lbl+'</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="'+(c[k]||"")+'" oninput="countryPresets['+i+'].'+k+'=+this.value"></div>').join("")+
+      '</div></div>';
+  }).join("");
+}
+window.addCountry = function() {
+  countryPresets.push({code:"new"+Date.now(),flag:"",name:"Neues Land",fullDayRate:0,travelDayRate:0,freeLimit:0,lst:0,sv:0,mealFrueh:0,mealMittag:0,mealAbend:0});
+  renderCountryList();
+};
+window.removeCountry = function(i) { countryPresets.splice(i,1); renderCountryList(); };
+window.saveCountries = async function() {
+  try { await setDoc(doc(db,"settings","countries"),{list:countryPresets,updated_at:new Date().toISOString()}); closeSheets(); showToast("Laender gespeichert"); }
+  catch(e) { showToast("Fehler beim Speichern"); }
+};
+
+// ── Delete ────────────────────────────────────────────────────────────────────
 window.confirmDelete = function(type) {
-  const idField = type==="income"?"fIncomeId":type==="expense"?"fExpenseId":"fTripId";
-  const id      = document.getElementById(idField).value;
-  if (!id) return;
-  deleteTarget  = { type, id };
-  document.getElementById("confirmSub").textContent = "Dieser Eintrag wird unwiderruflich geloescht.";
+  const idMap={project:"fProjId",income:"fIncId",expense:"fExpId"};
+  const id=document.getElementById(idMap[type]).value; if (!id) return;
+  deleteTarget={type,id};
+  document.getElementById("confirmSub").textContent="Dieser Eintrag wird unwiderruflich geloescht.";
   document.getElementById("confirmBox").classList.add("open");
 };
 window.closeConfirm = function() { deleteTarget=null; document.getElementById("confirmBox").classList.remove("open"); };
 document.getElementById("confirmOk").addEventListener("click", async function() {
   if (!deleteTarget) return;
-  const { type, id } = deleteTarget;
-  const colRef = type==="trip"?"trips":type==="income"?"incomes":"expenses";
-  try { await deleteDoc(doc(db,colRef,id)); closeConfirm(); closeSheets(); showToast("Geloescht"); }
+  const colMap={project:"trips",income:"incomes",expense:"expenses"};
+  try { await deleteDoc(doc(db,colMap[deleteTarget.type],deleteTarget.id)); closeConfirm(); closeSheets(); showToast("Geloescht"); }
   catch(e) { showToast("Fehler beim Loeschen"); }
 });
 
-// ─── Navigation ───────────────────────────────────────────────────────────────
+// ── Nav ───────────────────────────────────────────────────────────────────────
 document.querySelectorAll(".nav-tab").forEach(tab => {
   tab.addEventListener("click", function() {
-    activePage = this.dataset.page;
+    activePage=this.dataset.page;
     document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     this.classList.add("active");
@@ -1320,10 +861,10 @@ document.querySelectorAll(".nav-tab").forEach(tab => {
   });
 });
 window.selectProject = function(id) {
-  selectedTripId = id;
-  document.getElementById("projectSelect").value = id;
+  selProject=id||"all";
+  document.getElementById("projectSelect").value=selProject;
   if (activePage!=="dashboard") {
-    activePage = "dashboard";
+    activePage="dashboard";
     document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
     document.querySelector("[data-page='dashboard']").classList.add("active");
@@ -1331,34 +872,33 @@ window.selectProject = function(id) {
   }
   renderDashboard();
 };
-window.setListTab = function(tab) { activeListTab=tab; listProjectFilter=null; renderListe(); };
-
+window.goExpList = function(tid) {
+  listFilter=tid&&tid!=="all"?tid:null; listTab="expense";
+  activePage="liste";
+  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelector("[data-page='liste']").classList.add("active");
+  document.getElementById("page-liste").classList.add("active");
+  renderListe();
+};
 document.getElementById("fabBtn").addEventListener("click", function() {
-  if      (activePage==="projekte")                         window.openAddTrip();
-  else if (activePage==="liste"&&activeListTab==="income")  window.openAddIncome();
-  else                                                      window.openAddExpense();
+  if (activePage==="projekte")                           window.openAddProject();
+  else if (activePage==="liste"&&listTab==="income")     window.openAddIncome();
+  else                                                   window.openAddExpense();
 });
 
+// ── Sheets ────────────────────────────────────────────────────────────────────
 function openSheet(id) { document.getElementById("overlay").classList.add("open"); document.getElementById(id).classList.add("open"); }
 window.closeSheets = function() { document.getElementById("overlay").classList.remove("open"); document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("open")); };
 
-// ─── Utilities ────────────────────────────────────────────────────────────────
-function fmtEur(n) { return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" \u20ac"; }
-function fmtCompact(n) {
-  const abs=Math.abs(n||0), sign=(n||0)<0?"&#8722;":"";
-  if(abs>=1000) return sign+(Math.round(abs/100)/10).toFixed(1).replace(".",",")+"\u00a0k\u00a0\u20ac";
-  return sign+Math.round(abs)+"\u00a0\u20ac";
-}
-function fmtDate(s) { if(!s) return "&#8211;"; return new Date(s+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}); }
-function fmtDayLabel(s) {
-  const d=new Date(s+"T12:00:00"), base=new Date(today.getFullYear(),today.getMonth(),today.getDate()), day=new Date(d.getFullYear(),d.getMonth(),d.getDate());
-  const diff=(base-day)/86400000;
-  if(diff===0) return "Heute"; if(diff===1) return "Gestern";
-  return d.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"short"});
-}
-function groupByDate(items) { const g={}; items.forEach(i=>{if(!g[i.date])g[i.date]=[];g[i.date].push(i);}); return g; }
-function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function escAttr(s) { return escHtml(s).replace(/'/g,"&#39;"); }
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function fe(n)   { return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+"\u202f\u20ac"; }
+function fc(n)   { const a=Math.abs(n||0),s=(n||0)<0?"\u2212":""; return a>=1000?s+(Math.round(a/100)/10).toFixed(1).replace(".",",")+"\u00a0k\u202f\u20ac":s+Math.round(a)+"\u202f\u20ac"; }
+function fd(s)   { if(!s) return "\u2013"; return new Date(s+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}); }
+function dl(s)   { const d=new Date(s+"T12:00:00"),b=new Date(today.getFullYear(),today.getMonth(),today.getDate()),dy=new Date(d.getFullYear(),d.getMonth(),d.getDate()),df=(b-dy)/86400000; if(df===0) return "Heute"; if(df===1) return "Gestern"; return d.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"short"}); }
+function esc(s)  { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function esca(s) { return esc(s).replace(/'/g,"&#39;"); }
+function byDate(items) { const g={}; items.forEach(i=>{if(!g[i.date])g[i.date]=[];g[i.date].push(i);}); return Object.keys(g).sort((a,b)=>b.localeCompare(a)).map(k=>[k,g[k]]); }
 function showToast(msg) { const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
 document.addEventListener("keydown", e => { if(e.key==="Escape") closeSheets(); if(e.key==="Enter"&&document.getElementById("loginScreen").style.display!=="none") window.doLogin(); });
 </script>
