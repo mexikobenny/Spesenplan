@@ -830,20 +830,27 @@ function getDefaultCountries() {
 }
 window.openCountrySheet = function() { renderCountryList(); openSheet("sheetCountry"); };
 function renderCountryList() {
+  const fields=[["fullDayRate","Volltagssatz"],["travelDayRate","Anreisetag"],["freeLimit","Steuerfreie Grenze"],["lst","Einkommensteuer (%)"],["sv","Sozialvers. (%)"],["mealFrueh","Abzug Fruehst."],["mealMittag","Abzug Mittag"],["mealAbend","Abzug Abend"]];
   document.getElementById("countryList").innerHTML = countryPresets.map((c,i)=>{
-    const fields=[["fullDayRate","Volltagssatz"],["travelDayRate","Anreisetag"],["freeLimit","Steuerfreie Grenze"],["lst","Einkommensteuer (%)"],["sv","Sozialvers. (%)"],["mealFrueh","Abzug Fruehst."],["mealMittag","Abzug Mittag"],["mealAbend","Abzug Abend"]];
-    return '<div class="country-card"><div class="country-card-head"><span class="country-card-name">'+esc(c.flag?"["+c.flag+"] ":"")+esc(c.name)+'</span><button class="country-remove" onclick="removeCountry('+i+')">&#x2715; entfernen</button></div>'+
+    return '<div class="country-card">' +
+      '<div class="country-card-head"><span class="country-card-name">'+esc(c.flag?"["+c.flag+"] ":"")+esc(c.name)+'</span><button class="country-remove" onclick="removeCountry('+i+')">&#x2715; entfernen</button></div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'+
-        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Name</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.name)+'" oninput="updateCP('+i+','name',this.value,false)"></div>'+
-        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Kuerzel</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.flag||c.code||"")+'" oninput="updateCP('+i+','flag',this.value,false)"></div>'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Name</div>'+
+        '<input class="form-input" style="height:36px;font-size:13px" type="text" data-idx="'+i+'" data-key="name" value="'+esca(c.name)+'" oninput="updateCP2(this)"></div>'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Kuerzel</div>'+
+        '<input class="form-input" style="height:36px;font-size:13px" type="text" data-idx="'+i+'" data-key="flag" value="'+esca(c.flag||c.code||"")+'" oninput="updateCP2(this)"></div>'+
       '</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
-        fields.map(([k,lbl])=>'<div><div class="form-label" style="font-size:10px;margin-bottom:3px">'+lbl+'</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="'+(c[k]||"")+'" oninput="updateCP('+i+',''+k+'',this.value,true)"></div>').join("")+
+        fields.map(([k,lbl])=>
+          '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">'+lbl+'</div>'+
+          '<input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" data-idx="'+i+'" data-key="'+k+'" value="'+(c[k]||"")+'" oninput="updateCP2(this)"></div>'
+        ).join("")+
       '</div></div>';
   }).join("");
 }
-window.updateCP = function(i, key, val, numeric) {
-  if (countryPresets[i]) countryPresets[i][key] = numeric ? (+val||0) : val;
+window.updateCP2 = function(el) {
+  const i = +el.dataset.idx, key = el.dataset.key, num = el.type === "number";
+  if (countryPresets[i]) countryPresets[i][key] = num ? (+el.value||0) : el.value;
 };
 window.addCountry = function() {
   countryPresets.push({code:"new"+Date.now(),flag:"",name:"Neues Land",fullDayRate:0,travelDayRate:0,freeLimit:0,lst:0,sv:0,mealFrueh:0,mealMittag:0,mealAbend:0});
@@ -925,20 +932,18 @@ window.closeSheets = function() { document.getElementById("overlay").classList.r
 window.acShow = function() {
   const val = (document.getElementById("fExpName").value||"").trim().toLowerCase();
   const box = document.getElementById("acBox");
-  if (!val || val.length < 1) { box.style.display="none"; return; }
-  // Count by name, sorted by frequency then alpha
+  if (!val) { box.style.display="none"; return; }
   const counts = {};
-  expenses.forEach(e => { if(e.name) { const n=e.name.trim(); counts[n]=(counts[n]||0)+1; } });
+  expenses.forEach(e => { if(e.name){ const n=e.name.trim(); counts[n]=(counts[n]||0)+1; } });
   const matches = Object.keys(counts)
     .filter(n => n.toLowerCase().includes(val))
     .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
     .slice(0,7);
   if (!matches.length) { box.style.display="none"; return; }
   box.innerHTML = matches.map(n =>
-    '<div class="ac-item" onmousedown="acPick(''+esca(n)+'')">' +
-    '<span class="ac-name">'+esc(n)+'</span>' +
-    '<span class="ac-count">'+counts[n]+'x</span>' +
-    '</div>'
+    '<div class="ac-item" data-val="'+esca(n)+'" onmousedown="acPick(this.dataset.val)">'+
+    '<span class="ac-name">'+esc(n)+'</span>'+
+    '<span class="ac-count">'+counts[n]+'x</span></div>'
   ).join("");
   box.style.display="block";
 };
