@@ -185,6 +185,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
 .empty-icon{font-size:36px;margin-bottom:10px}
 .empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .empty-sub{font-size:13px;color:var(--hint)}
+
+.ac-wrap{position:relative}
+.ac-box{position:absolute;top:50px;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-s);z-index:20;box-shadow:var(--shadow);display:none;max-height:220px;overflow-y:auto}
+.ac-item{padding:10px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.ac-item:last-child{border-bottom:none}
+.ac-item:active{background:var(--accent-l);color:var(--accent-t)}
+.ac-name{font-weight:500}
+.ac-count{font-size:11px;color:var(--hint)}
 </style>
 </head>
 <body>
@@ -333,7 +341,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-s
   <div class="sheet-header"><span class="sheet-title" id="sheetExpenseTitle">Ausgabe hinzufuegen</span><button class="sheet-close" onclick="closeSheets()">&#x2715;</button></div>
   <div class="form-body">
     <input type="hidden" id="fExpId">
-    <div class="form-group"><label class="form-label">Bezeichnung</label><input class="form-input" type="text" id="fExpName" placeholder="z.B. Supermarkt" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Bezeichnung</label><div class="ac-wrap"><input class="form-input" type="text" id="fExpName" placeholder="z.B. Supermarkt" autocomplete="off" oninput="acShow()" onblur="acHide()" onfocus="acShow()"><div class="ac-box" id="acBox"></div></div></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Betrag (&#8364;)</label><input class="form-input" type="number" id="fExpAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal"></div>
       <div class="form-group"><label class="form-label">Datum</label><input class="form-input" type="date" id="fExpDate"></div>
@@ -409,7 +417,7 @@ const colExpenses = collection(db, "expenses");
 let trips = [], incomes = [], expenses = [], countryPresets = [];
 let selProject   = null;  // tripId or "all"
 let activePage   = "dashboard";
-let listTab      = "income";
+let listTab      = "expense";
 let listFilter   = null;  // tripId filter for list
 let deleteTarget = null;
 const today      = new Date();
@@ -713,6 +721,7 @@ window.saveIncome = async function() {
 
 // ── Expense CRUD ──────────────────────────────────────────────────────────────
 window.openAddExpense = function() {
+  const acb=document.getElementById("acBox"); if(acb) acb.style.display="none";
   document.getElementById("fExpId").value=""; document.getElementById("sheetExpenseTitle").textContent="Ausgabe hinzufuegen";
   document.getElementById("fExpName").value=""; document.getElementById("fExpAmount").value="";
   document.getElementById("fExpDate").value=today.toISOString().slice(0,10);
@@ -796,8 +805,18 @@ window.loadPreset = function(code) {
 async function loadCountries() {
   try {
     const s=await getDoc(doc(db,"settings","countries"));
-    countryPresets = s.exists()&&s.data().list ? s.data().list : getDefaultCountries();
-  } catch(e) { countryPresets=getDefaultCountries(); }
+    if (s.exists()&&s.data().list) {
+      countryPresets=s.data().list;
+      localStorage.setItem("spesenplan_cp",JSON.stringify(countryPresets));
+      return;
+    }
+  } catch(e) {}
+  // LocalStorage fallback
+  try {
+    const stored=localStorage.getItem("spesenplan_cp");
+    if (stored) { countryPresets=JSON.parse(stored); return; }
+  } catch(e) {}
+  countryPresets=getDefaultCountries();
 }
 function getDefaultCountries() {
   return [
@@ -815,22 +834,32 @@ function renderCountryList() {
     const fields=[["fullDayRate","Volltagssatz"],["travelDayRate","Anreisetag"],["freeLimit","Steuerfreie Grenze"],["lst","Einkommensteuer (%)"],["sv","Sozialvers. (%)"],["mealFrueh","Abzug Fruehst."],["mealMittag","Abzug Mittag"],["mealAbend","Abzug Abend"]];
     return '<div class="country-card"><div class="country-card-head"><span class="country-card-name">'+esc(c.flag?"["+c.flag+"] ":"")+esc(c.name)+'</span><button class="country-remove" onclick="removeCountry('+i+')">&#x2715; entfernen</button></div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'+
-        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Name</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.name)+'" oninput="countryPresets['+i+'].name=this.value"></div>'+
-        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Kuerzel</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.flag||c.code||"")+'" oninput="countryPresets['+i+'].flag=this.value"></div>'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Name</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.name)+'" oninput="updateCP('+i+','name',this.value,false)"></div>'+
+        '<div><div class="form-label" style="font-size:10px;margin-bottom:3px">Kuerzel</div><input class="form-input" style="height:36px;font-size:13px" type="text" value="'+esca(c.flag||c.code||"")+'" oninput="updateCP('+i+','flag',this.value,false)"></div>'+
       '</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'+
-        fields.map(([k,lbl])=>'<div><div class="form-label" style="font-size:10px;margin-bottom:3px">'+lbl+'</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="'+(c[k]||"")+'" oninput="countryPresets['+i+'].'+k+'=+this.value"></div>').join("")+
+        fields.map(([k,lbl])=>'<div><div class="form-label" style="font-size:10px;margin-bottom:3px">'+lbl+'</div><input class="form-input" style="height:36px;font-size:13px" type="number" step="0.1" value="'+(c[k]||"")+'" oninput="updateCP('+i+',''+k+'',this.value,true)"></div>').join("")+
       '</div></div>';
   }).join("");
 }
+window.updateCP = function(i, key, val, numeric) {
+  if (countryPresets[i]) countryPresets[i][key] = numeric ? (+val||0) : val;
+};
 window.addCountry = function() {
   countryPresets.push({code:"new"+Date.now(),flag:"",name:"Neues Land",fullDayRate:0,travelDayRate:0,freeLimit:0,lst:0,sv:0,mealFrueh:0,mealMittag:0,mealAbend:0});
   renderCountryList();
 };
 window.removeCountry = function(i) { countryPresets.splice(i,1); renderCountryList(); };
 window.saveCountries = async function() {
-  try { await setDoc(doc(db,"settings","countries"),{list:countryPresets,updated_at:new Date().toISOString()}); closeSheets(); showToast("Laender gespeichert"); }
-  catch(e) { showToast("Fehler beim Speichern"); }
+  // Always save to localStorage first (instant, no rules needed)
+  try { localStorage.setItem("spesenplan_cp",JSON.stringify(countryPresets)); } catch(e) {}
+  // Then try Firebase
+  try {
+    await setDoc(doc(db,"settings","countries"),{list:countryPresets,updated_at:new Date().toISOString()});
+    closeSheets(); showToast("Laender gespeichert");
+  } catch(e) {
+    closeSheets(); showToast("Lokal gespeichert (Firebase nicht erreichbar)");
+  }
 };
 
 // ── Delete ────────────────────────────────────────────────────────────────────
@@ -890,6 +919,34 @@ document.getElementById("fabBtn").addEventListener("click", function() {
 // ── Sheets ────────────────────────────────────────────────────────────────────
 function openSheet(id) { document.getElementById("overlay").classList.add("open"); document.getElementById(id).classList.add("open"); }
 window.closeSheets = function() { document.getElementById("overlay").classList.remove("open"); document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("open")); };
+
+
+// ── Autocomplete Ausgaben ────────────────────────────────────────────────────
+window.acShow = function() {
+  const val = (document.getElementById("fExpName").value||"").trim().toLowerCase();
+  const box = document.getElementById("acBox");
+  if (!val || val.length < 1) { box.style.display="none"; return; }
+  // Count by name, sorted by frequency then alpha
+  const counts = {};
+  expenses.forEach(e => { if(e.name) { const n=e.name.trim(); counts[n]=(counts[n]||0)+1; } });
+  const matches = Object.keys(counts)
+    .filter(n => n.toLowerCase().includes(val))
+    .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
+    .slice(0,7);
+  if (!matches.length) { box.style.display="none"; return; }
+  box.innerHTML = matches.map(n =>
+    '<div class="ac-item" onmousedown="acPick(''+esca(n)+'')">' +
+    '<span class="ac-name">'+esc(n)+'</span>' +
+    '<span class="ac-count">'+counts[n]+'x</span>' +
+    '</div>'
+  ).join("");
+  box.style.display="block";
+};
+window.acHide = function() { setTimeout(()=>{ const b=document.getElementById("acBox"); if(b) b.style.display="none"; }, 150); };
+window.acPick = function(name) {
+  document.getElementById("fExpName").value = name;
+  document.getElementById("acBox").style.display = "none";
+};
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 function fe(n)   { return (n||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+"\u202f\u20ac"; }
